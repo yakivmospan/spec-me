@@ -1,0 +1,8 @@
+# Tool droppings, and personal additions: .agents/.local/ is never shared.
+__pycache__/
+*.pyc
+.local/
+
+# Generated on this machine by scripts — the map's Local section, and spec check results where
+# specs is installed.
+.cache/

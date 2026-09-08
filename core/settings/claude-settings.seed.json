@@ -1,0 +1,45 @@
+{
+  "_comment": [
+    "Template for .claude/settings.json. SETUP.md copies this and fills it.",
+    "",
+    "allow/ask/deny come from the stack profile's 'Tool commands' section (PROFILE.builder.md)",
+    "plus what the target repo actually uses. Delete this _comment key when filling.",
+    "",
+    "Rules of thumb for the lists: allow only what is read-only or trivially reversible; ask for",
+    "anything that writes outside the repo, publishes, or costs money; deny reads of secrets and",
+    "edits of generated files. A permission you are unsure about belongs in ask, not allow."
+  ],
+  "permissions": {
+    "allow": [
+      "Bash(git diff:*)",
+      "Bash(git status:*)",
+      "Bash(git log:*)",
+      "{{TEST_COMMAND_PATTERN}}",
+      "{{LINT_COMMAND_PATTERN}}",
+      "Bash(python3 .agents/skills/spec-rebuild-overviews/scripts/build_index.py:*)",
+      "Bash(python3 .agents/skills/spec-sync-with-code/scripts/record_check.py:*)",
+      "Bash(python3 .agents/core/skills/project-sync-profiles-and-skills/scripts/build_setup_map.py:*)",
+      "Bash(python3 .agents/core/skills/project-sync-profiles-and-skills/scripts/sync.py)",
+      "Bash(python3 .agents/skills/project-create-rule-or-skill/scripts/skill_stats.py:*)",
+      "Read({{SOURCE_GLOB}})",
+      "Read(.specs/**)",
+      "Read(.agents/**)",
+      "Edit({{SOURCE_GLOB}})",
+      "Edit(.specs/**)"
+    ],
+    "ask": [
+      "Bash(git push:*)",
+      "{{BUILD_COMMAND_PATTERN}}"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./**/*secrets*)",
+      "{{SIGNING_KEY_GLOBS}}",
+      "Edit(.specs/INDEX.md)",
+      "Edit(.specs/DECISIONS.md)",
+      "Edit(.specs/OPEN-QUESTIONS.md)",
+      "Bash(curl:*)"
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+# Codex's own defaults for this project. Subagents load from .codex/agents/*.toml and skills from
+# .agents/skills without an entry here. .claude/settings.json belongs to the other tool: keep any
+# permission both need in step by hand.
+
+model_provider = "openai"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+
+[sandbox_workspace_write]
+network_access = false
+
+[agents]
+max_concurrent_threads_per_session = 4

@@ -1,0 +1,5 @@
+settings.local.json
+
+# The marker inside a forwarding stub, written by .agents/core/skills/project-sync-profiles-and-skills/scripts/sync.py when symlinks are unavailable.
+# Where the setup is committed, the symlinks are too — they are how Claude reaches .agents/skills/.
+skills/*/.forwarding-stub

@@ -1,0 +1,1103 @@
+<!--
+  Source for the setup map linked from .agents/README.md. A local file, deliberately: it is opened
+  in a browser from that link, not published anywhere. Nothing outside this machine points at it,
+  so it can never go stale against a copy someone else is reading.
+
+  Numbers are generated. `.agents/core/skills/project-sync-profiles-and-skills/scripts/build_setup_map.py` rewrites every element carrying a
+  `data-wc="<path>"` attribute and the text between each pair of GEN:name markers, and the skills
+  that change what it measures run it. Don't hand-edit a count; change the file
+  it measures.
+
+  Careful writing one of those marker names in prose: a literal comment terminator inside this
+  comment ends it early, and the rest of these lines become visible text on the page.
+
+  The prose, the three figures and the captions are hand-written and yours to edit.
+
+  A complete standalone document. The charset declaration is load-bearing: opened over
+  file:// there is no HTTP header to supply one, and every em-dash on the page would be at
+  the mercy of the browser's guess without it.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{PROJECT_NAME}} Agent Setup Map</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;0,500;1,400&display=swap">
+<style>
+  :root {
+    --paper: #E9EDEF;
+    --surface: #FFFFFF;
+    --surface-2: #F3F6F7;
+    --ink: #15181B;
+    --ink-2: #3F4A52;
+    --ink-3: #6B7A84;
+    --rule: #C8D2D8;
+    --rule-soft: #DDE4E8;
+
+    --always: #0E5B87;
+    --conditional: #5C6B75;
+    --automatic: #8C5B0B;
+    --generated: #5B4B8A;
+
+    --always-bg: #DCEAF3;
+    --conditional-bg: #E3E8EB;
+    --automatic-bg: #F5E8D2;
+    --generated-bg: #E6E2F2;
+
+    --shadow: 0 1px 2px rgba(21, 24, 27, .06), 0 6px 20px rgba(21, 24, 27, .05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #14181B;
+      --surface: #1B2024;
+      --surface-2: #212830;
+      --ink: #E8EDF0;
+      --ink-2: #B3BFC7;
+      --ink-3: #8494A0;
+      --rule: #34404A;
+      --rule-soft: #283138;
+
+      --always: #6BB6E2;
+      --conditional: #9AAAB5;
+      --automatic: #E0A94E;
+      --generated: #A996E0;
+
+      --always-bg: #12303F;
+      --conditional-bg: #262F35;
+      --automatic-bg: #3A2D14;
+      --generated-bg: #2A2440;
+
+      --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 6px 20px rgba(0, 0, 0, .3);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #14181B;
+    --surface: #1B2024;
+    --surface-2: #212830;
+    --ink: #E8EDF0;
+    --ink-2: #B3BFC7;
+    --ink-3: #8494A0;
+    --rule: #34404A;
+    --rule-soft: #283138;
+
+    --always: #6BB6E2;
+    --conditional: #9AAAB5;
+    --automatic: #E0A94E;
+    --generated: #A996E0;
+
+    --always-bg: #12303F;
+    --conditional-bg: #262F35;
+    --automatic-bg: #3A2D14;
+    --generated-bg: #2A2440;
+
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 6px 20px rgba(0, 0, 0, .3);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "IBM Plex Serif", Georgia, "Times New Roman", serif;
+    font-size: 17px;
+    line-height: 1.62;
+    margin: 0;
+    padding: 0 24px 96px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 1180px; margin: 0 auto; }
+  .col { max-width: 720px; }
+
+  h1, h2, h3, .sans { font-family: "IBM Plex Sans", system-ui, -apple-system, sans-serif; }
+  code, .mono, th, td.num { font-family: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace; }
+
+  header { padding: 72px 0 40px; }
+  .eyebrow {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin: 0 0 18px;
+  }
+  h1 {
+    font-size: clamp(34px, 5vw, 52px);
+    line-height: 1.06;
+    letter-spacing: -.022em;
+    font-weight: 600;
+    margin: 0 0 20px;
+    text-wrap: balance;
+    max-width: 16ch;
+  }
+  .standfirst {
+    font-size: 20px;
+    line-height: 1.55;
+    color: var(--ink-2);
+    margin: 0;
+    max-width: 60ch;
+  }
+
+  .facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    margin: 40px 0 0;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+  .fact {
+    flex: 1 1 190px;
+    padding: 18px 24px 18px 0;
+    border-right: 1px solid var(--rule-soft);
+  }
+  .fact:last-child { border-right: 0; }
+  .fact dt {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin: 0 0 6px;
+  }
+  .fact dd {
+    font-family: "IBM Plex Sans", sans-serif;
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: -.01em;
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .fact dd small {
+    display: block;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--ink-3);
+    letter-spacing: 0;
+    margin-top: 2px;
+  }
+
+  h2 {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin: 0 0 8px;
+  }
+  h3 {
+    font-size: 27px;
+    font-weight: 600;
+    letter-spacing: -.015em;
+    line-height: 1.2;
+    margin: 0 0 14px;
+    text-wrap: balance;
+  }
+  section { padding-top: 72px; }
+  p { margin: 0 0 18px; }
+  p:last-child { margin-bottom: 0; }
+  a { color: var(--always); }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 28px;
+    padding: 18px 22px;
+    margin: 28px 0 0;
+    background: var(--surface);
+    border: 1px solid var(--rule-soft);
+    border-radius: 3px;
+  }
+  .legend div {
+    display: flex;
+    align-items: baseline;
+    gap: 9px;
+    font-family: "IBM Plex Sans", sans-serif;
+    font-size: 13.5px;
+    color: var(--ink-2);
+  }
+  .swatch {
+    width: 11px; height: 11px;
+    border-radius: 2px;
+    flex: none;
+    transform: translateY(1px);
+  }
+  .legend b {
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  figure {
+    margin: 32px 0 0;
+    padding: 0;
+  }
+  .plate {
+    background: var(--surface);
+    border: 1px solid var(--rule-soft);
+    border-radius: 3px;
+    padding: 26px 22px 20px;
+    overflow-x: auto;
+    box-shadow: var(--shadow);
+  }
+  svg.fig { display: block; width: 100%; min-width: 720px; height: auto; }
+  figcaption {
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: var(--ink-3);
+    margin-top: 14px;
+    max-width: 78ch;
+  }
+  figcaption b { color: var(--ink-2); font-weight: 500; }
+
+  .tablewrap {
+    margin-top: 32px;
+    overflow-x: auto;
+    background: var(--surface);
+    border: 1px solid var(--rule-soft);
+    border-radius: 3px;
+  }
+  table { border-collapse: collapse; width: 100%; min-width: 780px; }
+  th {
+    font-size: 11px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    text-align: left;
+    font-weight: 600;
+    color: var(--ink-3);
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--rule);
+    white-space: nowrap;
+  }
+  td {
+    padding: 13px 18px;
+    border-bottom: 1px solid var(--rule-soft);
+    vertical-align: top;
+    font-size: 15px;
+    line-height: 1.45;
+  }
+  tbody tr:last-child td { border-bottom: 0; }
+  td.file { font-family: "IBM Plex Mono", monospace; font-size: 13px; white-space: nowrap; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; font-size: 13px; color: var(--ink-3); }
+  tr.group td {
+    background: var(--surface-2);
+    font-family: "IBM Plex Sans", sans-serif;
+    font-size: 11px;
+    letter-spacing: .11em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--ink-2);
+    padding: 10px 18px;
+  }
+  .tag {
+    display: inline-block;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10.5px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+  .t-always { background: var(--always-bg); color: var(--always); }
+  .t-cond { background: var(--conditional-bg); color: var(--conditional); }
+  .t-auto { background: var(--automatic-bg); color: var(--automatic); }
+  .t-gen { background: var(--generated-bg); color: var(--generated); }
+
+  .note {
+    border-left: 2px solid var(--automatic);
+    padding: 4px 0 4px 20px;
+    margin: 28px 0 0;
+    max-width: 68ch;
+  }
+  .note p { font-size: 16px; color: var(--ink-2); }
+
+  code {
+    font-size: .88em;
+    background: var(--surface-2);
+    padding: 1px 5px;
+    border-radius: 2px;
+    color: var(--ink);
+  }
+  td code, figcaption code { background: none; padding: 0; }
+
+  footer {
+    margin-top: 80px;
+    padding-top: 22px;
+    border-top: 1px solid var(--rule);
+    font-family: "IBM Plex Sans", sans-serif;
+    font-size: 13.5px;
+    color: var(--ink-3);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 28px;
+  }
+
+  @media (max-width: 640px) {
+    header { padding-top: 48px; }
+    .fact { border-right: 0; padding-right: 0; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    a { transition: color .15s ease; }
+  }
+  :focus-visible { outline: 2px solid var(--always); outline-offset: 2px; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">{{PROJECT_NAME}} · <span>.agents</span> / <span>.specs</span></p>
+  <h1>What loads, when, and why</h1>
+  <p class="standfirst">
+    A map of the spec-driven setup in this repository: the root instruction file, the rules it
+    pulls in, the skills and subagents those hand off to, and the three files a script keeps
+    regenerating underneath it all. Read it to decide what to change — every count below is
+    measured, not estimated.
+  </p>
+
+  <dl class="facts">
+    <div class="fact">
+      <dt>Loaded every session</dt>
+      <dd><!-- GEN:always -->3,251<!-- /GEN:always --> <small>words, before any task begins</small></dd>
+    </div>
+    <div class="fact">
+      <dt>Available on demand</dt>
+      <dd><!-- GEN:ondemand -->21,783<!-- /GEN:ondemand --> <small>words across rules and skills</small></dd>
+    </div>
+    <div class="fact">
+      <dt>Rules files</dt>
+      <dd><!-- GEN:rules -->9<!-- /GEN:rules --> <small><!-- GEN:rules_split -->3 always-on, 6 conditional<!-- /GEN:rules_split --></small></dd>
+    </div>
+    <div class="fact">
+      <dt>Skills / subagents</dt>
+      <dd><!-- GEN:skills -->13<!-- /GEN:skills --> <span class="mono" style="font-size:16px">/</span> <!-- GEN:agents -->3<!-- /GEN:agents --> <small>none load until invoked</small></dd>
+    </div>
+  </dl>
+</header>
+
+<section>
+  <h2>Encoding</h2>
+  <h3>Four ways a file gets into context</h3>
+  <p class="col">
+    Every arrow in the three figures below is one of these, and the distinction is the whole point
+    of the map: the cost of a file is not its length but its length multiplied by how often it
+    loads.
+  </p>
+  <div class="legend">
+    <div><span class="swatch" style="background:var(--always)"></span><b>Always</b> — every session or every task, unconditionally</div>
+    <div><span class="swatch" style="background:var(--conditional)"></span><b>Conditional</b> — a row in <code>LOADER.md</code> fires — or in <code>.local/LOADER.md</code>, which only the machine that has it reads — or a skill's description matches the request</div>
+    <div><span class="swatch" style="background:var(--automatic)"></span><b>Scripted</b> — a skill runs a script, no judgement involved</div>
+    <div><span class="swatch" style="background:var(--generated)"></span><b>Generated</b> — written by <code>build_index.py</code>, never by hand</div>
+  </div>
+</section>
+
+<section>
+  <h2>Figure 1 — the spine</h2>
+  <h3>One task, top to bottom</h3>
+  <p class="col">
+    <code>spec-builder-rules.md</code>'s <em>Every task</em> list is the only place the delegation flow is
+    written down, and nothing else repeats it. This is that list, with what enters context at each
+    step. Steps 3 – 8 are conditions, not a checklist: most tasks fire two or three of them.
+  </p>
+
+  <figure>
+    <div class="plate">
+      <svg class="fig" viewBox="0 0 1160 812" role="img"
+           aria-label="A vertical flow from session start to spec update, showing at each step what triggers it and which files enter the agent's context, colour-coded by whether the load is always, conditional, automatic or generated.">
+        <defs>
+          <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M 0 1 L 9 5 L 0 9 z" fill="currentColor"/>
+          </marker>
+        </defs>
+
+        <!-- column headers -->
+        <text x="286" y="22" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="11" letter-spacing="1.4" fill="currentColor" opacity=".5">WHEN</text>
+        <text x="326" y="22" font-family="IBM Plex Mono, monospace" font-size="11" letter-spacing="1.4" fill="currentColor" opacity=".5">STEP</text>
+        <text x="700" y="22" font-family="IBM Plex Mono, monospace" font-size="11" letter-spacing="1.4" fill="currentColor" opacity=".5">ENTERS CONTEXT</text>
+        <line x1="0" y1="34" x2="1160" y2="34" stroke="currentColor" opacity=".18"/>
+
+        <!-- root -->
+        <rect x="306" y="56" width="330" height="46" rx="3" fill="var(--always-bg)" stroke="var(--always)" stroke-width="1.5"/>
+        <text x="322" y="76" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="var(--always)">CLAUDE.md</text>
+        <text x="408" y="76" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--always)">imports</text>
+        <text x="456" y="76" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="var(--always)">AGENTS.md</text>
+        <text x="322" y="93" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="currentColor" opacity=".65">the root: points at the two loaders</text>
+        <text x="286" y="84" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="currentColor" opacity=".75">session start</text>
+
+        <!-- rail -->
+        <line x1="316" y1="102" x2="316" y2="782" stroke="currentColor" opacity=".28" stroke-width="1.5"/>
+
+        <!-- ROW 1 -->
+        <circle cx="316" cy="140" r="7" fill="var(--always)"/>
+        <text x="286" y="137" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="currentColor" opacity=".75">before anything else</text>
+        <text x="286" y="152" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="currentColor" opacity=".45">every session</text>
+        <text x="336" y="137" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="600" fill="currentColor">Follow LOADER.md</text>
+        <text x="336" y="153" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="currentColor" opacity=".6">always-on/ now, on-demand/ by its rows</text>
+        <line x1="640" y1="140" x2="686" y2="140" stroke="var(--always)" stroke-width="1.5" marker-end="url(#ar)" color="var(--always)"/>
+        <rect x="694" y="127" width="220" height="26" rx="3" fill="var(--always-bg)"/>
+        <text x="706" y="138" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--always)" data-wc=".agents/CONSTITUTION.md">constitution-rules.md · 0</text>
+        <text x="706" y="152" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--always)" data-wc=".agents/profiles/specs/rules/always-on/spec-builder-rules.md">spec-builder-rules.md · 0</text>
+
+        <!-- ROW 2 -->
+        <circle cx="316" cy="212" r="11" fill="var(--surface)" stroke="var(--always)" stroke-width="1.8"/>
+        <text x="316" y="216" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="var(--always)">1</text>
+        <text x="286" y="209" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="currentColor" opacity=".75">every task</text>
+        <text x="286" y="224" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="currentColor" opacity=".45">once per session</text>
+        <text x="336" y="209" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="600" fill="currentColor">Route the file you'll edit</text>
+        <text x="336" y="225" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="currentColor" opacity=".6">most specific glob wins; no match is normal</text>
+        <line x1="640" y1="212" x2="686" y2="212" stroke="var(--always)" stroke-width="1.5" marker-end="url(#ar)" color="var(--always)"/>
+        <rect x="694" y="199" width="132" height="26" rx="3" fill="var(--always-bg)"/>
+        <text x="706" y="216" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--always)">INDEX.md</text>
+        <line x1="834" y1="212" x2="856" y2="212" stroke="var(--conditional)" stroke-width="1.5" marker-end="url(#ar)" color="var(--conditional)"/>
+        <rect x="864" y="199" width="128" height="26" rx="3" fill="var(--conditional-bg)"/>
+        <text x="876" y="216" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--conditional)">the owning spec</text>
+
+        <!-- ROW 3 -->
+        <circle cx="316" cy="284" r="11" fill="var(--surface)" stroke="var(--always)" stroke-width="1.8"/>
+        <text x="316" y="288" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="var(--always)">2</text>
+        <text x="286" y="281" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="currentColor" opacity=".75">before proposing anything</text>
+        <text x="286" y="296" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="currentColor" opacity=".45">or explaining "why is it like this"</text>
+        <text x="336" y="281" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="600" fill="currentColor">Check what is already settled</text>
+        <text x="336" y="297" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="currentColor" opacity=".6">rejected alternatives leave no trace in code</text>
+        <line x1="640" y1="284" x2="686" y2="284" stroke="var(--always)" stroke-width="1.5" marker-end="url(#ar)" color="var(--always)"/>
+        <rect x="694" y="271" width="160" height="26" rx="3" fill="var(--generated-bg)"/>
+        <text x="706" y="288" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--generated)">DECISIONS.md</text>
+        <line x1="862" y1="284" x2="884" y2="284" stroke="var(--conditional)" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#ar)" color="var(--conditional)"/>
+        <rect x="892" y="271" width="212" height="26" rx="3" fill="var(--generated-bg)"/>
+        <text x="904" y="288" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--generated)">OPEN-QUESTIONS.md</text>
+        <text x="892" y="311" font-family="IBM Plex Sans, sans-serif" font-size="10.5" fill="currentColor" opacity=".5">only if the spec has any</text>
+
+        <!-- ROW 4 -->
+        <circle cx="316" cy="368" r="11" fill="var(--surface)" stroke="var(--conditional)" stroke-width="1.8"/>
+        <text x="316" y="372" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="var(--conditional)">3</text>
+        <text x="286" y="365" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="currentColor" opacity=".75">new or changed behaviour</text>
+        <text x="286" y="380" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="currentColor" opacity=".45">a one-line fix needs none</text>
+        <text x="336" y="365" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="600" fill="currentColor">Start a change first</text>
+        <text x="336" y="381" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="currentColor" opacity=".6">spec files, then a plan, one approval</text>
+        <line x1="640" y1="368" x2="686" y2="368" stroke="var(--conditional)" stroke-width="1.5" marker-end="url(#ar)" color="var(--conditional)"/>
+        <rect x="694" y="355" width="126" height="26" rx="3" fill="var(--conditional-bg)" stroke="var(--conditional)" stroke-width="1"/>
+        <text x="706" y="372" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--conditional)">skill spec-create</text>
+        <line x1="828" y1="368" x2="836" y2="368" stroke="var(--conditional)" stroke-width="1.5" marker-end="url(#ar)" color="var(--conditional)"/>
+        <rect x="844" y="355" width="190" height="26" rx="3" fill="var(--conditional-bg)"/>
+        <text x="856" y="372" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--conditional)">spec-change-rules</text>
+
+        <!-- ROW 5 -->
+        <circle cx="316" cy="440" r="11" fill="var(--surface)" stroke="var(--conditional)" stroke-width="1.8"/>
+        <text x="316" y="444" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="var(--conditional)">4</text>
+        <text x="286" y="437" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="currentColor" opacity=".75">module added, boundary moved</text>
+        <text x="286" y="452" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="currentColor" opacity=".45">not a file count — a real design choice</text>
+        <text x="336" y="437" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="600" fill="currentColor">Design it with the user</text>
+        <text x="336" y="453" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="currentColor" opacity=".6">the architect compares; the user decides</text>
+        <line x1="640" y1="440" x2="686" y2="440" stroke="var(--conditional)" stroke-width="1.5" marker-end="url(#ar)" color="var(--conditional)"/>
+        <rect x="694" y="427" width="130" height="26" rx="3" fill="var(--conditional-bg)" stroke="var(--conditional)" stroke-width="1"/>
+        <text x="706" y="444" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--conditional)">agent spec-architect</text>
+        <line x1="832" y1="440" x2="854" y2="440" stroke="var(--conditional)" stroke-width="1.5" marker-end="url(#ar)" color="var(--conditional)"/>
+        <rect x="862" y="427" width="256" height="26" rx="3" fill="var(--conditional-bg)"/>
+        <text x="874" y="444" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--conditional)" data-wc=".agents/profiles/specs/rules/on-demand/spec-architecture-rules.md">spec-architecture-rules.md · 271</text>
+
+        <!-- ROW 6 -->
+        <circle cx="316" cy="512" r="11" fill="var(--surface)" stroke="var(--conditional)" stroke-width="1.8"/>
+        <text x="316" y="516" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="var(--conditional)">5</text>
+        <text x="286" y="509" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="currentColor" opacity=".75">first production edit</text>
+        <text x="286" y="524" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="currentColor" opacity=".45">a LOADER.md row fires</text>
+        <text x="336" y="509" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="600" fill="currentColor">Implement</text>
+        <text x="336" y="525" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="currentColor" opacity=".6">read before the first production edit</text>
+        <line x1="640" y1="512" x2="686" y2="512" stroke="var(--conditional)" stroke-width="1.5" marker-end="url(#ar)" color="var(--conditional)"/>
+        <rect x="694" y="499" width="262" height="26" rx="3" fill="var(--conditional-bg)" stroke="var(--conditional)" stroke-width="1"/>
+        <text x="706" y="516" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--conditional)" data-wc=".agents/core/rules/on-demand/project-code-style-rules.md">project-code-style-rules.md · 668</text>
+
+        <!-- ROW 7 -->
+        <circle cx="316" cy="584" r="11" fill="var(--surface)" stroke="var(--conditional)" stroke-width="1.8"/>
+        <text x="316" y="588" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="var(--conditional)">6</text>
+        <text x="286" y="581" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="currentColor" opacity=".75">new or changed public surface</text>
+        <text x="286" y="596" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="currentColor" opacity=".45">point it at the owning spec's criteria</text>
+        <text x="336" y="581" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="600" fill="currentColor">Delegate the tests</text>
+        <text x="336" y="597" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="currentColor" opacity=".6">its tests go under the criterion's Verified:</text>
+        <line x1="640" y1="584" x2="686" y2="584" stroke="var(--conditional)" stroke-width="1.5" marker-end="url(#ar)" color="var(--conditional)"/>
+        <rect x="694" y="571" width="140" height="26" rx="3" fill="var(--conditional-bg)" stroke="var(--conditional)" stroke-width="1"/>
+        <text x="706" y="588" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--conditional)">agent spec-test-writer</text>
+        <line x1="842" y1="584" x2="864" y2="584" stroke="var(--conditional)" stroke-width="1.5" marker-end="url(#ar)" color="var(--conditional)"/>
+        <rect x="872" y="571" width="192" height="26" rx="3" fill="var(--conditional-bg)"/>
+        <text x="884" y="588" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--conditional)">02-tech.md · Testing</text>
+
+        <!-- ROW 8 -->
+        <circle cx="316" cy="656" r="11" fill="var(--surface)" stroke="var(--conditional)" stroke-width="1.8"/>
+        <text x="316" y="660" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="var(--conditional)">7</text>
+        <text x="286" y="653" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="currentColor" opacity=".75">build, lint or test run</text>
+        <text x="286" y="668" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="currentColor" opacity=".45">don't read raw build output yourself</text>
+        <text x="336" y="653" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="600" fill="currentColor">Delegate the run</text>
+        <text x="336" y="669" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="currentColor" opacity=".6">reports only what failed</text>
+        <line x1="640" y1="656" x2="686" y2="656" stroke="var(--conditional)" stroke-width="1.5" marker-end="url(#ar)" color="var(--conditional)"/>
+        <rect x="694" y="643" width="108" height="26" rx="3" fill="var(--conditional-bg)" stroke="var(--conditional)" stroke-width="1"/>
+        <text x="706" y="660" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--conditional)">agent runner</text>
+        <line x1="810" y1="656" x2="832" y2="656" stroke="var(--conditional)" stroke-width="1.5" marker-end="url(#ar)" color="var(--conditional)"/>
+        <rect x="840" y="643" width="236" height="26" rx="3" fill="var(--conditional-bg)"/>
+        <text x="852" y="660" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--conditional)" data-wc=".agents/core/rules/on-demand/project-workflow-rules.md">project-workflow-rules.md · 581</text>
+
+        <!-- ROW 9 -->
+        <circle cx="316" cy="740" r="11" fill="var(--surface)" stroke="var(--automatic)" stroke-width="1.8"/>
+        <text x="316" y="744" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="var(--automatic)">8</text>
+        <text x="286" y="737" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="currentColor" opacity=".75">the spec's intent moved</text>
+        <text x="286" y="752" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="currentColor" opacity=".45">same change, not a follow-up</text>
+        <text x="336" y="737" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="600" fill="currentColor">Update the spec, regenerate</text>
+        <text x="336" y="753" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="currentColor" opacity=".6">run it after every spec edit</text>
+        <line x1="640" y1="740" x2="686" y2="740" stroke="var(--automatic)" stroke-width="2" marker-end="url(#ar)" color="var(--automatic)"/>
+        <rect x="694" y="727" width="122" height="26" rx="3" fill="var(--automatic-bg)" stroke="var(--automatic)" stroke-width="1"/>
+        <text x="706" y="744" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--automatic)">skill spec-rebuild-overviews</text>
+        <line x1="824" y1="740" x2="846" y2="740" stroke="var(--generated)" stroke-width="1.5" marker-end="url(#ar)" color="var(--generated)"/>
+        <rect x="854" y="727" width="196" height="26" rx="3" fill="var(--generated-bg)"/>
+        <text x="866" y="744" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--generated)">3 files regenerated</text>
+
+        <line x1="0" y1="790" x2="1160" y2="790" stroke="currentColor" opacity=".18"/>
+      </svg>
+    </div>
+    <figcaption>
+      Numbers after a filename are its word count. <b>Steps 1 – 2 fire on every task</b>; the rest
+      are conditions, followed the same way by both tools — no step depends on a hook. A rule on the
+      right arrives by its <code>LOADER.md</code> row; a skill by its description matching the work,
+      never by a row. The <code>project-*</code> rules are optional: without one, its step runs with
+      nothing extra to read.
+    </figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2>Figure 2 — ownership</h2>
+  <h3>Every rule has exactly one home</h3>
+  <p class="col">
+    The rule set applies its own <em>Point, don't repeat</em> to itself: the always-on file
+    stays short by holding pointers, and the detail sits in files that only load when you are
+    actually doing that thing. An arrow here means <em>defers to</em> — the source states the rule
+    exists and the target owns what it says.
+  </p>
+
+  <figure>
+    <div class="plate">
+      <svg class="fig" viewBox="0 0 1160 420" role="img"
+           aria-label="A two-level graph showing the mandatory always-on rule file delegating detail to on-demand rule files, which in turn point at a section of the architecture spec.">
+        <defs>
+          <marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M 0 1 L 9 5 L 0 9 z" fill="currentColor"/>
+          </marker>
+        </defs>
+
+        <text x="1156" y="20" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="11" letter-spacing="1.4" fill="var(--always)">ALWAYS-ON — SHORT BY DESIGN</text>
+        <text x="1156" y="196" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="11" letter-spacing="1.4" fill="var(--conditional)">ON DEMAND — WHERE THE DETAIL LIVES</text>
+        <text x="1156" y="372" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="11" letter-spacing="1.4" fill="var(--conditional)">TERMINAL AUTHORITIES — ON DEMAND TOO</text>
+
+        <!-- always tier -->
+        <rect x="122" y="36" width="466" height="52" rx="3" fill="var(--always-bg)" stroke="var(--always)" stroke-width="1.5"/>
+        <text x="138" y="60" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="var(--always)">constitution-rules.md + spec-builder-rules.md</text>
+        <text x="138" y="77" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="var(--always)">core: constitution · which instruction wins — specs: the 8 steps · keeping it honest</text>
+
+        <rect x="700" y="36" width="240" height="52" rx="3" fill="none" stroke="var(--always)" stroke-width="1.2" stroke-dasharray="4 3" opacity=".7"/>
+        <text x="716" y="60" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="var(--always)">LOADER.md table</text>
+        <text x="716" y="77" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="var(--always)" opacity=".8">one row per rule below</text>
+
+        <!-- on demand tier -->
+        <rect x="0" y="212" width="216" height="52" rx="3" fill="var(--conditional-bg)" stroke="var(--conditional)" stroke-width="1.2"/>
+        <text x="14" y="236" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="var(--conditional)">spec-architecture-rules.md</text>
+        <text x="14" y="253" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="var(--conditional)">how to propose a change</text>
+
+        <rect x="226" y="212" width="216" height="52" rx="3" fill="var(--conditional-bg)" stroke="var(--conditional)" stroke-width="1.2"/>
+        <text x="240" y="236" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="var(--conditional)">spec-style-rules.md</text>
+        <text x="240" y="253" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="var(--conditional)">how to phrase it · 14 rules</text>
+
+        <rect x="452" y="212" width="216" height="52" rx="3" fill="var(--conditional-bg)" stroke="var(--conditional)" stroke-width="1.2"/>
+        <text x="466" y="236" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="var(--conditional)">spec-format-rules.md</text>
+        <text x="466" y="253" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="var(--conditional)">what a section must contain</text>
+
+        <rect x="678" y="212" width="216" height="52" rx="3" fill="var(--conditional-bg)" stroke="var(--conditional)" stroke-width="1.2"/>
+        <text x="692" y="236" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="var(--conditional)">project-workflow-rules.md</text>
+        <text x="692" y="253" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="var(--conditional)">optional · commits · what CI verifies</text>
+
+        <rect x="904" y="212" width="216" height="52" rx="3" fill="var(--conditional-bg)" stroke="var(--conditional)" stroke-width="1.2"/>
+        <text x="918" y="236" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="var(--conditional)">project-code-style-rules.md</text>
+        <text x="918" y="253" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="var(--conditional)">optional · this repo's conventions</text>
+
+        <!-- terminal tier -->
+        <rect x="0" y="388" width="240" height="26" rx="3" fill="none" stroke="var(--conditional)" stroke-width="1" opacity=".8"/>
+        <text x="14" y="405" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="var(--conditional)">01-architecture.md · Boundaries</text>
+
+        <!-- edges: always -> on demand -->
+        <path d="M 160 88 L 160 150 L 108 150 L 108 206" fill="none" stroke="var(--always)" opacity=".6" stroke-width="1.2" marker-end="url(#ar2)" color="var(--always)"/>
+        <path d="M 334 88 L 334 206" fill="none" stroke="var(--always)" opacity=".6" stroke-width="1.2" marker-end="url(#ar2)" color="var(--always)"/>
+
+        <text x="168" y="146" font-family="IBM Plex Sans, sans-serif" font-size="10.5" fill="var(--always)" opacity=".8">step 4 defers to</text>
+        <text x="342" y="150" font-family="IBM Plex Sans, sans-serif" font-size="10.5" fill="var(--always)" opacity=".8">where a decision lives</text>
+
+        <!-- edges: on demand -> terminal -->
+        <path d="M 108 264 L 108 382" fill="none" stroke="var(--conditional)" opacity=".7" stroke-width="1.2" marker-end="url(#ar2)" color="var(--conditional)"/>
+        <text x="116" y="320" font-family="IBM Plex Sans, sans-serif" font-size="10.5" fill="var(--conditional)">the module graph</text>
+        <path d="M 1012 264 L 1012 300 L 230 300 L 230 382" fill="none" stroke="var(--conditional)" opacity=".35" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#ar2)" color="var(--conditional)"/>
+      </svg>
+    </div>
+    <figcaption>
+      <b>Nothing points upward.</b> The always-on file never restates what a lower file owns,
+      which is what keeps it short. <code>spec-architecture-rules.md</code> holds
+      <em>method</em> and deliberately never holds this project's module graph — that is
+      <code>01-architecture.md</code>'s Boundaries section, so the portable rule and the project
+      state can't drift apart.
+      <br><br>
+      The <code>project-*</code> rules are optional, so no mandatory file names them: only their
+      <code>LOADER.md</code> row brings them in, and no arrow from above reaches them. Skills get no
+      arrow either — each loads by its own description, never by a rule or a row.
+      <br><br>
+      Each row is drawn in its own load colour, and the bottom two share slate on purpose: reaching
+      the end of the pointer chain doesn't change <em>when</em> something loads, and both lower
+      rows are conditional. What separates them is the shape — a hollow box is an authority outside
+      <code>rules/</code>, where the chain stops.
+    </figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2>Figure 3 — the loop</h2>
+  <h3>The specs, and three files generated from them</h3>
+  <p class="col">
+    Everything the agent reads for routing and history is derived, so it cannot drift from the
+    specs the way a hand-maintained note would. The same pass runs five checks — and only one of
+    them can fail the run.
+  </p>
+
+  <figure>
+    <div class="plate">
+      <svg class="fig" viewBox="0 0 1160 400" role="img"
+           aria-label="Hand-written spec files feed build_index.py, which writes three generated files that are read back into context, and runs five checks: one fails the run, two warn, and two are informational.">
+        <defs>
+          <marker id="ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M 0 1 L 9 5 L 0 9 z" fill="currentColor"/>
+          </marker>
+        </defs>
+
+        <rect x="0" y="60" width="212" height="112" rx="3" fill="none" stroke="currentColor" stroke-width="1.3" opacity=".55"/>
+        <text x="16" y="86" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="currentColor">.specs/**.md</text>
+        <text x="16" y="106" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="currentColor" opacity=".65">specs, written by hand</text>
+        <text x="16" y="126" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="currentColor" opacity=".65">frontmatter carries</text>
+        <text x="16" y="143" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="currentColor" opacity=".65">parent, owns, updated</text>
+        <text x="16" y="163" font-family="IBM Plex Mono, monospace" font-size="11" fill="currentColor" opacity=".5">the only source of truth</text>
+
+        <line x1="212" y1="116" x2="266" y2="116" stroke="currentColor" stroke-width="1.4" marker-end="url(#ar3)"/>
+        <text x="220" y="108" font-family="IBM Plex Sans, sans-serif" font-size="10.5" fill="currentColor" opacity=".55">parsed</text>
+
+        <rect x="274" y="82" width="196" height="68" rx="3" fill="var(--automatic-bg)" stroke="var(--automatic)" stroke-width="1.5"/>
+        <text x="290" y="108" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="var(--automatic)">build_index.py</text>
+        <text x="290" y="127" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="var(--automatic)">stdlib only · no install</text>
+        <text x="290" y="143" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="var(--automatic)">run by spec-rebuild-overviews</text>
+
+        <line x1="470" y1="116" x2="524" y2="116" stroke="var(--generated)" stroke-width="1.4" marker-end="url(#ar3)" color="var(--generated)"/>
+        <text x="478" y="108" font-family="IBM Plex Sans, sans-serif" font-size="10.5" fill="currentColor" opacity=".55">writes</text>
+
+        <rect x="532" y="54" width="228" height="30" rx="3" fill="var(--generated-bg)"/>
+        <text x="546" y="74" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--generated)">INDEX.md — routing</text>
+        <rect x="532" y="98" width="228" height="30" rx="3" fill="var(--generated-bg)"/>
+        <text x="546" y="118" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--generated)">DECISIONS.md — why</text>
+        <rect x="532" y="142" width="228" height="30" rx="3" fill="var(--generated-bg)"/>
+        <text x="546" y="162" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--generated)">OPEN-QUESTIONS.md</text>
+
+        <path d="M 760 69 L 860 69 L 860 116" fill="none" stroke="var(--always)" stroke-width="1.4" color="var(--always)"/>
+        <path d="M 760 113 L 860 113" fill="none" stroke="var(--always)" stroke-width="1.4" color="var(--always)"/>
+        <path d="M 760 157 L 810 157" fill="none" stroke="var(--conditional)" stroke-width="1.4" stroke-dasharray="4 3" color="var(--conditional)"/>
+        <line x1="860" y1="116" x2="908" y2="116" stroke="var(--always)" stroke-width="1.6" marker-end="url(#ar3)" color="var(--always)"/>
+
+        <rect x="916" y="92" width="212" height="48" rx="3" fill="var(--always-bg)" stroke="var(--always)" stroke-width="1.5"/>
+        <text x="932" y="114" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="var(--always)">back into context</text>
+        <text x="932" y="131" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="var(--always)">steps 1 – 2 of every task</text>
+        <text x="818" y="161" font-family="IBM Plex Sans, sans-serif" font-size="10.5" fill="currentColor" opacity=".55">only when relevant</text>
+
+        <!-- checks -->
+        <line x1="0" y1="216" x2="1160" y2="216" stroke="currentColor" opacity=".18"/>
+        <text x="0" y="242" font-family="IBM Plex Mono, monospace" font-size="11" letter-spacing="1.4" fill="currentColor" opacity=".5">THE SAME PASS CHECKS FIVE THINGS</text>
+
+        <rect x="0" y="258" width="4" height="52" fill="var(--automatic)"/>
+        <text x="18" y="278" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="currentColor">Structural drift</text>
+        <text x="18" y="296" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="currentColor" opacity=".65">dangling glob, duplicate id, cycle</text>
+        <text x="18" y="330" font-family="IBM Plex Mono, monospace" font-size="10.5" letter-spacing=".6" fill="var(--automatic)">FAILS --CHECK</text>
+
+        <rect x="236" y="258" width="4" height="52" fill="currentColor" opacity=".3"/>
+        <text x="254" y="278" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="currentColor">Contract contradiction</text>
+        <text x="254" y="296" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="currentColor" opacity=".65">contract box checked, implementer isn't</text>
+        <text x="254" y="330" font-family="IBM Plex Mono, monospace" font-size="10.5" letter-spacing=".6" fill="currentColor" opacity=".5">WARNING</text>
+
+        <rect x="530" y="258" width="4" height="52" fill="currentColor" opacity=".3"/>
+        <text x="548" y="278" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="currentColor">Proof and checkbox</text>
+        <text x="548" y="296" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="currentColor" opacity=".65">a box without proof, or proof without a box</text>
+        <text x="548" y="330" font-family="IBM Plex Mono, monospace" font-size="10.5" letter-spacing=".6" fill="currentColor" opacity=".5">WARNING</text>
+
+        <rect x="784" y="258" width="4" height="52" fill="currentColor" opacity=".3"/>
+        <text x="802" y="278" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="currentColor" opacity=".75">Coverage gaps</text>
+        <text x="802" y="296" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="currentColor" opacity=".6">areas with no owning spec</text>
+        <text x="802" y="330" font-family="IBM Plex Mono, monospace" font-size="10.5" letter-spacing=".6" fill="currentColor" opacity=".5">INFORMATIONAL</text>
+
+        <rect x="982" y="258" width="4" height="52" fill="currentColor" opacity=".3"/>
+        <text x="1000" y="278" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="currentColor" opacity=".75">Possibly stale</text>
+        <text x="1000" y="296" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="currentColor" opacity=".6">code committed since updated:</text>
+        <text x="1000" y="330" font-family="IBM Plex Mono, monospace" font-size="10.5" letter-spacing=".6" fill="currentColor" opacity=".5">INFORMATIONAL</text>
+
+        <line x1="0" y1="366" x2="1160" y2="366" stroke="currentColor" opacity=".18"/>
+        <text x="0" y="390" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="currentColor" opacity=".6">The two on the right are judgement calls for a human, so failing on them would only teach everyone to stop running the check.</text>
+      </svg>
+    </div>
+    <figcaption>
+      <b>Possibly stale</b> is the only check that asks whether a spec is still <em>true</em>
+      rather than well-formed: it compares git's last commit to each spec's <code>owns</code> globs
+      against that spec's <code>updated:</code> date. Everything else here verifies shape.
+    </figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2>Reference</h2>
+  <h3>Every file, and what it costs</h3>
+  <p class="col">
+    Every count is measured by <code>build_setup_map.py</code>. The always-on rows are the ones that
+    matter: they are paid for on every single session, whatever the task turns out to be.
+  </p>
+
+  <div class="tablewrap">
+    <table>
+      <thead>
+        <tr><th>File</th><th>Load</th><th>When, and why</th><th>Words</th></tr>
+      </thead>
+      <tbody>
+        <tr class="group"><td colspan="4">Root</td></tr>
+        <tr>
+          <td class="file">CLAUDE.md</td>
+          <td><span class="tag t-always">always</span></td>
+          <td>One line: <code>@AGENTS.md</code>. Exists so Claude and Codex read the same root file.</td>
+          <td class="num" data-wc="CLAUDE.md">1</td>
+        </tr>
+        <tr>
+          <td class="file">AGENTS.md</td>
+          <td><span class="tag t-always">always</span></td>
+          <td>The project in one line, the pointer to both loaders, and the constitution's <code>carried</code> section copied in by the sync — most of this file's weight, and the only part of the setup that survives a context compaction, because this file is put in front of an agent again on every request. Stack, commands and structure live in the specs.</td>
+          <td class="num" data-wc="AGENTS.md">658</td>
+        </tr>
+
+        <tr class="group"><td colspan="4">Rules — always on</td></tr>
+        <tr>
+          <td class="file">rules/LOADER.md</td>
+          <td><span class="tag t-always">always</span></td>
+          <td>What loads: every file in <code>always-on/</code>, then each <code>on-demand/</code> file when its row applies. Rows point only at rules — skills load by their description. Seeded; the project adds its own rows.</td>
+          <td class="num" data-wc=".agents/LOADER.md">0</td>
+        </tr>
+        <tr>
+          <td class="file">rules/always-on/constitution-rules.md</td>
+          <td><span class="tag t-always">always</span></td>
+          <td>The constitution, from <code>core</code>. Outranks every other rule and skill, so no agent argues for strictness; changed only on the user's request, confirmed twice. Carries <em>Which instruction wins</em>, the only place precedence is stated.</td>
+          <td class="num" data-wc=".agents/CONSTITUTION.md">0</td>
+        </tr>
+        <tr>
+          <td class="file">rules/always-on/spec-builder-rules.md</td>
+          <td><span class="tag t-always">always</span></td>
+          <td>The always-on file <code>specs</code> brings. The two constitution principles that need specs; <em>Ground rules</em> for spec ownership; <em>Every task</em> — the eight-step flow in Figure 1, written nowhere else; <em>Keeping it honest</em> — what a code change owes its spec.</td>
+          <td class="num" data-wc=".agents/profiles/specs/rules/always-on/spec-builder-rules.md">0</td>
+        </tr>
+        <tr>
+          <td class="file">rules/always-on/project-ground-rules.md</td>
+          <td><span class="tag t-always">always</span></td>
+          <td>From <code>core</code>. KISS, no invented facts, the code over any document on what the system does today, one feature or module per change, and "I don't know" over a confident guess.</td>
+          <td class="num" data-wc=".agents/core/rules/always-on/project-ground-rules.md">0</td>
+        </tr>
+        <tr>
+          <td class="file">rules/always-on/project-sensitive-paths-rules.md</td>
+          <td><span class="tag t-always">always</span></td>
+          <td>Optional, chosen at install. This project's paths to ask about before touching — build config, CI, signing keys. Answered at install.</td>
+          <td class="num" data-wc=".agents/core/rules/always-on/project-sensitive-paths-rules.md">0</td>
+        </tr>
+
+        <tr class="group"><td colspan="4">Rules — on demand</td></tr>
+        <tr>
+          <td class="file">on-demand/project-code-style-rules.md</td>
+          <td><span class="tag t-cond">conditional</span></td>
+          <td>Optional, seeded from the stack profile. Before production code, from <code>LOADER.md</code>. This project's conventions, where a reasonable general answer would be wrong.</td>
+          <td class="num" data-wc=".agents/core/rules/on-demand/project-code-style-rules.md">668</td>
+        </tr>
+        <tr>
+          <td class="file">on-demand/project-workflow-rules.md</td>
+          <td><span class="tag t-cond">conditional</span></td>
+          <td>Optional, chosen at install. Before committing, branching, or reading a failure. What CI actually verifies here.</td>
+          <td class="num" data-wc=".agents/core/rules/on-demand/project-workflow-rules.md">581</td>
+        </tr>
+        <tr>
+          <td class="file">on-demand/spec-format-rules.md</td>
+          <td><span class="tag t-cond">conditional</span></td>
+          <td>Before writing spec content. What each section must contain, and how evidence works.</td>
+          <td class="num" data-wc=".agents/profiles/specs/rules/on-demand/spec-format-rules.md">749</td>
+        </tr>
+        <tr>
+          <td class="file">on-demand/spec-change-rules.md</td>
+          <td><span class="tag t-cond">conditional</span></td>
+          <td>Before starting, planning, building or merging a change. Stages, the folder, approval, the implementation plan, and changing course mid-way.</td>
+          <td class="num" data-wc=".agents/profiles/specs/rules/on-demand/spec-change-rules.md">0</td>
+        </tr>
+        <tr>
+          <td class="file">on-demand/spec-style-rules.md</td>
+          <td><span class="tag t-cond">conditional</span></td>
+          <td>Alongside the above. The drafting checklist — its reasons and examples live in spec-check-style's reference.</td>
+          <td class="num" data-wc=".agents/profiles/specs/rules/on-demand/spec-style-rules.md">2,847</td>
+        </tr>
+        <tr>
+          <td class="file">on-demand/spec-architecture-rules.md</td>
+          <td><span class="tag t-cond">conditional</span></td>
+          <td>Before a module, boundary or design choice. Method only — never this project's graph.</td>
+          <td class="num" data-wc=".agents/profiles/specs/rules/on-demand/spec-architecture-rules.md">271</td>
+        </tr>
+
+        <tr class="group"><td colspan="4">Generated — never hand-edited</td></tr>
+        <tr>
+          <td class="file">.specs/INDEX.md</td>
+          <td><span class="tag t-gen">generated</span> <span class="tag t-always">always</span></td>
+          <td>Step 1 routing. Work queues appear as counts only, so routing doesn't pay for them.</td>
+          <td class="num">per machine</td>
+        </tr>
+        <tr>
+          <td class="file">.specs/DECISIONS.md</td>
+          <td><span class="tag t-gen">generated</span> <span class="tag t-always">always</span></td>
+          <td>Step 2, before any proposal. Decisions grouped by spec, and what each rejected; a task reads its sections.</td>
+          <td class="num">per machine</td>
+        </tr>
+        <tr>
+          <td class="file">.specs/OPEN-QUESTIONS.md</td>
+          <td><span class="tag t-gen">generated</span> <span class="tag t-cond">conditional</span></td>
+          <td>Only when your task touches a spec that has some.</td>
+          <td class="num">per machine</td>
+        </tr>
+
+        <tr class="group"><td colspan="4">Skills — spec lifecycle</td></tr>
+        <tr>
+          <td class="file">spec-create</td>
+          <td><span class="tag t-cond">invoked</span></td>
+          <td>Step 3. Every change starts here — a new feature, a changed one, or code already written: it works out which, elicits requirements, and gets your OK.</td>
+          <td class="num" data-wc=".agents/skills/spec-create/SKILL.md">0</td>
+        </tr>
+        <tr>
+          <td class="file">spec-rebuild-overviews</td>
+          <td><span class="tag t-cond">invoked</span></td>
+          <td>Step 8, after any <code>.specs/</code> edit. Runs the loop in Figure 3.</td>
+          <td class="num" data-wc=".agents/skills/spec-rebuild-overviews/SKILL.md">1,074</td>
+        </tr>
+        <tr>
+          <td class="file">spec-sync-with-code</td>
+          <td><span class="tag t-cond">invoked</span></td>
+          <td>On request — step 1 offers it for a spec <code>INDEX.md</code> marks possibly stale. Runs its tests in the background, reads the code for the rest, and records the result for the index.</td>
+          <td class="num" data-wc=".agents/skills/spec-sync-with-code/SKILL.md">0</td>
+        </tr>
+        <tr>
+          <td class="file">spec-plan</td>
+          <td><span class="tag t-cond">invoked</span></td>
+          <td>Steps 4 and 5. Writes a change's implementation plan with you — design, then tasks — builds from it when you ask, and changes it with you mid-way. The architect subagent proposes.</td>
+          <td class="num" data-wc=".agents/skills/spec-plan/SKILL.md">0</td>
+        </tr>
+        <tr>
+          <td class="file">spec-merge</td>
+          <td><span class="tag t-cond">invoked</span></td>
+          <td>Merges a finished change: copies its spec files over, keeps what its plan decided, deletes the folder.</td>
+          <td class="num" data-wc=".agents/skills/spec-merge/SKILL.md">0</td>
+        </tr>
+        <tr>
+          <td class="file">spec-check-style</td>
+          <td><span class="tag t-cond">on request</span></td>
+          <td>Audits prose against spec-style-rules. Offered with --fix by spec-merge.</td>
+          <td class="num" data-wc=".agents/skills/spec-check-style/SKILL.md">1,432</td>
+        </tr>
+
+        <tr class="group"><td colspan="4">Skills — writing code, optional</td></tr>
+        <tr>
+          <td class="file">code-clean-kotlin</td>
+          <td><span class="tag t-cond">invoked</span></td>
+          <td>Kotlin code as it is written, changed or reviewed: Clean Code principles, Kotlin idioms, KISS, robustness, and a sweep for what a change left behind. From the stack profile.</td>
+          <td class="num" data-wc=".agents/skills/code-clean-kotlin/SKILL.md">0</td>
+        </tr>
+        <tr>
+          <td class="file">docs-incode</td>
+          <td><span class="tag t-cond">invoked</span></td>
+          <td>Any comment a change writes, edits or reviews — KDoc, docstrings, inline, region markers: only what the code alone can't say.</td>
+          <td class="num" data-wc=".agents/skills/docs-incode/SKILL.md">0</td>
+        </tr>
+        <tr>
+          <td class="file">docs-readme</td>
+          <td><span class="tag t-cond">invoked</span></td>
+          <td>READMEs and ARCHITECTURE.md: one structure per kind of file, commands that run as written, point instead of copying.</td>
+          <td class="num" data-wc=".agents/skills/docs-readme/SKILL.md">859</td>
+        </tr>
+        <tr>
+          <td class="file">test-plan-manual</td>
+          <td><span class="tag t-cond">invoked</span></td>
+          <td>A runbook, or a plan's tasks needing real infrastructure, as numbered checkboxed test cases; records each reported run under the case's Result. Independent of <code>.specs/</code>.</td>
+          <td class="num" data-wc=".agents/skills/test-plan-manual/SKILL.md">420</td>
+        </tr>
+        <tr class="group"><td colspan="4">Skills — stack profile, optional</td></tr>
+        <tr>
+          <td class="file">test-unit</td>
+          <td><span class="tag t-cond">invoked</span></td>
+          <td>ViewModels, repositories, flows. Lives in the profile — it would be wrong advice on another stack.</td>
+          <td class="num" data-wc=".agents/skills/test-unit/SKILL.md">1,228</td>
+        </tr>
+        <tr>
+          <td class="file">test-integration</td>
+          <td><span class="tag t-cond">invoked</span></td>
+          <td>Across component boundaries; fakes over mocks. Profile-scoped like the one above.</td>
+          <td class="num" data-wc=".agents/skills/test-integration/SKILL.md">878</td>
+        </tr>
+        <tr>
+          <td class="file">compose-create</td>
+          <td><span class="tag t-cond">invoked</span></td>
+          <td>New or changed Compose screen. The largest skill, and the most stack-bound of all of them.</td>
+          <td class="num" data-wc=".agents/skills/compose-create/SKILL.md">2,106</td>
+        </tr>
+
+        <tr class="group"><td colspan="4">Skills — setup and handoff</td></tr>
+        <tr>
+          <td class="file">project-sync-profiles-and-skills</td>
+          <td><span class="tag t-cond">on change</span></td>
+          <td>Symlinks <code>.agents/skills/</code> into <code>.claude/skills/</code> so both tools see one copy.</td>
+          <td class="num" data-wc=".agents/skills/project-sync-profiles-and-skills/SKILL.md">420</td>
+        </tr>
+        <tr>
+          <td class="file">project-create-rule-or-skill</td>
+          <td><span class="tag t-cond">on change</span></td>
+          <td>Holds the model — what kind a piece of guidance is, mandatory or optional, and where it goes — then writes, reviews and tests rules and skills to one shape: triggers first, non-negotiables, checkable stops, a word budget, a fresh agent per test.</td>
+          <td class="num" data-wc=".agents/skills/project-create-rule-or-skill/SKILL.md">0</td>
+        </tr>
+        <tr>
+          <td class="file">project-resolve-conflicts</td>
+          <td><span class="tag t-cond">on request</span></td>
+          <td>Finds installed rules and skills that say different things, compete for the same request or load the wrong way, and settles each with you — keep one, narrow one, or merge them. Offered after a rule or skill is installed, and by <em>Which instruction wins</em>.</td>
+          <td class="num" data-wc=".agents/skills/project-resolve-conflicts/SKILL.md">0</td>
+        </tr>
+        <tr>
+          <td class="file">project-test-setup</td>
+          <td><span class="tag t-cond">on request</span></td>
+          <td>Reviews the whole setup against the constitution — token load, what could go, leftovers — and reports a score with small drafted proposals. Changes nothing.</td>
+          <td class="num" data-wc=".agents/skills/project-test-setup/SKILL.md">0</td>
+        </tr>
+        <tr>
+          <td class="file">project-test-behaviour</td>
+          <td><span class="tag t-cond">on request</span></td>
+          <td>Tests whether a rule or skill is actually followed: hands you one prompt at a time for fresh sessions, scores each from its transcript against a baseline, and puts every change back.</td>
+          <td class="num" data-wc=".agents/skills/project-test-behaviour/SKILL.md">0</td>
+        </tr>
+        <tr>
+          <td class="file">session-snapshot</td>
+          <td><span class="tag t-cond">on request</span></td>
+          <td>Optional. Handoff document for a fresh conversation with no context.</td>
+          <td class="num" data-wc=".agents/skills/session-snapshot/SKILL.md">705</td>
+        </tr>
+        <tr>
+          <td class="file">code-query-dependencies</td>
+          <td><span class="tag t-cond">on request</span></td>
+          <td>Optional. Call-graph questions via graphify. Explicitly never proactive — never a substitute for grep.</td>
+          <td class="num" data-wc=".agents/skills/code-query-dependencies/SKILL.md">724</td>
+        </tr>
+        <tr>
+          <td class="file">one-head-good-two-better</td>
+          <td><span class="tag t-cond">on request</span></td>
+          <td>Optional. A second look at a go-ahead with no agreed plan behind it.</td>
+          <td class="num" data-wc=".agents/skills/one-head-good-two-better/SKILL.md">0</td>
+        </tr>
+
+        <tr class="group"><td colspan="4">Subagents — fresh context, report back</td></tr>
+        <tr>
+          <td class="file">spec-architect</td>
+          <td><span class="tag t-cond">step 4</span></td>
+          <td>Reads specs and code, and proposes options. Never edits files.</td>
+          <td class="num">—</td>
+        </tr>
+        <tr>
+          <td class="file">spec-test-writer</td>
+          <td><span class="tag t-cond">step 6</span></td>
+          <td>Derives cases from the owning spec's acceptance criteria.</td>
+          <td class="num">—</td>
+        </tr>
+        <tr>
+          <td class="file">test-writer</td>
+          <td><span class="tag t-cond">on request</span></td>
+          <td>Testing profile. Writes tests from the code's behaviour, following the installed testing skills.</td>
+          <td class="num">—</td>
+        </tr>
+        <tr>
+          <td class="file">runner</td>
+          <td><span class="tag t-cond">step 7</span></td>
+          <td>Runs build, lint or tests and reports only what failed.</td>
+          <td class="num">—</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="local" hidden>
+  <h2>Local</h2>
+  <h3>Yours only — never shared</h3>
+  <p class="col">
+    Rules and skills under <code>.agents/.local/</code>. It is gitignored, so nobody else loads these
+    and nothing shared may point at them. The rows come from <code>.cache/map-local.js</code>, which
+    <code>build_setup_map.py</code> writes; without that file this section stays hidden.
+  </p>
+  <div class="tablewrap">
+    <table>
+      <thead>
+        <tr><th>File</th><th>Load</th><th>When, and why</th><th>Words</th></tr>
+      </thead>
+      <tbody id="local-rows"></tbody>
+    </table>
+  </div>
+</section>
+<script src=".cache/map-local.js"></script>
+<script>
+  (function () {
+    var files = window.MAP_LOCAL || [];
+    if (!files.length) return;
+    var body = document.getElementById("local-rows");
+    files.forEach(function (file) {
+      var tr = document.createElement("tr");
+      var name = document.createElement("td");
+      name.className = "file";
+      name.textContent = file.path;
+      var load = document.createElement("td");
+      var tag = document.createElement("span");
+      tag.className = "tag " + (file.load === "always" ? "t-always" : "t-cond");
+      tag.textContent = file.load;
+      load.appendChild(tag);
+      var note = document.createElement("td");
+      note.textContent = file.note;
+      var words = document.createElement("td");
+      words.className = "num";
+      words.textContent = file.words.toLocaleString("en-US");
+      [name, load, note, words].forEach(function (cell) { tr.appendChild(cell); });
+      body.appendChild(tr);
+    });
+    document.getElementById("local").hidden = false;
+  })();
+</script>
+
+<section>
+  <h2>The honest part</h2>
+  <h3>How rules are followed</h3>
+  <div class="col">
+    <p>
+      Nothing enforces a rule. Every rule is followed by reading, the same way in both tools. When
+      someone runs <code>spec-rebuild-overviews</code>, <code>build_index.py</code> reports the spec tree's structure —
+      the one thing its <code>--check</code> fails on — and everything else as warnings.
+    </p>
+    <div class="note">
+      <p>
+        <strong>Tightening is the user's call.</strong> No hook, CI job or gate is part of this setup;
+        adding one is a decision a project makes when it wants to, not a gap to close.
+      </p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span><!-- GEN:specs -->9<!-- /GEN:specs --> specs · <!-- GEN:rules -->9<!-- /GEN:rules --> rules · <!-- GEN:skills -->13<!-- /GEN:skills --> skills · <!-- GEN:agents -->3<!-- /GEN:agents --> subagents</span>
+  <span class="mono">python3 .agents/skills/spec-rebuild-overviews/scripts/build_index.py --check</span>
+</footer>
+
+</div>
+</body>
+</html>

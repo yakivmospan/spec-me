@@ -1,0 +1,24 @@
+# Hand-written descriptions for the converted rules, used with `skillify.py --descriptions`.
+#
+# The generated descriptions are the floor of "their when == skill description". These are the
+# ceiling: what someone would write if they meant the conversion seriously, with triggers first and
+# a "Not for" that separates each from its neighbours. Running the variant both ways is the only
+# way to tell a real result from a badly-worded one.
+#
+# Written to the same 70-100 word budget a real skill description gets.
+
+project-code-style = "Use before you write or change production code in any language, and before reviewing someone else's. Carries this project's stack-agnostic conventions: naming, error handling, logging, what belongs in a function, what belongs in a file. Not for Kotlin or Android specifics, spec prose, commit messages, or review process."
+
+kotlin-code-style = "Use before you write or change any Kotlin or Android code, including when the Kotlin change is a step inside a larger task rather than the request. Carries only what needs Kotlin or Android to be true: language idiom, Android APIs, module layout. Not for stack-agnostic conventions, spec prose, or commit messages."
+
+project-workflow = "Use before you commit, push, name a branch, write a merge request description, or read a build, lint or test failure. Carries this project's branch and commit format, what CI actually gates, and which modules its jobs never test. Not for code style, review findings, or spec content."
+
+project-review = "Use before you review a merge request, or a branch before any request exists. Carries what a review here judges against: the requirement sources in order, how reachability works in this repository, and what a performance claim has to carry. Not for writing code, or for the review method itself."
+
+spec-architecture = "Use before you add a module, move a boundary between modules, or choose between two designs. Carries how this project decides where code lives and what is allowed to depend on what. Not for a spec's prose, an ordinary multi-file change, or code style."
+
+spec-change = "Use before you start, plan, build or merge a change under .specs/changes/. Carries how a change folder is opened, what its implementation plan holds, and how it folds back into .specs/ when it is done. Not for a spec's wording or format, or for code style."
+
+spec-format = "Use before you write or edit the structure of a spec under .specs/: its sections, frontmatter, acceptance criteria and Change history. Carries what each section must contain and how it changes over time. Not for the wording inside those sections, which spec-style covers."
+
+spec-style = "Use before you write or edit the wording inside a spec under .specs/: sentences, how a criterion is phrased, what to cut. Carries KISS for spec prose, because every sentence taxes every future reader, human or agent. Not for a spec's structure or frontmatter, which spec-format covers."

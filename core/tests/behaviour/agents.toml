@@ -1,0 +1,27 @@
+# How to start each agent, and how to read back what it did.
+#
+# `command` is the argv. `{prompt}` is replaced with the whole prompt, `{cwd}` with the throwaway
+# repository. Add an agent by adding a table here — nothing in `run.py` names a particular one.
+#
+# `events` says how to read the run's output:
+#   stream-json  one JSON object per line, the shape Claude Code prints with --output-format stream-json
+#   jsonl        one JSON object per line, any shape; every object is scanned for tool calls and text
+#   text         no structure; only the answer checks can be scored, and tool checks are skipped
+
+[claude]
+command = ["claude", "-p", "{prompt}", "--output-format", "stream-json", "--verbose",
+           "--permission-mode", "acceptEdits", "--max-turns", "40"]
+events = "stream-json"
+version = ["claude", "--version"]
+# Claude Code is installed with: npm install -g @anthropic-ai/claude-code
+
+[claude-fast]
+command = ["claude", "-p", "{prompt}", "--output-format", "stream-json", "--verbose",
+           "--permission-mode", "acceptEdits", "--max-turns", "40", "--model", "claude-opus-5"]
+events = "stream-json"
+version = ["claude", "--version"]
+
+[codex]
+command = ["codex", "exec", "--json", "--skip-git-repo-check", "{prompt}"]
+events = "jsonl"
+version = ["codex", "--version"]
