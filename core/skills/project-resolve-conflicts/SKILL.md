@@ -27,7 +27,7 @@ Read both loaders, every always-on and on-demand rule, shared and local, every a
 every skill's description:
 
 ```bash
-python3 .agents/skills/project-create-rule-or-skill/scripts/skill_stats.py
+python3 .agents/core/skills/project-create-rule-or-skill/scripts/skill_stats.py
 ```
 
 Done when you can list, for each file, its kind, whether it is core's, a profile's or the user's, and

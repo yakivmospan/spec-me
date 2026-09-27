@@ -21,7 +21,7 @@ setup is `AGENTS.md`, `CLAUDE.md`, `.claude/` and `.codex/`.
 .agents/
 ├── CONSTITUTION.md  outranks every other rule and skill; AGENTS.md points here first
 ├── LOADER.md        this project's own — what to read and run at each step; the sync checks it
-├── core/            the engine: its rules, the five project-* skills, the runner agent
+├── core/            the engine: its rules, the six project-* skills, the runner agent
 ├── profiles/        a profile per folder; drop one in, delete one to uninstall
 ├── skills/          links, so both tools find every profile's skills in one flat folder
 ├── .local/          yours only, gitignored — its own LOADER.md, profiles/, skills/
@@ -45,15 +45,50 @@ What you may edit:
 
 ### How rules load
 
-`AGENTS.md` points at `CONSTITUTION.md`, then `LOADER.md`, then `.local/LOADER.md` where it
-exists. The loaders are this project's own files, edited by hand: a list of always-on rules, read at
-the start of each session, then steps, each saying what to read and what to run before one kind of
-work. A rule loads only where a line names it; `always-on/` and `on-demand/` are where it sits by
-convention. `project-sync-profiles-and-skills` keeps both loaders honest: it removes a line whose file
-is gone, reports a rule no line places — it never loads — and proposes where that rule goes.
+The loaders are this project's own files, edited by hand: a list of always-on rules, then steps, each
+saying what to read and what to run before one kind of work. `project-sync-profiles-and-skills` carries
+them to the agent with every request: `CONSTITUTION.md`, each always-on rule whole and the table go
+into `AGENTS.md`, between its `<!-- carried rules -->` markers, and `.local/LOADER.md`'s into
+`CLAUDE.local.md` and `AGENTS.override.md`. Edit the loaders and the rules, never those sections.
+Always-on is only for a rule with no single moment; anything tied to a kind of work is a row, because
+an agent follows a row when its moment comes and skips a list telling it to read first. A rule loads
+only where a line names it; `always-on/` and `on-demand/` are where it sits by convention. The sync
+also keeps both loaders honest: it removes a line whose file is gone, reports a rule no line places —
+it never loads — and proposes where that rule goes. Measured in fresh Claude Code sessions on
+Sonnet 5; after a compaction, and on Codex, it is untested.
+
+**What it costs**, measured in one setup. Every request already sends about 50,000 tokens before your
+task — the tool's own prompt, its tools and the skill descriptions — mostly from the prompt cache. The
+carried rules add about 1,900. Keeping the always-on rules as text is the cheaper way: as rows the
+agent read them with tools every session, and each read is another round trip that sends everything
+again — a one-question session took about 100,000 tokens instead of 50,000. Keeping the on-demand rules
+as rows is the cheaper way too: as text they would add about 8,500 tokens to every request, needed or
+not, while a row costs only when its work comes up.
+
+**What the tests showed, and what to do.** Measured with the behaviour suite in
+`core/tests/behaviour/` — Claude Code on Sonnet 5, 15 cases, 3 takes each unless a line says more.
+
+- **Keep always-on for rules with no moment, and keep them short.** Carried as text they held in every
+  take — fresh, and in a window already filled to 924,000 tokens. Every word goes out with every
+  request.
+- **Make everything else a row, at the moment it applies.** A row is followed when its moment comes; a
+  list saying "read these first" was skipped every time. Don't turn an always-on rule into a row to save
+  tokens: the agent then reads it every session, which cost about twice as much.
+- **Keep the carried section's opening line an instruction.** Opening with a note to its editors, the
+  agent opened a row's rule in 1 take of 6; with the instruction `AGENTS.md` has now, 9 of 9.
+- **Between unrelated tasks, start fresh (`/clear`); in a long one, `/compact` with a focus** — from
+  Claude Code's own docs, not measured here. After a compaction `CLAUDE.md`, and the rules it carries,
+  comes back from disk; a rule file read earlier may not, and its row sends the agent back to it when
+  its moment comes again.
+- **Expect rows to weaken after a compaction.** In an earlier round, rules carried as text held after a
+  compaction and rows fell to 0–33%; not measured again with the current opening. If a rule behind a row
+  matters after you compact, name it in your next request.
+- **Not measured yet:** why one row was skipped in a window half full — 0 of 3 at 500,000 tokens —
+  while it held at 250,000, 750,000 and 900,000.
+
 `CONSTITUTION.md` and `project-ground-rules.md` come with `core`;
-<!-- specs -->`spec-builder-rules.md` and the `spec-*-rules.md` in `on-demand/` come with
-`specs`; <!-- /specs -->the rest were chosen at install.
+<!-- specs -->the `spec-*-rules.md` in `on-demand/` come with `specs`; <!-- /specs -->the rest were
+chosen at install.
 Which instruction wins when two disagree is in `CONSTITUTION.md`'s *Which instruction wins*; a code or docs skill only
 repeats the one line `project-create-rule-or-skill`'s *Non-negotiables* allows, which points at `AGENTS.md`. Where a
 new rule goes, and how to write one: the `project-create-rule-or-skill` skill.
@@ -194,7 +229,7 @@ write it to the shape both tools follow, and how to test it before relying on it
 ```
 .agents/.local/
 ├── profiles/<name>/   a profile only you get — same shape as a shared one
-│   ├── rules/always-on/   read every session, once your LOADER.md's always-on list names it
+│   ├── rules/always-on/   carried with every request, once your LOADER.md's always-on list names it
 │   ├── rules/on-demand/   read at the step a line in your LOADER.md places it
 │   └── skills/            linked for both tools, and kept out of git
 ├── skills/            a loose skill of your own, from before profiles existed
@@ -255,7 +290,8 @@ open .agents/SETUP-MAP.html          # macOS — xdg-open on Linux, start on Win
 - **Claude or Codex doesn't see a new or local skill** — Claude sees a skill only through its link in
   `.claude/skills/`, and Codex a local skill only through its link in `.agents/skills/`. Run the link script
   above.
-- **A new always-on rule isn't followed** — rules load at the start of a session. Start a new one.
+- **A new always-on rule isn't followed** — run the sync so `AGENTS.md` carries it, then start a new
+  session.
 - **`build_setup_map.py --check` reports a file that "exists but the map never mentions it"** — a new
   rule or skill has no row in `SETUP-MAP.html`. Add one saying what it's for.
 

@@ -6,9 +6,16 @@ in a throwaway copy of this setup and checking mechanically what it did.
 
 It answers four things the mechanical suite cannot:
 
-- **Does load change behaviour?** The same case runs with the window 0%, 25%, 75% or 100% full.
-- **Does it survive a compaction?** At a high enough load the session is compacted mid-run, and the
-  case still expects the constitution to be followed.
+- **Does it survive a compaction?** With `--compact`, each take warms a session up, compacts it for
+  real, then asks — and the case still expects the constitution to be followed. The agent's own
+  compaction marker is checked on every take; a take without one is reported, not scored as if it
+  had compacted.
+- **Does a full window change behaviour?** `--fill 250k,500k,900k` pipes the installed packages'
+  documentation into the session as turns of its own until the window holds that many tokens, reads
+  the size back from the agent's own report, and only then asks. A take that fell short says so.
+  With `--compact` as well, the filled session is compacted before the request. `--load` asks the
+  agent to read a list of files instead, and an agent skips a list it has no use for — a Claude Code
+  take at `--load 100` read 3 files — so a load number is a claim about the prompt, not the window.
 - **Does it recover by itself?** A case can accept *either* a correct answer *or* the agent going
   back and re-reading the file — recovering is a pass, guessing is not.
 - **Is the wiring real?** Skills name subagents. A case checks the subagent was actually started.
@@ -48,12 +55,13 @@ npm install -g @anthropic-ai/claude-code
 Then, from this folder:
 
 ```bash
-python3 run.py --agent claude --load 25 --repeats 3
+python3 run.py --agent claude --repeats 3                     # the setup, a fresh session
+python3 run.py --agent claude --repeats 3 --ablate AGENTS.md  # the baseline: nothing points at it
+python3 run.py --agent claude --repeats 3 --compact           # the setup, after a real compaction
+python3 run.py --agent claude --repeats 3 --fill 250k,900k    # the setup, in a window already full
 ```
 
-```bash
-python3 run.py --agent claude --load 0,25,75,100 --repeats 3
-```
+The setup works where the first beats the second, and holds where the third stays close to the first.
 
 `--dry-run` starts no agent and prints each case's **floor**: what it scores when nothing happens at
 all. A case whose floor is 100% measures nothing, and the report says so by name. A real run has to
@@ -117,7 +125,7 @@ should be argued from the curve, not from a table.
 ## What one rule is actually buying
 
 ```bash
-python3 run.py --ablate .agents/profiles/specs/rules/always-on/spec-builder-rules.md --load 25
+python3 run.py --ablate .agents/profiles/specs/rules/on-demand/spec-builder-rules.md --load 25
 ```
 
 runs everything with that file taken out, using the real uninstall — delete it, run the sync,
@@ -132,6 +140,10 @@ Every take is a real agent session in a fresh copy, and a take at 100% load make
 hundred-odd files first. Fourteen cases, four loads, three takes is 168 sessions — start with one
 load and one take while you are changing cases, and run the wide grid when you want a number to
 keep. Scoring a session you drove by hand costs nothing beyond the session itself.
+
+A filled take pays for its fill: writing the filler cost about $4 per million tokens with Claude
+Code, so a take at `--fill 900k` is about $5, and every case pays its own. Run one or two cases at
+the levels you need before the whole suite.
 
 Three takes is the default because agents are not deterministic. One passing run is an anecdote.
 
@@ -151,10 +163,17 @@ the rest are reported as failures rather than silently skipped.
 
 ## Adding a case
 
-Add to `cases.toml`. Keep two things in mind, because both were got wrong here first:
+Add to `cases.toml`. Keep these in mind, because each was got wrong here first:
 
-- **A case must be able to fail.** Checks built only from `answer_lacks` and `file_unchanged` are
-  satisfied by an agent that says nothing. Pair them with something only a real answer can pass.
+- **A case must be able to fail without the setup.** A case that asks about the setup by name — "what
+  outranks every rule here?" — sends the agent to the file whatever loaded, and scores the same with
+  the setup cut off. Plant one distinctive fact instead (a fixture with `append` adds it to a real
+  rule in the copy) and ask for ordinary work only that fact decides. Check it with a dry run and with
+  `--ablate AGENTS.md`: both should score near zero.
+- **An empty answer must score nothing.** `answer_lacks` and `file_unchanged` pass for an agent that
+  says nothing. Fold a "must not" into the "must" check with a lookahead, `^(?![\s\S]*bad)[\s\S]*good`.
+- **`requires`** skips a case where its profile is not installed, so a stack or a profile a project
+  never took does not score as a failure.
 - **`dimension` is what the score reports.** Cases group into it, so a run says which part is
   slipping rather than giving one number with no handle on it.
 

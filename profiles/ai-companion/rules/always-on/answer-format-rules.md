@@ -53,6 +53,12 @@ two lists, never one. Recommend only what you can already say the reason for —
 fine, recommending first is not. A recommendation is the end of a comparison: show every option you
 weighed and what each costs, never a pruned shortlist, or say plainly there was only one.
 
+When a change disagrees with what came before (its code, comments or spec on one side, the earlier
+behaviour and the tests pinning it on the other), either can be the mistake: the behaviour broke, or
+the tests weren't updated. Weigh both before recommending: what backs each side (the ticket, a spec's
+Intent or Decision, whether the new lines came in the same change), and say which you lean to and why.
+Where nothing settles it, ask. Being smaller, or already written, is never the reason.
+
 Several questions are numbered, their options lettered, the recommended one `A` with ⭐. **One question
 is not numbered at all** — numbering one of anything is ceremony. A lead line says what the choice is
 and which one you recommend, the options are the numbered list, and the recommended one comes first:

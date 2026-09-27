@@ -28,10 +28,10 @@ builder*.
 ```
 builder/
 ├── VERSION  CHANGELOG.md  README.md  BUILDER-DESIGN.md   not installed
+├── BEHAVIOUR-FINDINGS.md                                 not installed — what the behaviour suite measured, and the conclusions
 ├── SETUP.md  SETUP-DEV.md                                not installed — the setup prompts
-├── CLAUDE-PROJECT-INSTRUCTIONS.md                        not installed — rebuilds a claude.ai project's Instructions
 ├── builder-dev-rules.builder.md                          linked by SETUP-DEV.md only, to
-│                                                         .agents/.local/profiles/builder-dev/rules/always-on/
+│                                                         .agents/.local/profiles/builder-dev/rules/on-demand/
 ├── tests/                                                not installed — the builder's own suites
 ├── core/                                                 the engine, in every project
 │   ├── CLAUDE.md                        → CLAUDE.md
@@ -40,7 +40,7 @@ builder/
 │   ├── README.seed.md                   → .agents/README.md
 │   ├── PROFILE.builder.md               not installed — what core needs, read by SETUP.md
 │   ├── rules/{always-on,on-demand}/     → .agents/core/rules/…   the project's core rules, mostly forms
-│   ├── skills/                          → .agents/core/skills/   the five project-* skills
+│   ├── skills/                          → .agents/core/skills/   the six project-* skills
 │   ├── agents/{claude,codex}/           → .agents/core/agents/…
 │   ├── tests/                           → .agents/core/tests/    health report, behaviour suite
 │   ├── settings/
@@ -60,13 +60,17 @@ builder/
 
 Two loaders are not in the tree: `.agents/LOADER.md` and `.agents/.local/LOADER.md` are the project's
 own files. The sync starts one where it is missing and reports every rule no line places; `SETUP.md`
-places each on your yes.
+places each on your yes. The sync then carries them to the agent with every request: the constitution,
+each always-on rule whole and the shared table into `AGENTS.md`, between its `<!-- carried rules -->`
+markers, and the local loader's into `CLAUDE.local.md` and `AGENTS.override.md`. Always-on is only for a
+rule with no single moment; the rest are rows. Measured in fresh Claude Code sessions on Sonnet 5;
+after a compaction, and on Codex, it is untested.
 
 The profiles here: `specs` (spec-driven development), `code-review`, `documentation` (comments and
 READMEs kept true, with the rule that runs them mid-work), `testing`, `graphify` (dependency
 questions through the graphify tool, for projects that use it), `ai-companion` (one person's
-preferences for how the AI works beside them — answers, edits, a second look, handovers), and
-`kotlin-android`, a stack.
+preferences for how the AI works beside them — answers, edits, a second look, handovers), and two
+stacks: `kotlin-android` and `typescript-vue`.
 
 ### Update a project
 
@@ -140,8 +144,8 @@ ask for the `project-test-behaviour` skill.
   install never overwrites. Compare the two by hand, or ask an AI to.
 - **A rule never loads** — no loader line names it; the sync reports it as unplaced. Place it.
 - **A change made while developing isn't in the builder** — the developer rule wasn't loaded: it's
-  missing from `.agents/.local/profiles/builder-dev/rules/always-on/`, or the session started before it
-  was linked. Start a new session; if the link is missing, follow `SETUP-DEV.md` again.
+  missing from `.agents/.local/profiles/builder-dev/rules/on-demand/` or from the local loader's
+  table, or the session started before it was linked. Start a new session; if the link is missing, follow `SETUP-DEV.md` again.
 
 ## See also
 

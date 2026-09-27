@@ -27,6 +27,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import uuid
 import tomllib
 from datetime import datetime, timezone
 from pathlib import Path
@@ -71,7 +72,8 @@ def results_home(mine):
     return LOCAL_RESULTS if mine else SHARED_RESULTS
 # What the setup needs to behave the way it does here. Code is left out: none of these cases read it,
 # and copying a whole Android tree for every repeat would cost minutes and prove nothing.
-COPIED = [".agents", ".claude", ".codex", ".specs", "AGENTS.md", "CLAUDE.md"]
+COPIED = [".agents", ".claude", ".codex", ".specs", "AGENTS.md", "CLAUDE.md",
+          "CLAUDE.local.md", "AGENTS.override.md"]  # the personal ones, copied only where they exist
 WORDS_PER_TOKEN = 0.75  # a rough English ratio; only used to size the filler, never to score
 
 
@@ -128,7 +130,8 @@ def always_on_words(root: Path):
     for folder_kind in ("always-on", "on-demand"):
         for folder in rule_folders(root, folder_kind):
             for rule in folder.glob("*.md"):
-                if ".seed." not in rule.name and loads_always(root, rule, always):
+                # is_file: a link into the builder dangles in a copy, which leaves the builder out.
+                if ".seed." not in rule.name and rule.is_file() and loads_always(root, rule, always):
                     total += len(rule.read_text(errors="replace").split())
     return total
 
@@ -194,7 +197,13 @@ def plant(root: Path, fixtures):
             continue
         target = root / f["path"]
         target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(f.get("content", ""))
+        if "append" in f:
+            # One fact added to a file the setup already has, so the case can ask for something only
+            # that file answers, without replacing the rest of it.
+            before = target.read_text() if target.exists() else ""
+            target.write_text(before.rstrip("\n") + "\n" + f["append"])
+        else:
+            target.write_text(f.get("content", ""))
 
 
 def clean_install(root: Path):
@@ -223,8 +232,8 @@ def clean_install(root: Path):
             continue
         dest = root / ".agents/profiles" / folder.name
         shutil.copytree(folder, dest)
-        # A form is answered out of the folder at install time. Copying it stands in for the
-        # answering a person does, so the destination exists and the tree is shaped right.
+        # A form is answered where it sits at install time. Copying it stands in for the answering
+        # a person does, so the destination exists and the tree is shaped right.
         for seed in sorted(dest.rglob("*.seed.*")):
             rel = f"{folder.name}/{seed.relative_to(dest).as_posix()}"
             for target in (V.profile_destination(rel) or []):
@@ -258,7 +267,13 @@ def make_sandbox(ablate=None, fixtures=None, inflate_to=None, clean=False):
                 continue
             dest = root / item
             if src.is_dir():
-                shutil.copytree(src, dest, symlinks=True)
+                # Never the builder: linked in, it is the builder's own checkout, and an agent under
+                # test with edit permission would write into it. Never this suite's results either:
+                # an agent could read an earlier take's answer, and they grow with every run.
+                skip = {(REPO / ".agents").resolve(): ["builder"],
+                        (REPO / ".agents/.local").resolve(): ["tests"]}
+                shutil.copytree(src, dest, symlinks=True,
+                                ignore=lambda d, names: skip.get(Path(d).resolve(), []))
             else:
                 shutil.copy2(src, dest)
     subprocess.run(["git", "init", "-q"], cwd=root, check=True)
@@ -324,10 +339,10 @@ def filler(root: Path, percent, window):
 
 # --- running one case ---------------------------------------------------------------------------
 
-def run_agent(spec, prompt, cwd, timeout):
+def run_agent(spec, prompt, cwd, timeout, stdin=None):
     argv = [a.replace("{prompt}", prompt).replace("{cwd}", str(cwd)) for a in spec["command"]]
     try:
-        out = subprocess.run(argv, cwd=cwd, capture_output=True, text=True, timeout=timeout)
+        out = subprocess.run(argv, cwd=cwd, capture_output=True, text=True, timeout=timeout, input=stdin)
     except FileNotFoundError:
         return None, f"{argv[0]} is not installed — see the comment in agents.toml"
     except subprocess.TimeoutExpired:
@@ -780,8 +795,115 @@ def score_case(case, ctx, answered=True):  # noqa: C901 — one place, so the ru
 
 # --- a whole run -----------------------------------------------------------------------------------
 
+# Ordinary work that reads the setup into the session before `--compact` squeezes it out.
+WARM_UP = ("Give me a short tour of this repository: what it is, and how the agent setup under .agents/ "
+           "is organised. Five lines at most.")
+
+
+def after_compaction(spec, prompt, cwd, timeout):
+    """The request, asked in a session that has really been compacted: warm up, compact, then ask.
+
+    Filling the window by asking the agent to read files does not work — an agent skips a reading
+    list it has no use for, so a "full" window stays nearly empty. Compacting on purpose does not
+    depend on the agent cooperating, and the agent's own marker in its output proves it happened.
+    Returns the request's output, an error, whether the marker was seen, and the raw output before.
+    """
+    if not all(k in spec for k in ("new_session", "resume", "compact")):
+        return None, "this agent has no session keys in agents.toml, so --compact cannot run", False, ""
+    session = str(uuid.uuid4())
+
+    def call(text, extra):
+        argv = spec["command"] + [a.replace("{session}", session) for a in extra]
+        return run_agent({**spec, "command": argv}, text, cwd, timeout)
+
+    warm, error = call(WARM_UP, spec["new_session"])
+    if error:
+        return None, f"warm-up: {error}", False, ""
+    squeezed, error = call(spec["compact"], spec["resume"])
+    before = (warm.stdout or "") + (squeezed.stdout if squeezed else "")
+    if error:
+        return None, f"compaction: {error}", False, before
+    compacted = spec.get("compacted_marker", "") in (squeezed.stdout or "")
+    out, error = call(prompt, spec["resume"])
+    return out, error, compacted, before
+
+
+FILL_TURN = "Reference material for later. Nothing to do with it yet — reply with just OK."
+FILL_CHUNK = 300_000  # tokens piped in one turn; a 360,000-token turn went through in a probe
+
+
+def fill_pool():
+    """Neutral text to fill a window with: the documentation of the packages this project installs.
+
+    Real prose and code, and none of it about this setup, so no planted fact can arrive through it.
+    """
+    words = []
+    for doc in sorted((REPO / "node_modules").rglob("*.md")) if (REPO / "node_modules").is_dir() else []:
+        try:
+            words += doc.read_text(encoding="utf-8", errors="replace").split()
+        except OSError:
+            pass
+    return words
+
+
+def context_of(out):
+    """The tokens the session's last request carried, from the agent's own report of that turn."""
+    for line in reversed((out.stdout or "").splitlines() if out else []):
+        try:
+            event = json.loads(line)
+        except ValueError:
+            continue
+        if isinstance(event, dict) and event.get("type") == "result":
+            usage = event.get("usage") or {}
+            return sum(usage.get(k, 0) for k in
+                       ("input_tokens", "cache_read_input_tokens", "cache_creation_input_tokens"))
+    return 0
+
+
+def after_fill(spec, prompt, cwd, timeout, target, compact=False):
+    """The request, asked in a session whose window already holds about `target` tokens.
+
+    A reading list is skipped and a prompt argument tops out near a megabyte, so the filler is piped
+    in as turns of its own, each measured from the agent's own report, until the window holds the
+    target. With `compact`, the filled session is compacted before the request. Returns the request's
+    output, an error, the tokens reached, whether it compacted, and the raw output before the request.
+    """
+    if not all(k in spec for k in ("new_session", "resume")):
+        return None, "this agent has no session keys in agents.toml, so --fill cannot run", 0, None, ""
+    pool = fill_pool()
+    if not pool:
+        return None, "no node_modules/ documentation to fill with — run npm install", 0, None, ""
+    session = str(uuid.uuid4())
+
+    def call(text, extra, stdin=None):
+        argv = spec["command"] + [a.replace("{session}", session) for a in extra]
+        return run_agent({**spec, "command": argv}, text, cwd, timeout, stdin=stdin)
+
+    reached, at, per_word, before = 0, 0, 3.0, ""
+    while reached < target * 0.95 and at < len(pool):
+        words = int(min(target - reached, FILL_CHUNK) / per_word)
+        chunk = " ".join(pool[at:at + words])
+        out, error = call(FILL_TURN, spec["resume"] if reached else spec["new_session"], stdin=chunk)
+        if error:
+            return None, f"filling: {error}", reached, None, before
+        before += out.stdout or ""
+        now = context_of(out)
+        if now <= reached:
+            return None, "filling: the agent reported no growth, so the text did not reach it", reached, None, before
+        per_word, reached, at = max((now - reached) / max(words, 1), 0.5), now, at + words
+    compacted = None
+    if compact:
+        squeezed, error = call(spec["compact"], spec["resume"])
+        before += squeezed.stdout if squeezed else ""
+        if error:
+            return None, f"compaction: {error}", reached, False, before
+        compacted = spec.get("compacted_marker", "") in (squeezed.stdout or "")
+    out, error = call(prompt, spec["resume"])
+    return out, error, reached, compacted, before
+
+
 def one_pass(case, spec, percent, window, timeout, dry, archive=None, take=0, ablate=None,
-             inflate_to=None, clean=False):
+             inflate_to=None, clean=False, compact=False, fill=0):
     """One agent session, scored — and its raw output kept.
 
     The expensive half of this suite is starting an agent; the cheap half is deciding whether what
@@ -795,11 +917,23 @@ def one_pass(case, spec, percent, window, timeout, dry, archive=None, take=0, ab
         before = {v: digest(root / v) for v in watched}
         preamble, picked = filler(root, percent, window)
         prompt = preamble + case["prompt"]
-        raw = ""
+        raw, before_raw, compacted, reached = "", "", None, 0
         if dry:
             tools, answer, error = [], "", "dry run: no agent was started"
         else:
-            out, error = run_agent(spec, prompt, root, timeout)
+            if fill:
+                out, error, reached, compacted, before_raw = after_fill(spec, prompt, root, timeout,
+                                                                        fill, compact)
+                if not error and reached < fill * 0.9:
+                    error = f"the window reached {reached:,} tokens, short of {fill:,}"
+                elif not error and compact and not compacted:
+                    error = "no compaction marker in the agent's output: this take was not compacted"
+            elif compact:
+                out, error, compacted, before_raw = after_compaction(spec, prompt, root, timeout)
+                if not error and not compacted:
+                    error = "no compaction marker in the agent's output: this take was not compacted"
+            else:
+                out, error = run_agent(spec, prompt, root, timeout)
             raw = out.stdout if out else ""
             tools, answer = parse_events(raw, spec.get("events", "text")) if out else ([], "")
             if out and not answer:
@@ -813,12 +947,21 @@ def one_pass(case, spec, percent, window, timeout, dry, archive=None, take=0, ab
         row["always_on_words"] = rule_words
         row["error"] = error
         row["digests"] = {"before": before, "after": after}
+        if compact:
+            row["compacted"] = compacted
+        if fill:
+            row["filled_to"] = reached
         if archive and raw:
             archive.mkdir(parents=True, exist_ok=True)
-            tag = f"-without-{Path(ablate).name}" if ablate else ""
-            kept = archive / f"{case['id']}-load{percent}{tag}-take{take}.txt"
+            tag = (f"-without-{Path(ablate).name}" if ablate else "") + ("-compacted" if compact else "")
+            level = f"fill{fill // 1000}k" if fill else f"load{percent}"
+            kept = archive / f"{case['id']}-{level}{tag}-take{take}.txt"
             kept.write_text(raw)
-            row["transcript"] = str(kept.relative_to(home))
+            if before_raw:
+                # Kept apart, so a rescore judges only what the agent did after the compaction.
+                kept.with_name(kept.stem + "-before.txt").write_text(before_raw)
+            # Relative to the results folder, which holds `transcripts/<run>/`, so a rescore finds it.
+            row["transcript"] = str(kept.relative_to(archive.parent.parent))
         return row
     finally:
         shutil.rmtree(root, ignore_errors=True)
@@ -834,29 +977,39 @@ def run(args):
         got = subprocess.run(spec["version"], capture_output=True, text=True)
         version = got.stdout.strip() if got.returncode == 0 else "unknown"
     wanted = [c for c in cases if not args.only or args.only in c["id"]]
+    # A case about a profile's guidance means nothing where that profile is not installed.
+    have = {p.name for base in (".agents/profiles", ".agents/.local/profiles")
+            for p in ((REPO / base).iterdir() if (REPO / base).is_dir() else []) if p.is_dir()}
+    for c in [c for c in wanted if not set(c.get("requires", [])) <= have]:
+        print(f"skip load   -  {c['id']:<38} needs {', '.join(sorted(set(c['requires']) - have))}")
+    wanted = [c for c in wanted if set(c.get("requires", [])) <= have]
     started = datetime.now(timezone.utc).isoformat(timespec="seconds")
     mine = [] if args.clean_install else local_profiles(REPO)
     home = results_home(mine)
     archive = home / "transcripts" / (started.replace(":", "").replace("-", "") + "-" + args.agent)
     out_runs = []
-    for percent in args.load:
+    # A fill in tokens replaces the percentage load, which only asks the agent to read a list.
+    for level in (args.fill or args.load):
+        percent, fill = (0, level) if args.fill else (level, 0)
         rows = []
         for case in wanted:
             takes = [one_pass(case, spec, percent, args.window, args.timeout, args.dry_run,
                               archive=archive, take=i, ablate=args.ablate,
-                              inflate_to=args.inflate, clean=args.clean_install)
+                              inflate_to=args.inflate, clean=args.clean_install,
+                              compact=args.compact, fill=fill)
                      for i in range(args.repeats)]
             mean = sum(t["score"] for t in takes) / len(takes)
             rows.append({"id": case["id"], "dimension": case["dimension"], "score": mean,
                          "takes": takes})
             mark = "ok  " if mean == 1 else ("FAIL" if mean == 0 else "part")
-            print(f"{mark} load {percent:>3}%  {case['id']:<38} {mean:5.0%}"
+            label = f"fill {fill // 1000:>4}k" if fill else f"load {percent:>3}%"
+            print(f"{mark} {label}  {case['id']:<38} {mean:5.0%}"
                   + (f"   {takes[0]['error']}" if takes[0].get("error") else ""))
         by_dimension = {}
         for r in rows:
             by_dimension.setdefault(r["dimension"], []).append(r["score"])
         dimensions = {k: sum(v) / len(v) for k, v in sorted(by_dimension.items())}
-        out_runs.append({"load": percent, "cases": rows, "dimensions": dimensions,
+        out_runs.append({"load": percent, "fill": fill, "cases": rows, "dimensions": dimensions,
                          "overall": sum(dimensions.values()) / len(dimensions) if dimensions else 0})
     record = {
         "when": started,
@@ -864,14 +1017,17 @@ def run(args):
         "events": spec.get("events", "text"),
         "builder": (REPO / ".agents/builder/VERSION").read_text().strip(),
         "repeats": args.repeats, "window": args.window, "dry_run": args.dry_run,
-        "ablated": args.ablate, "inflated_to": args.inflate,
+        "ablated": args.ablate, "inflated_to": args.inflate, "compacted_first": args.compact,
         "tree": "a clean install from the builder" if args.clean_install else "this project",
         "local_profiles": mine,
         "runs": out_runs,
     }
     home.mkdir(parents=True, exist_ok=True)
     stamp = record["when"].replace(":", "").replace("-", "")
-    path = home / f"{stamp}-{args.agent}{'-dry' if args.dry_run else ''}.json"
+    path = home / (f"{stamp}-{args.agent}{'-filled' if args.fill else ''}"
+                   f"{'-compacted' if args.compact else ''}"
+                   f"{f'-without-{Path(args.ablate).name}' if args.ablate else ''}"
+                   f"{'-dry' if args.dry_run else ''}.json")
     path.write_text(json.dumps(record, indent=2) + "\n")
     print()
     print(report(record))
@@ -1050,6 +1206,11 @@ def main():
                          "what the budget is actually buying")
     ap.add_argument("--ablate", metavar="PATH",
                     help="take this file out of the copy first, so a run says what it was worth")
+    ap.add_argument("--compact", action="store_true",
+                    help="warm the session up and compact it for real before each request")
+    ap.add_argument("--fill", default="",
+                    help="tokens already in the window when the request comes, piped in first, "
+                         "e.g. 250k or 250k,500k,900k; with --compact, compacted after filling")
     args = ap.parse_args()
     if args.list:
         sys.exit(listing())
@@ -1067,7 +1228,10 @@ def main():
     if args.transcript:
         sys.exit(score_transcript(args))
     args.load = [int(x) for x in str(args.load).split(",")]
+    args.fill = [int(float(x.lower().rstrip("k")) * (1000 if x.lower().endswith("k") else 1))
+                 for x in args.fill.split(",") if x.strip()]
     sys.exit(run(args))
 
 
-main()
+if __name__ == "__main__":
+    main()

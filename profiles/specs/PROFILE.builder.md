@@ -16,9 +16,9 @@ and the two agents from where the folder sits. Deleting the folder and running t
 every one of them. The one thing the folder cannot bring is the spec tree itself — `SETUP.md`'s
 Steps 3, 7 and 8 write `.specs/`, because those files describe this repository.
 
-## What it takes from core
+## Requires
 
-No other profile is required. Like every profile it runs on core, which every setup has: the
+`core`, and no other profile. Like every profile it runs on core, which every setup has: the
 constitution these rules answer to is core's `CONSTITUTION.md`, and this profile's
 `spec-builder-rules.md` adds the two principles that only make sense with specs. Every rule here loads
 through core's `AGENTS.md` and `LOADER.md`, every skill here is linked by core's
@@ -52,7 +52,7 @@ constitution says a spec reads and changes correctly without any of this.
 | Block | Lands at |
 |---|---|
 | `skills/spec-*/` | `.agents/skills/` |
-| `rules/always-on/spec-builder-rules.md` | stays here; `LOADER.md`'s always-on list names it where it sits |
+| `rules/on-demand/spec-builder-rules.md` | stays here; a line in `.agents/LOADER.md` places it at "work on anything under `.specs/`, or any task a spec owns" |
 | `rules/on-demand/spec-*-rules.md` | stays here; a line in `.agents/LOADER.md` places each at its step, proposed when the sync reports it unplaced |
 | `templates/spec-feature.md`, `spec-contract.md`, `implementation-plan.md` | `.agents/profiles/specs/templates/` |
 | `templates/spec-0*.builder.md` | nowhere — read by `SETUP.md` to write the root specs |

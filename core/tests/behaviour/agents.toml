@@ -7,12 +7,20 @@
 #   stream-json  one JSON object per line, the shape Claude Code prints with --output-format stream-json
 #   jsonl        one JSON object per line, any shape; every object is scanned for tool calls and text
 #   text         no structure; only the answer checks can be scored, and tool checks are skipped
+#
+# For `--compact`, an agent also says how to start a session with a known id and resume it
+# (`{session}` is replaced with it), the prompt that compacts it, and the text its output carries
+# when a compaction happened. An agent without these keys cannot run `--compact`.
 
 [claude]
 command = ["claude", "-p", "{prompt}", "--output-format", "stream-json", "--verbose",
            "--permission-mode", "acceptEdits", "--max-turns", "40"]
 events = "stream-json"
 version = ["claude", "--version"]
+new_session = ["--session-id", "{session}"]
+resume = ["--resume", "{session}"]
+compact = "/compact"
+compacted_marker = "compact_boundary"
 # Claude Code is installed with: npm install -g @anthropic-ai/claude-code
 
 [claude-fast]

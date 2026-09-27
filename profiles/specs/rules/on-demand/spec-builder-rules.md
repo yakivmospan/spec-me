@@ -1,6 +1,6 @@
 # Spec builder rules
 
-Always-on. What every task in this spec-driven setup follows.
+What every task in this spec-driven setup follows.
 
 ## Constitution
 

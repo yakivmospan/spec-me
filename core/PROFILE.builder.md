@@ -58,12 +58,12 @@ Its spec-process checks are skipped, not failed, where `specs` was not installed
 | `CLAUDE.md` | `CLAUDE.md` |
 | `README.seed.md` | `.agents/README.md` |
 | `rules/always-on/project-ground-rules.md` | `.agents/core/rules/always-on/` |
-| `rules/always-on/project-sensitive-paths-rules.seed.md` | `.agents/core/rules/always-on/project-sensitive-paths-rules.md` |
+| `rules/on-demand/project-sensitive-paths-rules.seed.md` | `.agents/core/rules/on-demand/project-sensitive-paths-rules.md` |
 | `rules/on-demand/project-code-style-rules.seed.md` | `.agents/core/rules/on-demand/project-code-style-rules.md` |
 | `rules/on-demand/project-workflow-rules.seed.md` | `.agents/core/rules/on-demand/project-workflow-rules.md` |
-| `skills/project-*/` | `.agents/skills/` |
-| `agents/claude/runner.md` | `.claude/agents/` |
-| `agents/codex/runner.toml` | `.codex/agents/` |
+| `skills/project-*/` | `.agents/core/skills/`; the sync links each into `.agents/skills/` |
+| `agents/{claude,codex}/` | `.agents/core/agents/`; the sync links `runner` into `.claude/agents/` and `.codex/agents/` |
+| `tests/` | `.agents/core/tests/` |
 | `map/SETUP-MAP.seed.html` | `.agents/SETUP-MAP.html` |
 | `settings/claude-settings.seed.json` | `.claude/settings.json` |
 | `settings/codex-config.toml` | `.codex/config.toml` |

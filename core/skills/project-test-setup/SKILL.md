@@ -31,7 +31,7 @@ costs too many words, what could go, and what's left over. One report; the user 
 
 ## 1. Read
 
-1. Run `python3 .agents/skills/project-test-setup/scripts/validate_inventory.py` from the repository root —
+1. Run `python3 .agents/core/skills/project-test-setup/scripts/validate_inventory.py` from the repository root —
    load, budgets, profile files against installed files, retired names, missing paths, links, the map check.
    Its output, the ledger and `reference.md` are every reader's starting point. Then
    `.agents/CONSTITUTION.md`, the constitution — the measure for everything below.

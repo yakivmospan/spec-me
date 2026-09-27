@@ -1,6 +1,6 @@
 # Builder development
 
-Always-on, local — linked by `SETUP-DEV.md` while this project has the developer setup, and
+Local — linked by `SETUP-DEV.md` while this project has the developer setup, and
 unlinked when it switches back to the user setup.
 
 - **Every change to an installed copied file is made in its profile too**, in the same step — the

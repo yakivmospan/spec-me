@@ -309,6 +309,61 @@ The common case, and the one that shapes the most.
   - **Replaced 2026-09-24:** the loader generated from each rule's `load-when:`, which 0.5.0 chose to
     stop a hand-written table leaving a row behind a removed profile; the sync's pruning does that job
     now, and the key goes from every rule
+- **The rules reach the agent with every request: the sync carries the constitution and each
+  always-on rule whole, and the loader's table, into `AGENTS.md` between its markers; what one person
+  has goes to `CLAUDE.local.md` and `AGENTS.override.md`. Always-on is only for a rule with no single
+  moment; every other rule is a row**
+  - **Instead of** `AGENTS.md` pointing at the constitution and the loaders for the agent to read at
+    session start; every rule as a row; or every rule as text
+  - **Because** a pointer is skipped and text in front of the agent is followed. In behaviour runs of
+    the suite's 15 cases, 3 takes each, on Claude Code with `claude-sonnet-5`: the table carried alone
+    lifted the on-demand cases (code style 33% to 100%, commits 0% to 67%) and left the always-on ones
+    at 0%; carrying every always-on rule's text as well took those to 100%, after a compaction too, at
+    about 2,600 words a request; every rule as a row, with no text, sent the constitution and ground-rule
+    cases back to 0% — "before any task" is not a moment an agent notices, while touching a file or
+    committing is. Carrying only the rules with no moment as text, the rest as rows, kept every
+    always-on case at 100% and the on-demand ones at their level, for about 1,500 words. The text is
+    written in, not imported, so Claude and Codex get the same file; Codex reads `AGENTS.override.md`
+    instead of `AGENTS.md`, so that one holds both. A shared file with the personal rows in it would
+    have to stay out of git, and a clone that never ran the sync would get nothing
+  - **What each costs**, measured in one installed setup (tokens are words ÷ 0.75, the suite's own
+    ratio). Every request there already sends about 50,500 tokens before the task — the tool's own
+    prompt, its tools and the skill descriptions — mostly re-sent from the prompt cache. The carried
+    rules are about 1,450 words of it, about 1,900 tokens or 4%; the table alone, 160 words
+    - **Always-on rules as rows cost more, not less.** The agent opened them with tools, and every read
+      is another round trip that re-sends the whole context: a one-question session took 2 to 4 round
+      trips and about 100,000 tokens instead of 1 and 50,500 — about $0.12–0.14 a session instead of
+      $0.10. What a read brings in stays in the conversation and goes out with every later request
+      anyway, so a row saves nothing for a rule every session needs. A row can reach them: a first row
+      "reply to anything — every request matches this row", with the opening telling the agent to open
+      all three files before its first answer, had 9 of 9 takes open all three (7 of 9 with the row
+      alone). The cost is why it was not taken, and a compaction would leave the reads behind
+    - **On-demand rules as text would cost every request.** Its 14 on-demand rules are about 6,400
+      words, about 8,500 tokens — some 17% more on each request, whether the work comes up or not. As
+      rows, a session pays for one only when its work does: one round trip to read it, then its text
+  - **The shared rules go into the committed `AGENTS.md`**, instead of only into each person's local
+    files: a fresh clone gets them without running anything. The cost is that a rule edit also shows
+    as a diff in `AGENTS.md`. Local files only would leave anyone who has not run the sync on the
+    pointer, which scored 0% for the always-on cases
+  - **The loader stays the file you edit, and the sync writes the copies**, instead of removing
+    `LOADER.md` and editing the table in `AGENTS.md` by hand. The personal rows need a generating step
+    either way — Codex reads `AGENTS.override.md` instead of `AGENTS.md`, so that file has to be built
+    from both — and without the loader the sync, the map, the health checks and the tests would all
+    be rewritten around `AGENTS.md`
+  - **The carried section opens with an instruction, not a note to its editors.** Measured on the
+    code-style case, whose rule the agent must open through its row: opening with "the sync writes
+    them… edit those, never this section", 1 of 6 takes opened it; "Follow the rules below…", 6 of 9;
+    the old "Before doing anything else, read … and follow it", 4 of 6, with no take opening the loader;
+    moving the table into `CLAUDE.local.md` instead, 0 of 3. Naming the table and saying a row applies
+    to code only shown or proposed — "open every file that row names before you answer" — 9 of 9.
+    Where the table sits does not matter; what the section's first lines ask for does. With that
+    opening, all 15 cases scored 81%, against 77% for the hand-written copy first tested and 79%
+    for the section opening with the note
+  - **Also** measured on fresh sessions and, in a pilot, in windows filled to 924,000 tokens; after a
+    compaction only in an earlier round, where rows fell to 0–33% and carried text held; on Codex and
+    other models, untested. Every round and its per-case scores: `BEHAVIOUR-FINDINGS.md`. The four
+    rules that moved to rows — sensitive paths, file edits, second look, spec
+    builder — moved to `on-demand/` too, so a new loader places them the same way
 - **A profile declares in its `PROFILE.md` what core needs to know about it — a word-budget
   exception, its own self-check — and core reads that**
   - **Instead of** core's setup skills naming a profile's files, as `project-test-setup`,
@@ -399,11 +454,39 @@ The common case, and the one that shapes the most.
   - **Because** the setup's rules are read once, by a tool call, at the start of a session — and a
     long session is compacted, which can summarise that reading away. Whether a rule holds at 10%
     of a window and fails at 90% is the difference between a setup that works and one that works
-    in demos. This is also why the constitution's core is carried into `AGENTS.md`
+    in demos. This is also why the rules are carried into `AGENTS.md`
+- **A window is filled by piping text into the session, measured in tokens: `--fill 250k,500k,…`**
+  - **Instead of** `--load`, which asks the agent to read a list of files first, or the filler in the
+    prompt itself
+  - **Because** an agent skips a reading list it has no use for, so `--load` left the window nearly
+    empty; and a prompt goes in as one command-line argument, which tops out near a megabyte — about
+    250,000 tokens. Piped text arrives as turns of their own, before the request, and each turn's size
+    is read back from the agent's own report, so a take that fell short of its fill says so. In a
+    probe, a piped turn of about 360,000 tokens went through in 11 seconds, and a codeword in piped
+    text was quoted back after a resume
+  - **Also** the filler is the installed packages' documentation: real prose and code, about three
+    tokens a word, and nothing about this setup, so no planted fact can arrive through it. The top
+    level stays near 900,000 on a 1M window, because the tool compacts on its own before the window is
+    full. A turn cost about $4 per million tokens written, so a 900,000-token take costs about $5;
+    each case pays its own fill, and a take that filled one session with every case's facts planted and
+    branched each case off it would pay once
+  - **Open, parked until there is budget for it:** which window size is best, and what brings the
+    rules back after a compaction. Planned in three phases, each case at 250k, 500k, 750k and 900k: filled; filled then compacted; compacted with
+    a fix — a carried line telling the agent what to re-read, or a `/compact` focus. A pilot of two
+    cases — a rule carried as text, and one read through its row — at 3 takes and all four levels
+    comes first, to measure the cost before the rest. Its result: the rule carried as text held 12 of
+    12 at every level; the rule behind its row held 3 of 3 at 250k, 750k and 900k and 0 of 3 at 500k,
+    where no take opened it — one level down and two up held, so a window's size alone does not
+    explain it. A take cost about $1.30 at 250k, $2.10 at 500k, $3.40 at 750k and $4.20 at 900k; the
+    pilot's 24 takes, $67. The first fill turn overshot: "250k" reached 319,000. Known from Claude Code's own docs
+    (code.claude.com/docs/en/context-window): after a compaction the project-root `CLAUDE.md` comes
+    back from disk, with up to five of the files read most recently and the invoked skills' text; the
+    rest of the conversation becomes a summary, and quality falls as a window fills, with no threshold
+    published
 
 ### Updating
 - **The constitution has one source — `core/CONSTITUTION.seed.md` — seeded once and the project's
-  from then on, with its core carried into `AGENTS.md` by the sync**
+  from then on, carried whole into `AGENTS.md` by the sync**
   - **Changed 0.5.0:** it is a form, not a copied rule. A project that already has a constitution
     keeps it; the form is shown, what it would add is named, and it changes only on the user's yes,
     because changing a constitution is the setup's own red flag
@@ -413,6 +496,14 @@ The common case, and the one that shapes the most.
     can summarise it away. So the part that would cause harm if forgotten is the part that is
     carried, and it is generated rather than written twice so the two cannot drift. An `AGENTS.md`
     without the markers is left completely alone — the copy is offered, never imposed
+  - **Changed since:** `AGENTS.seed.md` no longer ships the empty slot, and the constitution seed never
+    shipped the `<!-- carried -->` section, so a fresh install carried nothing and said it did. The
+    default is the pointer and "read them again whenever you cannot quote them". The sync still fills
+    both marker pairs where a project adds them — kept until a behaviour test shows whether the pointer
+    alone survives a compaction
+  - **Replaced 2026-09-27:** the marked `<!-- carried -->` part and its own markers in `AGENTS.md`, and
+    the pointer default. The behaviour runs showed the pointer is skipped, so the whole constitution is
+    carried with the always-on rules (*The rules reach the agent with every request*)
   - **Changed 0.4.0:** it was the *Constitution* section of `spec-builder-rules.md`; the setup-wide
     principles and *Which instruction wins* moved to core, the two spec ones stayed with the specs
   - **Instead of** `CONSTITUTION.md` at the builder's root, copied by setup into a seeded
@@ -494,6 +585,32 @@ The common case, and the one that shapes the most.
 - **What a script writes on one machine lives in `.agents/.cache/`**
   - **Instead of** beside the personal rules and skills in `.agents/.local/`
   - **Because** `.local/` holds what a person writes, and `.cache/` what a script regenerates
+
+### A Claude project
+- **A claude.ai project reads this setup as a snapshot pasted into its Instructions, stamped; the
+  repository's `SYNC.md` records the stamp, and a connected chat says when its copy is behind**
+  - **Instead of** a condensed `setup.md` the project syncs and reads, a builder file rebuilding the
+    Instructions by hand, or a ready-made snapshot kept in the builder
+  - **Because** Instructions are what a project chat always has in front of it, even with no folder
+    connected, while a synced file is only read when the chat thinks to. Made fresh by
+    `project-context-snapshot`, nothing is stored that could drift from the rules it came from, and
+    the fingerprint turns "is it behind?" into a comparison. A project with no repository gets the
+    same text from the builder's profiles
+- **Sync moves files only on the user's word — "push ideas", "pull updates", "sync"; a connected
+  chat compares and says what it found**
+  - **Instead of** syncing at the start of every connected chat
+  - **Because** a chat opened to think something through should not start by moving files, and the
+    one-line notice keeps nothing hidden
+- **The snapshot's recipe lives with the profile that uses it: `claude-project-sync` names the
+  profiles — core, `ai-companion`, `specs`, no project overview — and adds the project's own part**
+  - **Instead of** core knowing which profiles each consumer wants, or each profile keeping its own
+    chat version
+  - **Because** core may not name a profile, and a stored chat version drifts from the rules it
+    retells. The specs' content reaches the project by sync, so the overview would only repeat it
+- **The repository's rule is a row, read before touching a file, not always-on**
+  - **Instead of** always-on, as first proposed
+  - **Because** its moment is concrete — an edit to a synced file — and the behaviour runs showed a
+    row with a concrete moment is followed, at no cost to a request that edits nothing
 
 ### The spec lifecycle
 - **The specs describe themselves: `.specs/README.md` says how to find, read and change one, following
@@ -702,7 +819,8 @@ What has to hold before 0.1.0 is released. Unchecked means not yet run.
 Not built yet: the direction the next changes are measured against.
 
 - **Two repositories.** `spec-me` ships `core` and the `specs` profile. Every other profile —
-  `code-review`, `documentation`, `graphify`, `ai-companion`, `kotlin-android` and `testing` today —
+  `code-review`, `documentation`, `graphify`, `ai-companion`, `kotlin-android`, `typescript-vue` and
+  `testing` today —
   moves to `spec-me-profiles`, its
   author's own collection: shared, but still theirs.
 - **Anyone can publish profiles.** A profile is more than a skill: a set of skills, rules and agents

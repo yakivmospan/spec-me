@@ -35,6 +35,11 @@ COST = {"Critical": 3, "High": 2, "Medium": 1, "Low": 0.25}
 def repo_root(override):
     if override:
         return os.path.abspath(override)
+    # The path as called, not resolved: a builder linked in at `.agents/builder` resolves to its own
+    # checkout, and the project is the folder holding the `.agents/` it was called through.
+    parts = os.path.dirname(os.path.abspath(__file__)).split(os.sep)
+    if ".agents" in parts:
+        return os.sep.join(parts[:len(parts) - 1 - parts[::-1].index(".agents")]) or os.sep
     here = os.path.dirname(os.path.realpath(__file__))
     out = subprocess.run(["git", "-C", here, "rev-parse", "--show-toplevel"], capture_output=True, text=True)
     return out.stdout.strip() or os.getcwd()
@@ -227,8 +232,7 @@ def profile_destination(rel):
 
     A profile is dropped in whole, so almost everything lands at the same path inside
     `.agents/profiles/<name>/` — or under `.agents/.local/profiles/` when it is the user's alone.
-    A `.seed.` file is the exception: it is a form about this repository, so it is answered into
-    the engine's own rules folder rather than left in the profile.
+    A `.seed.` file is answered in place, with the marker dropped from its name.
     """
     name, _, tail = rel.partition("/")
     if not tail or ".builder." in os.path.basename(tail):

@@ -299,7 +299,7 @@ comment explaining how to fill the file, a `_comment` key) once a file is answer
   before touching: show what the form would add, say which of its own principles that overrides, and
   change it only on a yes. If it had none, the form is the starting point and is the project's from
   then on.
-- **`.agents/core/rules/always-on/project-sensitive-paths-rules.md`**, where installed — only paths that exist: build config, CI, signing
+- **`.agents/core/rules/on-demand/project-sensitive-paths-rules.md`**, where installed — only paths that exist: build config, CI, signing
   keys, local machine config, lint and formatter config, migrations, infra, code generators.
 - **`.agents/core/rules/on-demand/project-code-style-rules.md`**, where installed — 3-8 real rows with code evidence, per the form's
   comment. Delete every row you have no evidence for; a table of general good practice is

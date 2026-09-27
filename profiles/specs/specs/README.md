@@ -18,6 +18,9 @@ Plain Markdown: no tool, skill or script is needed to read a spec or to change o
                                                  when one looks stale, the specs win
 ```
 
+Every Markdown file here is a spec. What a spec draws on without being one — research, a log, legal
+notes — lives outside `.specs/`, and the spec points at it under References.
+
 ## Find the spec for a file
 
 - **By `owns`:** a spec lists the code it describes under `owns:` in its frontmatter. Search for a

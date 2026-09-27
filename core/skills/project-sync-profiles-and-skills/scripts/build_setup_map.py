@@ -96,7 +96,12 @@ def aggregates(root: Path, counts: dict[str, int]) -> dict[str, str]:
     def kind_total(kind):  # rules live in profiles now, so sum the files, not a path prefix
         return sum(counts.get(str(r.relative_to(root)), 0) for r in rule_paths(root, kind))
 
-    always = sum(counts.get(p, 0) for p in always_files) + kind_total("always-on") + descriptions
+    agents = root / "AGENTS.md"
+    if agents.is_file() and "<!-- carried rules -->" in agents.read_text(encoding="utf-8"):
+        # AGENTS.md already holds the constitution, the always-on rules and the loader's table.
+        always = counts.get("AGENTS.md", 0) + counts.get("CLAUDE.md", 0) + descriptions
+    else:
+        always = sum(counts.get(p, 0) for p in always_files) + kind_total("always-on") + descriptions
     on_demand = kind_total("on-demand") + total(".agents/skills/")
 
     n_always = len(rule_paths(root, "always-on"))

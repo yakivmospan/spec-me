@@ -1,6 +1,6 @@
 ---
 name: test-plan-manual
-description: Use when asked to "write a test plan", "make a manual test plan", "turn this runbook into a test plan", or when a task's only proof needs a real MR, tag push, device or registry that can't run in this session — turns a checklist someone has to run by hand into a numbered, checkboxed list of test cases: Preconditions, Steps, Expected, an optional Result, and, where an implementation-plan.md exists, the task it closes. Also when the person reports how a case went ("TC-4 failed: …") — records it under that case. Not for automated tests or writing an implementation plan.
+description: Use when asked to "write a test plan", "make a manual test plan", "turn this runbook into a test plan", or when a task's only proof needs a real MR, tag push, device or registry that can't run in this session — turns a checklist someone has to run by hand into a numbered, checkboxed list of test cases: Preconditions, Steps, Expected, an optional Result, and, where an implementation-plan.md exists, the task it closes. Also when someone reports a run ("TC-4 failed: …") — records it under that case. Not for automated tests or writing an implementation plan.
 ---
 
 # Manual Test Plan

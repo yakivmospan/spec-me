@@ -16,7 +16,8 @@ import tempfile
 import time
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[3]
+# Not resolve(): `.agents/builder/` may be a link to a shared checkout, and following it leaves the project.
+REPO = Path(__file__).absolute().parents[3]
 CORE = REPO / ".agents/core"
 BUILDER = REPO / ".agents/builder"
 
@@ -708,8 +709,8 @@ def install_from_builder(root: Path, profiles_wanted):
         dest = root / ".agents/profiles" / name
         dest.parent.mkdir(parents=True, exist_ok=True)
         shutil.copytree(src, dest)
-        # A form is a question about this repository, so it is answered out of the folder, not left
-        # in it. Copying it stands in for the answering a real install does by hand.
+        # A form is answered where it sits, with the marker dropped. Copying it stands in for the
+        # answering a real install does by hand.
         for seed in sorted(dest.rglob("*.seed.*")):
             rel = f"{name}/{seed.relative_to(dest).as_posix()}"
             for target in (V.profile_destination(rel) or []):
@@ -829,62 +830,134 @@ def a_profile_moved_to_local_still_works(c):
     return r
 
 
-# --- what survives a compaction ------------------------------------------------------------------
+# --- what every request carries ------------------------------------------------------------------
 
-@case
-def the_constitution_core_is_carried_into_agents_md(c):
+MARKED_AGENTS = "# Test repo\n\nOur own words.\n\n<!-- carried rules -->\n<!-- /carried rules -->\n\nAfter.\n"
+
+
+def carried_repo():
+    """A repo with a constitution, one shared always-on rule, one shared row, and AGENTS.md marked."""
     r = make_repo()
-    (r / ".agents/CONSTITUTION.md").write_text(
-        "# Constitution\n\nPreamble that may be summarised away.\n\n"
-        "<!-- carried -->\n- **A red flag.** Never on your own initiative.\n<!-- /carried -->\n\n"
-        "Trailing note.\n")
-    (r / "AGENTS.md").write_text("# Test repo\n\n<!-- constitution core -->\n<!-- /constitution core -->\n")
-    sync(r)
-    text = (r / "AGENTS.md").read_text()
-    c.ok("A red flag." in text, "the carried section did not reach AGENTS.md")
-    c.ok("Preamble that may be summarised away" not in text,
-         "AGENTS.md carries more than the marked section")
-    c.ok("Trailing note" not in text, "AGENTS.md carries more than the marked section")
-    c.ok(summary(sync(r)).get("linked") == 0, "carrying the core is not stable on a second run")
+    (r / ".agents/CONSTITUTION.md").write_text("# Constitution\n\n- **A red flag.** Never alone.\n")
+    p = mkprofile(r, "team")
+    ground = rel(r, mkrule(p, "always-on", "team-ground-rules.md",
+                           "---\nholds: for authors only\n---\n# Ground\n\nDates as DD.MM.\n"))
+    change = rel(r, mkrule(p, "on-demand", "team-change-rules.md"))
+    write_loader(r, always=[ground], rows=[("change a thing", f"`{change}`")])
+    (r / "AGENTS.md").write_text(MARKED_AGENTS)
     return r
 
 
+def personal_rules(r):
+    """A local profile with one always-on rule and one row of its own."""
+    mine = mkprofile(r, "mine", local=True)
+    own = rel(r, mkrule(mine, "always-on", "mine-own-rules.md", "# Own\n\nEstimate in pomodoros.\n"))
+    step = rel(r, mkrule(mine, "on-demand", "mine-step-rules.md"))
+    write_loader(r, always=[own], rows=[("review a thing", f"`{step}`")], local=True)
+    return mine
+
+
 @case
-def editing_the_constitution_updates_the_carried_copy(c):
-    r = make_repo()
-    (r / ".agents/CONSTITUTION.md").write_text(
-        "# Constitution\n\n<!-- carried -->\n- **First.**\n<!-- /carried -->\n")
-    (r / "AGENTS.md").write_text("# Test\n\n<!-- constitution core -->\n<!-- /constitution core -->\n")
-    sync(r)
-    (r / ".agents/CONSTITUTION.md").write_text(
-        "# Constitution\n\n<!-- carried -->\n- **First.**\n- **Second.**\n<!-- /carried -->\n")
+def the_carried_rules_reach_agents_md(c):
+    r = carried_repo()
     out = sync(r)
-    c.ok("- **Second.**" in (r / "AGENTS.md").read_text(),
-         "changing the constitution left the carried copy stale")
-    c.ok("AGENTS.md" in out.stdout, "the run did not say it had refreshed AGENTS.md")
+    text = (r / "AGENTS.md").read_text()
+    c.ok("A red flag." in text, "the constitution did not reach AGENTS.md")
+    c.ok("Dates as DD.MM." in text, "the always-on rule's text did not reach AGENTS.md")
+    c.ok("for authors only" not in text, "a rule's front matter was carried")
+    c.ok("| change a thing |" in text, "the table's row did not reach AGENTS.md")
+    c.ok(text.startswith("# Test repo\n\nOur own words.\n\n") and text.endswith("\n\nAfter.\n"),
+         "text outside the markers changed")
+    c.ok("carried AGENTS.md" in out.stdout, f"writing AGENTS.md was not reported:\n{out.stdout}")
+    again = sync(r)
+    c.ok((r / "AGENTS.md").read_text() == text and "carried" not in again.stdout,
+         "carrying is not stable on a second run")
+    c.ok(not (r / "CLAUDE.local.md").exists() and not (r / "AGENTS.override.md").exists(),
+         "a personal file was written with nothing personal to carry")
     return r
 
 
 @case
-def an_agents_md_without_markers_is_left_alone(c):
-    r = make_repo()
-    (r / ".agents/CONSTITUTION.md").write_text(
-        "# Constitution\n\n<!-- carried -->\n- **A red flag.**\n<!-- /carried -->\n")
+def editing_a_rule_updates_the_carried_copy(c):
+    r = carried_repo()
+    sync(r)
+    rule = r / ".agents/profiles/team/rules/always-on/team-ground-rules.md"
+    rule.write_text(rule.read_text() + "\nWeeks start on Monday.\n")
+    sync(r)
+    c.ok("Weeks start on Monday." in (r / "AGENTS.md").read_text(),
+         "changing a rule left the carried copy stale")
+    return r
+
+
+@case
+def an_agents_md_without_markers_is_reported_not_edited(c):
+    r = carried_repo()
     mine = "# My project\n\nMy own rules, my own file.\n"
     (r / "AGENTS.md").write_text(mine)
-    sync(r)
-    c.ok((r / "AGENTS.md").read_text() == mine,
-         "an AGENTS.md with no markers was edited anyway")
+    out = sync(r)
+    c.ok((r / "AGENTS.md").read_text() == mine, "an AGENTS.md with no markers was edited anyway")
+    c.ok("no <!-- carried rules --> markers" in out.stdout,
+         f"the missing markers passed silently:\n{out.stdout}")
     return r
 
 
 @case
-def a_constitution_without_markers_is_reported(c):
-    r = make_repo()
-    (r / ".agents/CONSTITUTION.md").write_text("# Constitution\n\nNothing marked here.\n")
-    (r / "AGENTS.md").write_text("# Test\n\n<!-- constitution core -->\n<!-- /constitution core -->\n")
+def personal_rules_are_carried_only_in_the_personal_files(c):
+    r = carried_repo()
+    personal_rules(r)
+    sync(r)
+    shared = (r / "AGENTS.md").read_text()
+    claude = (r / "CLAUDE.local.md").read_text() if (r / "CLAUDE.local.md").exists() else ""
+    codex = (r / "AGENTS.override.md").read_text() if (r / "AGENTS.override.md").exists() else ""
+    c.ok("pomodoros" not in shared and "review a thing" not in shared, "a personal rule reached AGENTS.md")
+    c.ok("pomodoros" in claude and "| review a thing |" in claude, "CLAUDE.local.md lacks the personal rules")
+    c.ok("A red flag." not in claude, "CLAUDE.local.md repeats what AGENTS.md carries")
+    c.ok("A red flag." in codex and "pomodoros" in codex,
+         "AGENTS.override.md lacks AGENTS.md or the personal rules")
+    ex = excludes(r)
+    c.ok("/CLAUDE.local.md" in ex and "/AGENTS.override.md" in ex, f"a personal file was not excluded: {ex}")
+    return r
+
+
+@case
+def check_carries_nothing(c):
+    r = carried_repo()
+    personal_rules(r)
+    out = sync(r, "--check")
+    c.ok((r / "AGENTS.md").read_text() == MARKED_AGENTS, "--check wrote AGENTS.md")
+    c.ok(not (r / "CLAUDE.local.md").exists() and not (r / "AGENTS.override.md").exists(),
+         "--check wrote a personal file")
+    c.ok("carried AGENTS.md" in out.stdout, f"--check did not say what it would carry:\n{out.stdout}")
+    return r
+
+
+@case
+def the_personal_files_let_go_when_nothing_personal_is_left(c):
+    r = carried_repo()
+    (r / "CLAUDE.local.md").write_text("A note of my own.\n")
+    mine = personal_rules(r)
+    sync(r)
+    c.ok("A note of my own." in (r / "CLAUDE.local.md").read_text(), "the carried block replaced my own note")
+    shutil.rmtree(mine)
+    (r / ".agents/.local/LOADER.md").unlink()
     out = sync(r)
-    c.ok("carried" in out.stdout, f"an unmarked constitution passed silently:\n{out.stdout}")
+    c.ok((r / "CLAUDE.local.md").read_text().strip() == "A note of my own.",
+         "the carried block stayed in CLAUDE.local.md, or took my note with it")
+    c.ok(not (r / "AGENTS.override.md").exists(), "a stale AGENTS.override.md was left for Codex to read")
+    c.ok("pruned  AGENTS.override.md" in out.stdout, f"removing the override was not reported:\n{out.stdout}")
+    return r
+
+
+@case
+def an_override_the_sync_did_not_write_is_left_alone(c):
+    r = carried_repo()
+    personal_rules(r)
+    theirs = "# My own override\n"
+    (r / "AGENTS.override.md").write_text(theirs)
+    out = sync(r)
+    c.ok((r / "AGENTS.override.md").read_text() == theirs, "an override the sync did not write was replaced")
+    c.ok("AGENTS.override.md is not the sync's" in out.stdout,
+         f"the foreign override passed silently:\n{out.stdout}")
     return r
 
 

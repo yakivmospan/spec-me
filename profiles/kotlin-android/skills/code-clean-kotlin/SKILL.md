@@ -46,6 +46,11 @@ description: Use after changing any Kotlin file and before reporting code work d
 - **Robust** — every failure and state handled; coroutine cancellation never swallowed.
 - **Android** — work lives as long as its owner; nothing slow on the main thread; the process can die
   any time.
+- **Wired, not hardcoded** — a dependency, or a value that differs by build type or environment, comes
+  in through the constructor and is chosen where the object is wired (the DI module), never hardcoded
+  in the class. An object lives as long as what it holds: one that keeps nothing between calls is
+  created per use (a DI factory); a single shared instance is only for one that holds state or must be
+  shared.
 - **Complete** — nothing the change orphaned or made untrue stays.
 
 ## Steps

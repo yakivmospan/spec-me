@@ -21,7 +21,7 @@ between files.
   profiles.** Anything else points at nothing once that profile is gone. What core needs to know about a
   profile — a word-budget exception, its own self-check — goes in that profile's `PROFILE.md`. A skill
   you cannot edit — a plugin's, or one that ships with the tool — gets its trigger line in a loader.
-  `AGENTS.md` is the root pointer, not a rule or skill.
+  `AGENTS.md` is the root, not a rule or skill; what it carries the sync writes from the loaders.
 - **Precedence lives only in `CONSTITUTION.md`'s *Which instruction wins*.** No rule or skill ranks
   itself against another; a code or docs skill carries the one line `templates/skill-template.md` opens
   with, word for word, and a skill that only reads and reports carries none.
@@ -40,7 +40,7 @@ between files.
 
 | The guidance is… | Kind | Placed by |
 |---|---|---|
-| A fact or constraint every task needs | Always-on rule — only if a task would go wrong without it | a line on the loader's always-on list |
+| A fact or constraint every task needs, with no single moment to read it at | Always-on rule — only if a task would go wrong without it; carried whole with every request | a line on the loader's always-on list |
 | Facts one kind of work needs, no procedure: a format, a style, a project's conventions | On-demand rule | a line at the loader step it serves |
 | A procedure, a checklist, or guidance a request should pull in | Skill | its description — plus one trigger line where work already under way must reach it |
 | Deep reading or a run whose raw output shouldn't reach the conversation | Agent, in `.claude/agents/` and `.codex/agents/` | its description, and the rule or skill that hands it work |
@@ -56,7 +56,7 @@ other rule is the same in every project that has it. `project-*` skills manage t
 
 | Part | Target |
 |---|---|
-| Always-on rule | Under 300 words a file. Every word loads every session. By convention it sits in `rules/always-on/`, which is how a new loader places it. |
+| Always-on rule | Under 300 words a file. Every word is carried with every request. By convention it sits in `rules/always-on/`, which is how a new loader places it. |
 | On-demand rule | Under 1,000 words |
 | Skill description | 70–100 words; Claude's limit is 1,024 characters |
 | Skill body | Under 1,000 words; 1,500 at most, examples included. The rest goes to one `reference.md`, only if a run needs it. |
@@ -80,7 +80,7 @@ line; the check allows only those. `scripts/skill_stats.py` counts skills, `wc -
 ## Writing a rule or skill
 
 1. **Read what's there:** `LOADER.md` and the local one, the always-on rules, every skill's description
-   (`python3 .agents/skills/project-create-rule-or-skill/scripts/skill_stats.py`), and the two or three files
+   (`python3 .agents/core/skills/project-create-rule-or-skill/scripts/skill_stats.py`), and the two or three files
    nearest this one — done when you can name anything already covering the same point. Something does:
    narrow the new one, or stop and ask whether to extend or merge. Changing a sibling needs the user's yes.
 2. **Pin the job down.** In one message, with your inference beside each: the kind (*The model*);

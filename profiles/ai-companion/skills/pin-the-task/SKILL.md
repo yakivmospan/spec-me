@@ -1,18 +1,18 @@
 ---
 name: pin-the-task
-description: Use when the user says "pin it", "pin the task", "pin and fold it", "unpin", "resume Task 1", or answers by a pinned id — "1.2 B", "resolve Task 1", "Task 1 rest as recommended" — and when answer-format-rules sends a reply here because it leaves two or more questions open. Keeps a pinned list of open tasks and questions at the end of every reply, updated as the user answers them in any order, so nothing asked earlier is lost up the chat. Not for a handoff to a new conversation (session-snapshot) or remembering a preference across sessions.
+description: Use when the user says "pin it", "pin the task", "pin and fold it", "unpin", "resume Task 1", "activate Task 1", "pin to file", "pin in chat", or answers by a pinned id — "1.2 B", "resolve Task 1", "Task 1 rest as recommended" — and when answer-format-rules sends a reply here because it leaves two or more questions open. Keeps a pinned list of open tasks and questions in PINNED.md or at the end of every reply, updated as the user answers them in any order. Not for a handoff to a new conversation (session-snapshot) or remembering a preference across sessions.
 ---
 
 # Pin the Task
 
-Keeps every open question in sight: a short pinned list under each reply, updated as the user answers
+Keeps every open question in sight: a short pinned list, in a file or under each reply, updated as the user answers
 in any order, one aside at a time. What goes wrong most: a pinned line long enough to wrap, and an
 item updated from a guess at what an aside meant.
 
 ## Non-negotiables
 
-- **While a pin is active, it ends every reply** — a short answer or a side question included — until
-  the user says "unpin".
+- **While a pin is active, every reply keeps it current** where its mode puts it (*Where the pin
+  goes*) — a short answer or a side question included — until the user says "unpin".
 - **Only the user's words close or change an item.** An aside that might touch one is asked about in a
   line, never applied on a guess.
 - **Ids never move.** A task keeps its number until it is unpinned; its items keep theirs, closed
@@ -27,7 +27,7 @@ reply — as a markdown task list so the boxes render:
 
 ```markdown
 ---
-*📌 Pinned — reply "3.2 B", "resolve Task 3", or "Task 3 rest as recommended"; a task's start: search "Task <number> starts"*
+*📌 Pinned — reply "3.2 B", "resolve Task 3", "activate Task 3", or "Task 3 rest as recommended"; a task's start: search "Task <number> starts"*
 
 *⚔️ Main quests*
 - *~~Task 1: pin-the-task skill~~ (closed — all ⭐; "show Task 1")*
@@ -40,8 +40,6 @@ reply — as a markdown task list so the boxes render:
 ---
 *🧭 Side quests*
 - *Task 2: Release checklist (folded — 2.1 A, 2 open; "resume Task 2")*
-
----
 ```
 
 - **Tasks:** each headed `Task N: {name}`, numbered from 1 across the pin in the order pinned. Items
@@ -49,8 +47,8 @@ reply — as a markdown task list so the boxes render:
 - **Two groups:** *⚔️ Main quests* — tasks the user pinned; *🧭 Side quests* — tasks pinned
   because a reply left questions open. A task stays in the group it started in.
 - **Inside a group:** its folded tasks first, closed and parked alike, one list item each; then its
-  open tasks. No separator inside a group: one separator line before each group and one after the
-  last. A group with no tasks is left out.
+  open tasks. No separator inside a group, one before each group, and none after the last: the pin
+  ends on its last task, in the file and in a reply. A group with no tasks is left out.
 - **Where a task started:** the reply that pins a task opens with `*📌 Task N starts here*`, so
   searching "Task 3 starts" jumps back to it. The pin never writes that phrase with a real number —
   it would match every pin — only the top line's `Task <number> starts`. The chat gives no link to an
@@ -72,6 +70,26 @@ reply — as a markdown task list so the boxes render:
   with what is decided and what is open: `*Task 3: Release checklist (folded — 3.1 A, 2 open;
   "resume Task 3")*`. Its closed items keep their picks while it is folded.
   "unfold Task N" or "resume Task N" opens it again, and resuming moves ▶ to its first open item.
+- **An active task** — "activate Task N" parks every other open task, opens Task N and moves ▶ to
+  its first open item, then prints it in the reply, in either mode: every item with its state and
+  pick, closed ones included, then one line on where it stands — what is done, what is next, what
+  waits on someone. A closed task prints the same way and stays closed.
+
+## Where the pin goes
+
+Two modes; **file** is the default. "pin to file" or "pin in chat" switches for the rest of the
+session and moves the current pin there; leaving file mode leaves `*📌 Nothing pinned*` in the file.
+
+- **File** — the pin, exactly as above but without the separator over its header, is the whole
+  content of `PINNED.md` in this skill's profile folder — a file that opens with `---` reads as front
+  matter, and a preview hides everything up to the next `---`: two folders above the skill's real folder, links followed. The profile's `.gitignore` keeps
+  it out of git. Write it with the file-editing tool whenever the pin changes. The reply ends instead
+  with one line naming the ▶ item — `*📌 PINNED.md — ▶ 3.2 · Who edits a stale spec*` — or
+  `*📌 PINNED.md — unchanged*`. `*📌 Task N starts here*` and the header stay in the chat.
+- **Chat** — the pin ends every reply.
+
+"unpin" in file mode leaves `*📌 Nothing pinned*` as the file's content; in chat mode, nothing ends
+the reply.
 
 ## The header
 
@@ -91,7 +109,7 @@ something outside the pin: `*📍 Working on: side question*`.
    fold it", pin it parked. On a reply that
    leaves two or more questions open: pin them as a new side quest, parked — the questions sit right
    above it; it unfolds when the user resumes it or answers one of its items. Done when the pin
-   ends that reply.
+   is where its mode puts it.
 2. **Every reply after** — map what the user said onto items: an id ("1.2 B"), "rest as recommended"
    (each open item in that task takes its ⭐), or plain words plainly about one item. Update the
    states, move ▶, add the header on a switch. Done when the pin matches everything said so far.

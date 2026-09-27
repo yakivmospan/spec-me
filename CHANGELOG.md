@@ -5,6 +5,59 @@ builder by hand can decide what to take.
 
 ## 0.5.0 — unreleased
 
+### The rules travel with every request
+- **The sync carries the rules into `AGENTS.md`.** Between its `<!-- carried rules -->` markers go the
+  constitution, each rule on the loader's always-on list, whole, and the loader's table. What only you
+  have goes to `CLAUDE.local.md` for Claude, and to `AGENTS.override.md` for Codex, which reads that file
+  instead of `AGENTS.md` and so holds both; both are kept out of git. `AGENTS.md` pointing at the
+  loaders for the agent to read first is gone, with the constitution's separate `<!-- carried -->` copy:
+  in behaviour runs a pointer was skipped every time, and text in front of the agent was followed.
+  Measured in fresh Claude Code sessions on Sonnet 5; after a compaction, and on Codex, it is untested.
+- **Always-on is only for a rule with no single moment.** Sensitive paths, file edits, second look
+  and spec builder moved to `on-demand/` and become loader rows at their moment — touching a file,
+  "do it" with no plan, spec work. Every rule as a row failed for the constitution and ground rules,
+  which have no moment to notice; as text they held at 100%.
+- **The carried section opens with an instruction** — follow the rules below, and open every file a
+  row names before answering, code only shown or proposed included. Opening with a note to its
+  editors instead, one take in six opened the code-style rule its row names; with the instruction,
+  nine in nine.
+- **`BEHAVIOUR-FINDINGS.md`**, not installed: every behaviour round behind this — setups, per-case
+  scores, costs, the suite's own flaws — and the conclusions, with what is parked until there is budget.
+- **A project taking this version** replaces the paragraphs telling the agent to read the constitution
+  and loaders with `AGENTS.seed.md`'s rules section — the instruction, then the marker pair; moves those four rules to
+  `on-demand/` and their loader lines from the always-on list into rows; moves the developer rule's
+  link to `builder-dev/rules/on-demand/` with a row in the local loader; deletes any
+  hand-written `CLAUDE.local.md` or `AGENTS.override.md` carrying rules; and runs the sync.
+
+### A snapshot any chat can follow
+- **`project-context-snapshot`, a core skill.** It condenses what is installed — the constitution,
+  every rule the loaders name, each profile's skills — and, by default, the project's specs into one
+  text a chat with no access to the repository can follow: a rule becomes its behaviour, a skill its
+  steps by hand, a step only a tool can take is left out or named. Scoped to the project, to named
+  profiles (from the builder too, when it is here), or to the specs alone; another skill can pass
+  its own scope. Made fresh every time, never stored in the profiles, so nothing it holds can drift;
+  `scripts/fingerprint.py` stamps it with one fingerprint of its sources, so a pasted copy can tell
+  when it is behind. It lives in core because it reads every profile, and no profile may.
+
+### A Claude project and a repository, kept in step
+- **`claude-project`, a profile, Claude only.** A claude.ai project keeps its material as files
+  named by their repository paths, and syncs both ways with the repository when its folder is
+  connected: each side's last Change history row, against one `SYNC.md` row per file, says which side
+  changed it, and a file changed on both is asked about. Connected, the project's chat works as an
+  agent in the repository does and saves to both sides at once. A project can start on either side,
+  or never have a repository.
+- **Sync happens on your word.** A connected chat compares and says what it found in one line — "3
+  files not pushed, the repository has 2 updates" — and moves files only on "push ideas", "pull
+  updates" or "sync".
+- **The Instructions are a snapshot, stamped.** The `claude-project-sync` skill makes them with
+  `project-context-snapshot` — core, `ai-companion` and `specs`, then the project's own part — and
+  records the stamp in `SYNC.md`, so a connected chat says when its pasted copy is behind. The
+  hand-written `setup.md` the project once read is gone; so is `CLAUDE-PROJECT-INSTRUCTIONS.md`,
+  which the profile replaces.
+- **The repository's side:** a rule, read before touching a file, that gives every edit to a synced
+  file its change row; and the skill's *Link this repo*, *Adopt what the project wrote* and *Check
+  sync*, with `sync_state.py` to build `SYNC.md` and find edits a sync would miss.
+
 ### Skills named for the moment you reach for them
 - `project-profile-sync` → **`project-sync-profiles-and-skills`**, `project-rule-skill` →
   **`project-create-rule-or-skill`**, `project-rule-verify` → **`project-resolve-conflicts`**,
@@ -61,6 +114,24 @@ builder by hand can decide what to take.
 - **A project taking this version** renames `.agents/.local/profiles/general/` (or the shared one) to
   `ai-companion/`, points its loader's always-on lines at the new paths, and runs the sync — which
   otherwise prunes those lines and reports the rules unplaced.
+- **`decipher-message` joins it.** Review threads between agents drift into shorthand no person can
+  follow: line counts, internal names, ids. The skill retells a comment, a report or a draft as what
+  is being asked and the answer, always beside the original so the reader picks which to use. It runs
+  when asked, or at a loader row placed where drafts are shown.
+
+### A second stack: TypeScript on Vue
+- **`typescript-vue`** — Vue 3 single-file components in TypeScript, on Vite and Vitest, in the shape
+  of `kotlin-android`: detection, the tool commands a permission list needs, and a code-style form
+  asking only what needs Vue or TypeScript to be true — component API, props and emits, shared
+  state, strictness flags, side effects and their cleanup, naming, import paths, and layer imports
+  where the source is layered, as in Feature-Sliced Design.
+- **`code-clean-typescript`** keeps `.ts` files and `.vue` components simple and idiomatic and sweeps
+  what a change left behind, with `stale_refs.py` finding imports of deleted files and exports
+  nothing imports. Vue-only cleanup — unused props, emits and components — is inside it rather than a
+  `code-clean-vue` beside it: one change touches both kinds of file, and two skills would split one
+  sweep.
+- **`vue-create`** is `compose-create`'s counterpart: where a page, component or composable goes,
+  typed props and emits, state hoisted into composables, accessibility, and a component test.
 
 ### A tool's skill gets a tool's profile
 - **`code-query-dependencies` moved from `general` to a new `graphify` profile.** It only works with
@@ -104,6 +175,62 @@ builder by hand can decide what to take.
   ticket is a claim to check, and a difference is named with an offer to fix the stale side — which
   side is wrong stays the user's call. It replaced *No guessing*'s one code-reading sentence.
   *Specs vs. code* in `spec-builder-rules.md` still governs edits.
+- **The behaviour suite runs against a real agent again.** Every headless take crashed as it saved
+  its transcript — `one_pass` named a results folder only `run()` knew — so no real run had ever
+  been recorded.
+- **`--compact` tests a real compaction.** `--load` asks the agent to read a list of files first,
+  and an agent skips a list it has no use for: a take at `--load 100` read 3 files and never
+  compacted, so every load number measured a fresh session. Each `--compact` take warms a session
+  up, compacts it with the agent's own command, then asks the case, and checks the agent's
+  compaction marker so a take that did not compact says so. The agent's session and compaction
+  flags live in `agents.toml`, so `run.py` still names no agent.
+- **`--fill 250k,500k,900k` tests a window that is really full.** The installed packages'
+  documentation is piped into the session as turns of its own until the agent's own report says the
+  window holds that many tokens; then the case is asked, or, with `--compact`, the session is
+  compacted first. A prompt argument tops out near a megabyte and a reading list is skipped, so
+  neither could fill a 1M window.
+- **The behaviour cases can fail without the setup.** A run with `AGENTS.md` cut off scored within a
+  few points of the full setup: most cases asked about the setup by name, so the agent opened the
+  file whatever had loaded, and one checked for a skill that no longer exists. Each rule case now
+  plants one distinctive fact in a real rule — a date format, a commit prefix, a logging function, a
+  sensitive file, an estimate unit — through a new `append` fixture, and asks for ordinary work only
+  that fact decides; "must not" checks are folded into their "must" check, so an empty answer scores
+  nothing. `requires` skips a case whose profile is not installed, and the Kotlin-only cases went.
+- **A test copy leaves out the linked builder and the suite's own results.** An agent under test with
+  edit permission could write into the builder's checkout through the link, and could read an earlier
+  take's answer from the results — which also made every copy slower as runs piled up.
+- **`AGENTS.md` no longer ships an empty constitution slot.** Its seed said the constitution's core
+  was carried below, but the constitution seed had no `<!-- carried -->` section, so every install
+  carried nothing, claimed otherwise, and warned on every sync. The slot and its paragraph are gone;
+  the sync still fills both marker pairs where a project adds them.
+- **Two files that differ are a conflict, never a finding with a side already picked.** An agent saw a
+  template lack a section the script reading it expected, took the changelog's word for which side was
+  right, called it a bug and proposed a fix — with no failure seen. *Code first* now names a changelog
+  and an old test among the claims to check, covers a file against the code reading it, says a warning
+  that two differ settles nothing, and calls something a bug only once it has been seen to fail. "Offer
+  to fix the stale side" went: it assumed the side was known.
+
+### The pin can live in a file
+- **`pin-the-task` gained a file mode, and it is the default.** In file mode the pin is written to
+  `PINNED.md` in the profile's own
+  folder, which a new `.gitignore` there keeps out of git. A reply ends with a line only when an item
+  was added or closed, so the chat shows what the list gained and finished; the header still says what
+  work moved to. "pin in chat" brings back the old behaviour for the session; "pin to file" returns.
+  An experiment: the default may flip once it has been used.
+- **"activate Task N"** parks every other open task, opens that one and prints it with where it
+  stands, so switching to a task no longer means reading the pin and the chat above it.
+- **The pin ends on its last task.** The separator line after the last group is gone.
+- **`PINNED.md` starts at the header, with no separator above it.** A file opening with `---` reads as
+  front matter, so a Markdown preview hid everything up to the next separator — the whole first
+  group of tasks.
+
+### A recommendation weighs both sides of a changed behaviour
+- **`answer-format-rules.md`'s *Choices* gained a paragraph** for a change that disagrees with what
+  came before. An agent answering a review recommended keeping a behaviour the change had broken by
+  mistake: it read the comment, doc and spec lines written in that same change as the intent, took the
+  old tests as merely stale, and broke the tie on "smallest change". Either side can be the mistake,
+  so the agent now weighs what backs each, says which it leans to and why, and asks where nothing
+  settles it. Being smaller or already written is never the reason.
 
 ### A spec is checked against its code before a change moves it in
 - **`spec-create` gained a step for a *Change*:** when the spec's owned code has commits after its
@@ -135,10 +262,8 @@ builder by hand can decide what to take.
   either profile declaring it.
 
 ### The same habits in a claude.ai project
-- **`CLAUDE-PROJECT-INSTRUCTIONS.md`** rebuilds a Claude project's Instructions from the constitution,
-  the ground rules, `ai-companion` and your own preferences, as one self-contained document, and
-  lists what changed since the last one. A chat project reads no files, so the builder is the source
-  and the Instructions are its copy.
+- **A claude.ai project gets the same habits through `claude-project`** (*A Claude project and a
+  repository, kept in step*): its Instructions are a stamped snapshot of the setup.
 - **The chat keeps the project's files in the shape `.specs/` has** — an `INDEX.md`, the product
   spec, a spec per feature, material named by its future repository path, an inbox for what has no
   home — and saves only what the user asks to save. A product started in chat moves into a
@@ -162,6 +287,16 @@ builder by hand can decide what to take.
 - **`code-clean-kotlin` takes "clean up this branch" and leaves merge request reviews** to the review
   profile. "Review this code" matched both it and `code-change-review`, and its first step turned a
   branch diff away as another skill's job — so a cleanup of a branch's changes had no home.
+- **`code-clean-kotlin` gained *Wired, not hardcoded*.** A value that differs by build type comes in
+  through the constructor, chosen in the DI module, and an object that keeps nothing between calls is
+  registered per use rather than as one shared instance. Both came up as review fixes: a list picked
+  inside a class could not be tested per build type, and a stateless helper was made a singleton.
+
+### The review skill asks less
+- **`code-change-review`: one yes covers posting and reading back what landed**, so the user is not
+  asked twice for one action. A gathering step's shell reads go in one command, with the forge's
+  command-line tool in its own, since mixing them turns every read into a prompt. A posted comment
+  opens with "AI Review", or "Self AI Review" only on the reviewer's own request.
 
 ### Commit messages say what changed without the diff
 - **The workflow rule's commit format gained a default shape**: the subject says what the change
@@ -326,6 +461,35 @@ builder by hand can decide what to take.
 
 `SETUP.md` runs more than once. A profile written after a project was set up can now reach that
 project: drop the builder back in and run the prompt again.
+
+Found by installing the builder into a real project:
+
+- **The engine's install table said core's skills land in `.agents/skills/`**, and runner in
+  `.claude/agents/` — the linked paths, not where the files go. Following it put the skills where the
+  sync script could not be run from. It now matches the README tree: `.agents/core/skills/` and
+  `.agents/core/agents/`, linked by the sync, and `.agents/core/tests/`, which it had left out.
+- **The last `.agents/skills/project-…` commands moved to `.agents/core/skills/…`** — the settings form,
+  `project-test-setup`, `project-resolve-conflicts`, `project-create-rule-or-skill` and its script. The
+  permission entry has to match the command a skill prints, or every run asks.
+- **`specs` declares `core` under `## Requires`.** It runs the engine's map script by path, which
+  `project-test-setup` reports until the dependency is written down; the section was there, under
+  another heading.
+- **`SETUP-DEV.md` places the developer rule.** Linking it was not enough: the sync places always-on
+  rules only when it starts a loader, so the rule was reported unplaced and never loaded. Switching back
+  runs the sync, which drops the line.
+- **`test-plan-manual`'s description is back under 100 words.**
+- **`validate_inventory.py` finds the project through a linked builder.** It resolved its own path
+  before asking git for the repository, so with `.agents/builder` a link to the builder's checkout,
+  Step 0 inventoried the builder and reported the setup missing. It now takes the folder holding the
+  `.agents/` it was called through, and asks git only when there is none.
+- **The map seed has rows for `code-change-review`, `pin-the-task` and `decipher-message`.** The sync
+  reported all three as unmapped on every fresh install.
+- **The sync skill said a profile's form is answered into `.agents/core/rules/`**, the rule this
+  version retired; `SETUP.md`, the install notes and every script answer it where it sits. The skill,
+  a docstring and two test comments now say so.
+- **`.specs/README.md` says where reference material goes.** Every Markdown file under `.specs/` is
+  read as a spec, so research, logs and legal notes put there were reported as specs with no
+  frontmatter. They live outside `.specs/`, and a spec points at them under References.
 
 ### Two modes, one prompt
 - **Step 0 reads the project's state** instead of stopping. Four outcomes: *Empty*, *Foreign*

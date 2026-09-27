@@ -38,6 +38,10 @@ Validation runs in an isolated copy, never in the author's checkout.
 - ANY write — a comment, a reply, a resolve, an approval, a label, a merge, a tracker transition —
   requires an explicit ask first, showing the exact body and anchor of every item, and posting only
   what the user selects. Never post then ask; rewording something posted earlier counts.
+- **One approval covers the verification that follows it.** A yes to posting is also a yes to reading
+  back what landed: the re-list, the final anchor table, the per-thread `resolved` values. Posting and
+  proving what was posted are two halves of one action, and asking again in between teaches the user
+  to skim the asks. It buys nothing either, since the read-back was already free under the first rule.
 
 ## Review manifest, captured before any code is judged
 
@@ -116,9 +120,9 @@ One finding per comment. Every part below that has something to say, and no more
 - **Possible fix:** the smallest change. **Possible improvement:** where nothing is broken.
 ```
 
-- Open every posted comment with `> 🤖 **Self AI Review**`, a block quote on a line of its own.
-  Below it the category prefix is the only heading. No praise boilerplate, no severity rationale:
-  both live in the report.
+- Open every posted comment with `> 🤖 **AI Review**`, a block quote on a line of its own, and
+  `> 🤖 **Self AI Review**` only where the request is your own. Below it the category prefix is the
+  only heading. No praise boilerplate, no severity rationale: both live in the report.
 - Friendly and direct: first person for what you did, second person for what the author decides.
   Whoever uses the product is "the user", never "you", and their actions are named as the events they
   are ("user switched"), never narrated as instructions. "Possible" softens the remedy, never the
@@ -149,7 +153,13 @@ Where a Required or Must-to-have fix is small and self-contained, prefer a sugge
 
 1. **Gather, read-only.** The diff in context; the ticket, its criteria and sibling tickets that might
    overlap; the requirement documents the project names; the baseline files at the target revision. In
-   request mode also the existing threads and the pipeline.
+   request mode also the existing threads and the pipeline. **Put the shell reads of one step in a
+   single command,** separated by an `echo` naming each: a gathering step is a dozen small reads, and
+   one approval to read is worth the same as a dozen while costing the user eleven fewer prompts.
+   **Keep the forge calls out of that command.** Where the project asks before each use of the forge's
+   command-line tool, a compound command mixing it with file reads needs approval as a whole and turns
+   every read into a prompt, which is the opposite of the point. Reads in one command, the forge tool
+   in its own.
 2. **Business lane.** One row per scope item and per criterion: Done, Partial, Missing or Beyond
    scope, each with evidence. Name every overlap with another ticket.
 3. **Technical lane**, in this order: correctness and concurrency (walk every mutation site before
@@ -167,7 +177,8 @@ Where a Required or Must-to-have fix is small and self-contained, prefer a sugge
 7. **Approval gate.** Present the exact bodies and anchors and ask which to post. Default: Required yes, Must to have yes unless the change is time-critical, Cosmetic no.
 8. **Post, then verify.** Inline threads on the diff line, at most one top-level note. Re-list them
    afterwards and show the final anchor table. Report outcomes faithfully, partial failures included.
-   Then tick `Self AI Reviewed` in the request's description, naming the lanes and their models.
+   Then tick `AI Reviewed` in the request's description (`Self AI Reviewed` where it is your own),
+   naming the lanes and their models.
 
 ## Close-out checklist
 

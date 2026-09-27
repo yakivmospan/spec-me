@@ -12,10 +12,12 @@ level) and neither finds a nested folder, so nothing is visible until this links
 The loaders are the project's own files, edited by hand: `.agents/LOADER.md`, committed, names only
 what every clone has; `.agents/.local/LOADER.md` is one person's and adds to it. Each is an always-on
 list, then steps, top to bottom — what to read and what to run before each kind of work. The line order
-is the order. The script keeps them honest and decides nothing about where a line goes: it starts a
-missing loader with the always-on rules placed by their folder, removes a line whose file is gone, and
-warns about the rest. Placing is judgement, so it is yours, with the user (*Place what the loaders
-miss*).
+is the order. The script carries both to the agent with every request: the constitution, each always-on
+rule whole and the shared table into `AGENTS.md`, between its `<!-- carried rules -->` markers, and
+what only one person has into `CLAUDE.local.md` and `AGENTS.override.md`. It keeps them honest and
+decides nothing about where a line goes: it starts a missing loader with the always-on rules placed by
+their folder, removes a line whose file is gone, and warns about the rest. Placing is judgement, so it
+is yours, with the user (*Place what the loaders miss*).
 
 ## Non-negotiables
 
@@ -26,8 +28,10 @@ miss*).
   symlinks are unavailable. Anything else there is someone's, and it is reported, not overwritten.
 - **A `.seed.` file is never linked.** Its answer describes this repository, so it belongs to the
   project, not to the profile. Answer it into place as a real file.
-- **The script edits no file's contents** beyond starting a missing loader and removing a loader line
-  whose file is gone. Every other change to a loader is a line you propose and the user confirms.
+- **The script edits no file's contents** beyond starting a missing loader, removing a loader line
+  whose file is gone, and writing the carried rules between their markers — and `AGENTS.override.md`
+  whole, only when it wrote that file. Every other change to a loader is a line you propose and the
+  user confirms.
 - **A clash is never settled quietly.** Where two things want one name, the first in a fixed order
   wins — core, then the shared profiles by name, then your own — and every other claimant is
   printed with the ways out. The order is fixed so that two runs on one tree agree, and so that
@@ -58,16 +62,18 @@ python3 .agents/core/skills/project-sync-profiles-and-skills/scripts/build_setup
 | `… runs the \`x\` skill, which is not installed` | propose installing the profile that brings it, or deleting the line |
 | `… which only you have — move that line` | a shared loader line names a local rule or skill; propose moving it to `.agents/.local/LOADER.md` |
 | `… declares \`load-when:\`` | a key nothing reads any more; propose deleting it — a loader line decides when |
+| `carried …` | nothing — what every request carries was rewritten from the loaders and the rules they name |
+| `AGENTS.md has no <!-- carried rules --> markers` | no rule reaches the agent with every request; propose adding the pair under `AGENTS.md`'s rules section, and add it on a yes |
+| `AGENTS.override.md is not the sync's` | Codex reads that file instead of `AGENTS.md`, so it misses the carried rules; tell the user, and move theirs aside only on a yes |
 
 Only `seed` and the loader warnings need a person. Everything else is the folder telling the truth:
 what is there is installed, what is gone is gone.
 
-**One exception, and it is deliberate.** A profile's `.seed.` form is answered out of the folder —
-into `.agents/core/rules/`, usually — and that answer describes this repository, so it is the
-project's from then on. Deleting the profile takes its skills, agents and loader lines; it does not
-take that answer, which keeps loading. Nothing here deletes your writing for you. `project-test-setup`
-lists any answer whose profile has gone, under *Answered here, by a profile that is no longer
-dropped in*, so the choice is yours and visible.
+**A form stays with its profile.** A profile's `.seed.` form is answered where it sits, inside the
+profile, with the marker dropped — so deleting the folder takes the answer with its skills, agents
+and loader lines. No profile writes into `.agents/core/rules/`; the engine's own forms are answered
+there once, by the setup. `project-test-setup` still lists an answer whose profile has gone, under
+*Answered here, by a profile that is no longer dropped in*, as a net.
 
 ## Place what the loaders miss
 
@@ -77,8 +83,9 @@ For each `unplaced` rule:
    a rule under `.agents/.local/`. Note what work the rule is for, and the steps already there.
 2. **Propose one line** — the step, reusing an existing one where the rule serves the same work, or new
    wording in the loader's own style ("Before you…"); and where it goes in the order, named by the line
-   it follows. Within a step, shared lines come before local ones. An always-on rule goes on the
-   always-on list.
+   it follows. Within a step, shared lines come before local ones. Only a rule with no single moment
+   goes on the always-on list, because it is carried whole with every request; a rule tied to a kind
+   of work is a row, even where its folder is `always-on/`.
 3. **Ask the user**, all the proposals in one message, and **write each on a yes** — the user's
    wording where they change it. A rule the user declines stays unplaced, and the next run says so
    again.

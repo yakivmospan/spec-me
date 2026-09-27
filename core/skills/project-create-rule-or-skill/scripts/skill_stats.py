@@ -6,7 +6,7 @@ Stdlib only. Reads `.agents/skills/*/SKILL.md`, following links, so user-only sk
 same as `wc -w`: the description, and the body below the frontmatter with examples included.
 
 Usage:
-    python3 .agents/skills/project-create-rule-or-skill/scripts/skill_stats.py [--repo-root <path>] [name ...]
+    python3 .agents/core/skills/project-create-rule-or-skill/scripts/skill_stats.py [--repo-root <path>] [name ...]
 """
 
 from __future__ import annotations
