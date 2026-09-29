@@ -1,4 +1,4 @@
-# Documentation
+# Code documentation
 
 On demand: read before writing or changing production code. What to run before the work is done, so
 the documentation changes with the code in the same step.

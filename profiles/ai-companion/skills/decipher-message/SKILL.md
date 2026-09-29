@@ -1,6 +1,6 @@
 ---
 name: decipher-message
-description: Use when the user says "I don't understand this", "decipher", "in plain words", "explain like a person", "what are they asking" or "what does this comment mean" about a review comment, an agent's report or your own draft, and when a loader line sends a drafted review comment or reply here before the user sees it. Rewrites it as what is being asked and the answer, in everyday words, printed beside the original. Not for explaining what code does, or writing a review reply from scratch.
+description: Use when the user says "I don't understand this", "decipher", "in plain words", "explain like a person", "what are they asking" or "what does this comment mean" about a review comment, an agent's report or your own draft, and when a loader line sends a drafted review comment, reply or spec text here before the user sees it. Rewrites it as what is being asked and the answer, in everyday words, printed beside the original. Not for explaining what code does, or writing a review reply from scratch.
 ---
 
 # Decipher a message

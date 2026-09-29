@@ -1,6 +1,6 @@
 ---
 name: test-plan-manual
-description: Use when asked to "write a test plan", "make a manual test plan", "turn this runbook into a test plan", or when a task's only proof needs a real MR, tag push, device or registry that can't run in this session — turns a checklist someone has to run by hand into a numbered, checkboxed list of test cases: Preconditions, Steps, Expected, an optional Result, and, where an implementation-plan.md exists, the task it closes. Also when someone reports a run ("TC-4 failed: …") — records it under that case. Not for automated tests or writing an implementation plan.
+description: Use when asked to "write a test plan", "make a manual test plan", "turn this runbook into a test plan", or when a task's only proof needs a real MR, tag push, device or registry that can't run in this session — turns checks someone runs by hand into numbered, checkboxed test cases: Preconditions, Steps, Expected, an optional Result, and, where one exists, the implementation-plan task it closes and the e2e test already running it. Also when someone reports a run ("TC-4 failed: …") — records it under that case. Not for writing automated tests or an implementation plan.
 ---
 
 # Manual Test Plan
@@ -21,6 +21,9 @@ and get reported on one at a time.
   else in this plan restates that task's content.
 - **No `.specs/` required** — a repository with no implementation plan gets the same cases with no
   `Closes:` line.
+- **The plan is the whole checklist, automated or not** — a case an e2e test already runs stays in it
+  as a case a person can run, with `Automated:` naming that test, so the plan can double-check the
+  automation or go to QA as it is. Beside them, every case automation can't reach or doesn't cover yet.
 - **The checkbox follows the latest run; Result is optional** — `[x]` once the latest run passed,
   `[ ]` while it fails or hasn't run. **Result** is added only when a run has something worth keeping:
   a failure, a partial pass, a note or the builds it ran on. It holds one sub-bullet per such run,
@@ -35,12 +38,14 @@ Copy `templates/manual-test-plan.md` beside this file, never write from memory:
    - **Steps:** {what the person does}
    - **Expected:** {what tells them it passed}
    - **Closes:** {the task(s) it confirms — omit where there's no plan}
+   - **Automated:** {the e2e test that runs this case — omit where none does}
    - **Result:** {optional — only once a run has something worth keeping; one sub-bullet per run}
      - {date}, {builds or versions under test}: {pass | fail | partly}. {what happened}
 ```
 
 ## Writing cases
-1. Read the runbook, or the plan's unticked "verify for real" tasks — one case per Check.
+1. Read the runbook, or the plan's unticked "verify for real" tasks — one case per Check — and the
+   project's e2e tests for the same feature: each journey one runs becomes a case with `Automated:`.
 2. Name what actually changed hands — a tag, a version, a job, a file path — never "the module" or
    "it".
 3. A Steps or Expected field that already reads as more than one clause splits onto its own

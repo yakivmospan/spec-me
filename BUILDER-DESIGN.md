@@ -587,30 +587,21 @@ The common case, and the one that shapes the most.
   - **Because** `.local/` holds what a person writes, and `.cache/` what a script regenerates
 
 ### A Claude project
-- **A claude.ai project reads this setup as a snapshot pasted into its Instructions, stamped; the
-  repository's `SYNC.md` records the stamp, and a connected chat says when its copy is behind**
-  - **Instead of** a condensed `setup.md` the project syncs and reads, a builder file rebuilding the
-    Instructions by hand, or a ready-made snapshot kept in the builder
-  - **Because** Instructions are what a project chat always has in front of it, even with no folder
-    connected, while a synced file is only read when the chat thinks to. Made fresh by
-    `project-context-snapshot`, nothing is stored that could drift from the rules it came from, and
-    the fingerprint turns "is it behind?" into a comparison. A project with no repository gets the
-    same text from the builder's profiles
-- **Sync moves files only on the user's word — "push ideas", "pull updates", "sync"; a connected
-  chat compares and says what it found**
-  - **Instead of** syncing at the start of every connected chat
-  - **Because** a chat opened to think something through should not start by moving files, and the
-    one-line notice keeps nothing hidden
-- **The snapshot's recipe lives with the profile that uses it: `claude-project-sync` names the
-  profiles — core, `ai-companion`, `specs`, no project overview — and adds the project's own part**
-  - **Instead of** core knowing which profiles each consumer wants, or each profile keeping its own
-    chat version
-  - **Because** core may not name a profile, and a stored chat version drifts from the rules it
-    retells. The specs' content reaches the project by sync, so the overview would only repeat it
-- **The repository's rule is a row, read before touching a file, not always-on**
-  - **Instead of** always-on, as first proposed
-  - **Because** its moment is concrete — an edit to a synced file — and the behaviour runs showed a
-    row with a concrete moment is followed, at no cost to a request that edits nothing
+- **A claude.ai project's Instructions are one hand-kept file, `ai-companion`'s
+  `CLAUDE-PROJECT-INSTRUCTIONS.md`, changed when the user asks**
+  - **Instead of** a `claude-project` profile: a snapshot of core, `ai-companion` and `specs` made
+    fresh and stamped by `claude-project-sync`, pasted with a project part, and two-way sync of spec
+    files through a `SYNC.md` row per file and a rule giving every edit a change row
+  - **Because** the snapshot came to over 8,000 words and the sync needed a table, a script and a rule
+    that clashed with the spec rules' Change history. The user preferred a short text they own and
+    update on request, and accepts that it can fall behind the rules it retells
+  - **Replaced 2026-09-27:** the snapshot, stamp and sync of the `claude-project` profile, and its
+    rule read before touching a file
+- **Files move one way each: specs and docs to the project as read-only copies, ideas to the
+  repository's `.claude-project/IDEAS.md`, both on "scan" in the project chat**
+  - **Instead of** the project editing its spec copies and writing them back
+  - **Because** one way each leaves nothing to reconcile, and an idea reaches the specs through the
+    repository's own spec skills
 
 ### The spec lifecycle
 - **The specs describe themselves: `.specs/README.md` says how to find, read and change one, following

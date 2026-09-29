@@ -8,6 +8,7 @@ reach.}}
    - **Steps:** {{what the person does}}
    - **Expected:** {{what tells them it passed}}
    - **Closes:** Task {{N}}. <!-- omit this line where there's no implementation-plan.md -->
+   - **Automated:** `{{TestClass}}` — `{{test name}}` <!-- omit this line where no e2e test runs this case -->
    <!-- - **Result:** optional, added once a run has something worth keeping; one sub-bullet per run:
           - {{date}}, {{builds under test}}: {{pass | fail | partly}}. {{what happened}} -->
 

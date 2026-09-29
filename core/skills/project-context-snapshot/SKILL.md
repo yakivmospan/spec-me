@@ -1,6 +1,6 @@
 ---
 name: project-context-snapshot
-description: Use when asked to "snapshot the project", "make a context snapshot", "give me instructions I can paste into another chat", "snapshot" a named profile, "snapshot the specs", or when another skill passes a scope — condenses the setup installed here (the constitution, core's rules, each profile's rules and skills) and, where asked, this project's specs into one short text any chat or agent can follow without the repository, with a stamp that shows when it is behind. Not for handing over this conversation, writing a README, rebuilding the spec overviews, or a claude.ai project's Instructions, which its own profile's skill makes.
+description: Use when asked to "snapshot the project", "make a context snapshot", "give me instructions I can paste into another chat", "snapshot" a named profile, "snapshot the specs", or when another skill passes a scope — condenses the setup installed here (the constitution, core's rules, each profile's rules and skills) and, where asked, this project's specs into one short text any chat or agent can follow without the repository, with a stamp that shows when it is behind. Not for handing over this conversation, writing a README, rebuilding the spec overviews, or a claude.ai project's Instructions, which are kept by hand.
 ---
 
 # Project context snapshot

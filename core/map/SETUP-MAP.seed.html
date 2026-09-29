@@ -811,12 +811,6 @@
           <td class="num" data-wc=".agents/core/rules/on-demand/project-sensitive-paths-rules.md">0</td>
         </tr>
         <tr>
-          <td class="file">on-demand/claude-project-rules.md</td>
-          <td><span class="tag t-cond">conditional</span></td>
-          <td>Optional, with <code>claude-project</code>. Before touching a file, from its row. An edit to a file <code>SYNC.md</code> lists gets its change row, so a sync can see it.</td>
-          <td class="num" data-wc=".agents/profiles/claude-project/rules/on-demand/claude-project-rules.md">0</td>
-        </tr>
-        <tr>
           <td class="file">on-demand/project-code-style-rules.md</td>
           <td><span class="tag t-cond">conditional</span></td>
           <td>Optional, seeded from the stack profile. Before production code, from <code>LOADER.md</code>. This project's conventions, where a reasonable general answer would be wrong.</td>
@@ -1043,10 +1037,10 @@
           <td class="num" data-wc=".agents/skills/decipher-message/SKILL.md">612</td>
         </tr>
         <tr>
-          <td class="file">claude-project-sync</td>
+          <td class="file">write-summary</td>
           <td><span class="tag t-cond">on request</span></td>
-          <td>Optional, with <code>claude-project</code>. The Instructions to paste into a claude.ai project, stamped; <code>.claude-project/SYNC.md</code> built and checked; what the project wrote turned into proposals.</td>
-          <td class="num" data-wc=".agents/skills/claude-project-sync/SKILL.md">0</td>
+          <td>Optional. A summary of whatever you name — open questions, decisions, how something works today — from the specs, the code and the conversation, in plain words for its reader, handed over as a file and stored nowhere.</td>
+          <td class="num" data-wc=".agents/skills/write-summary/SKILL.md">900</td>
         </tr>
         <tr class="group"><td colspan="4">Subagents — fresh context, report back</td></tr>
         <tr>

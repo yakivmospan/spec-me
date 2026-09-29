@@ -3,6 +3,86 @@
 What each builder version brings, in prose, and why — so a project comparing itself with a newer
 builder by hand can decide what to take.
 
+## 0.5.2
+
+### A summary of anything, ready to send to another team
+- **`ai-companion` has `write-summary`,** which writes a summary of whatever the user names — open
+  questions, decisions, how something works today, the cases a team must handle — from the specs, the
+  code and the conversation. It first offers to write into the specs any decision the conversation made
+  but the specs don't hold yet, checks every claim in the code, groups open questions by who has to
+  answer, runs `decipher-message` on its draft, and scans out every internal name before handing the
+  file over. It stores nothing in the project unless asked: a summary kept beside the specs goes stale,
+  and one written from the specs alone misses what was decided since.
+
+### Designs that fit the system, before the user has to steer them
+- **`ai-companion` has `design-quality-rules.md`,** an on-demand rule read before proposing, comparing
+  or reviewing a design: map the flow and the pieces the codebase already has first, design for the
+  kind when a second case is known, keep shared types general, wire the way the codebase wires, give
+  each concern its own home, and recommend the lasting option — a shortcut named as one, taken only
+  when the user picks it. Without it, an agent proposed before it understood the system and reached
+  for the smallest change, and the user had to lead every design step.
+
+### Checks a person clicks through on a device can run by themselves
+- **`testing` has `test-e2e`,** for a user journey on a real device, an emulator or a car: it writes
+  UiAutomator tests in a test-only module that instruments itself, so a test can stop and clear any app
+  it drives, and runs them over adb with no IDE, on screen for anyone who wants to watch; or it drives
+  the device over adb through a manual test plan's cases. Nothing is mocked, backend writes stay on a test account, and a
+  run is reported with each failure's output.
+- **`test-plan-manual` lists automated cases too,** each with an `Automated:` line naming its test, so
+  one plan can double-check the automation or go to QA as it is.
+
+### Spec text gets its plain version too
+- **`decipher-message` also takes spec text you wrote or changed,** and `ai-companion`'s card says so:
+  its loader row can cover a spec draft beside a review comment, so what a spec says in plain words is
+  shown before the user agrees to it.
+
+### Write-ups for other people read as facts, not findings
+- **`documentation` has `docs-writeup-rules.md`,** an on-demand rule for a document other people read or
+  act on: an analysis, a proposal, a write-up to turn into tasks. It asks for a Markdown file, plain
+  facts with no word that blames another team, only what helps understand the problem or choose a fix,
+  outcomes said in words with a link to the question they depend on, and sources the team can open.
+  Written the way a report to an agent reads, such a document was long, judged other teams' work and
+  sent the reader hunting for "option C".
+
+### A Claude project gets one short, hand-kept file
+- **`claude-project` is gone; `ai-companion` has `CLAUDE-PROJECT-INSTRUCTIONS.md`.** About 1,000
+  words to paste into a claude.ai project's Instructions: the working principles, how a reply reads,
+  choices, a second look, plain words, the project's files, and "scan". It is kept by hand and changed
+  when you ask. Specs and docs go to the project as read-only copies; ideas come back to
+  `.claude-project/IDEAS.md`, for the spec skills to take in. Gone with the profile: the stamped
+  snapshot, `claude-project-sync`, `SYNC.md`, `sync_state.py` and the rule giving every edit a change
+  row.
+
+### The companion's card places its rules where its table does
+- **`ai-companion/PROFILE.md`'s *To place it* no longer puts all three rules on the always-on list.**
+  Its own table had moved the file-edits and second-look rules to on-demand rows in 0.5.0; the line
+  below it still said always-on, so a project placing the profile by its card undid the move.
+
+### Ninja mode keeps the AI out of sight
+- **`ai-companion` has `ninja-mode-rules.md`,** an on-demand rule a project turns on with one row in
+  the local loader, at "write a commit message, or draft or post anything bound for a forge or
+  tracker". With it placed, nothing that leaves the machine shows AI help unless the user says yes:
+  no box or line saying an AI reviewed or wrote it, no provenance mark or badge, no machine label such
+  as a review's severity prefix, and nothing naming a model or tool. Commit and request trailers stay
+  with the workflow rules' *Attribution* row, which already bans them. Some people work where showing
+  AI help is unwelcome, and attribution added by default is something they have to strip by hand
+  from every commit and thread. It is one person's choice per project, so it lives in their local
+  loader, not in a shared form.
+- **No other profile knows about it.** The rule strips what any skill, template or tool default adds,
+  by kind rather than by name, and wins because a project's rules outrank skills under *Which
+  instruction wins*. A skill keeps its own marks and labels, so a project without the rule is
+  unchanged, and removing `ai-companion` leaves nothing behind in another profile.
+
+### Work in a constructor, only for an observer
+- **`code-clean-kotlin` says when `init` may start work**: the work is the object's whole purpose,
+  runs in a scope passed in, is cheap and invisible, and touches only state already set up. Anything
+  else starts on demand. It came from a listener bridge whose mock side had to start at construction
+  to avoid missing a change, while its real side, which may one day cost a connection, had to start
+  only when someone listens.
+- **A single guard may stay in a lambda.** *Flat lambdas* moved every branch out to a named function,
+  which turned a one-line "pass it on unless mocked" wrapper into a jump to a function holding that
+  same line. One `if` with no `else` and no braces, around one call, now stays where it's read.
+
 ## 0.5.0 — unreleased
 
 ### The rules travel with every request
@@ -94,10 +174,10 @@ builder by hand can decide what to take.
 
 ### Documentation became a profile of its own
 - **`documentation` holds `docs-incode` and `docs-readme`,** moved out of `general`, and
-  `docs-rules.md`, the on-demand rule that runs them before code work is reported done and when a
+  `docs-code-rules.md`, the on-demand rule that runs them before code work is reported done and when a
   change renames something a README names. In `general` they ran only when a request matched them,
   which is the route real sessions skipped mid-work; a rule read at that step is the route they
-  followed. Place `docs-rules.md` after a stack's code-style rule in the same loader row, so the
+  followed. Place `docs-code-rules.md` after a stack's code-style rule in the same loader row, so the
   code is cleaned up before its comments are fixed. The `docs-incode` line follows the tested
   pattern but was not itself tested.
 - **The builder's `README.md` describes the builder again.** It had been overwritten with a copy of

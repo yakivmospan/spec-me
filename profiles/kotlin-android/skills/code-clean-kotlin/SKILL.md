@@ -21,7 +21,9 @@ description: Use after changing any Kotlin file and before reporting code work d
   `utils`, `helpers`); a sub-package holds several related files, not one or two.
 - **Follow Kotlin idioms, not Java habits** — only what the project's Kotlin version supports.
 - **Flat lambdas** — a lambda holds one expression; a branch or several statements inside one (`collect`,
-  `let`, `onSuccess`, …) move to a named private function, so a chain reads one step per line. Builder and
+  `let`, `onSuccess`, …) move to a named private function, so a chain reads one step per line. A single
+  guard — one `if` with no `else` and no braces, around one call — may stay:
+  `Listener { v -> if (!isMocked) target.on(v) }`. Builder and
   DSL blocks — `apply`, a Koin `module`, Composable content, a test body — are exempt. An expression body
   ending in a multi-line trailing lambda starts on the signature line — `fun x(): T = call(a) { p ->` —
   rather than breaking after `=`. A function whose whole body is one expression — any call, with or without a
@@ -46,6 +48,12 @@ description: Use after changing any Kotlin file and before reporting code work d
 - **Robust** — every failure and state handled; coroutine cancellation never swallowed.
 - **Android** — work lives as long as its owner; nothing slow on the main thread; the process can die
   any time.
+- **Work starts in `init` only for an observer** — only when all four hold: the work is the object's
+  whole purpose; it runs in a scope passed in, so cancelling that scope stops it and nothing is told
+  "start" or "stop"; it is cheap and invisible — no I/O, network, binder call or throw, which start on
+  demand instead; and it touches only state already set up — no `open` or `abstract` call, no `this`
+  handed out, easiest in a `final` class. A test passes its own scope and calls `runCurrent()` after
+  building it.
 - **Wired, not hardcoded** — a dependency, or a value that differs by build type or environment, comes
   in through the constructor and is chosen where the object is wired (the DI module), never hardcoded
   in the class. An object lives as long as what it holds: one that keeps nothing between calls is
