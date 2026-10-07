@@ -1,7 +1,7 @@
 # testing
 
-How tests get written here: unit tests in isolation, integration tests across real components,
-end-to-end tests on a real device — written, or driven over adb from a manual plan — and manual test
+How tests get written here: unit tests in isolation, integration tests across real components, UI
+tests of a screen against a mocked ViewModel, end-to-end tests on a real device — written, or driven over adb from a manual plan — and manual test
 plans a person or QA can run, listing automated cases beside what no automated test can reach.
 
 - **Take what you want.** Nothing here depends on anything else here; delete the skills you do not

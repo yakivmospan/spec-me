@@ -74,6 +74,9 @@ Sections, each present only when it has something real:
   overturned.
 - **Open questions** — undecided, each a `[ ]` checkbox with an *Action*. Never settle one by guessing;
   ask. Once answered, tick it, strike it through, add `- Resolved: see Decisions → "{name}"` — or `see the doc comment in {file}` for a file-scoped answer — and leave it in place.
+- **Future plans** — wanted, but not now: a bold title with optional *Why*, *Not yet because* and *Take
+  up when*. Not a guarantee — nothing here is built without a change, and a plan goes when a change
+  takes it up.
 - **Pitfalls** — what a reader would get wrong; **References** — pointers; **Change history** — a table with one row
   per change in documented behaviour or requirements: the ticket, one sentence and the date.
 
@@ -88,7 +91,7 @@ wherever the spec sits, in `.specs/` or in an open change.
 
 - **Through a change:** a new spec, or a change to Intent, Acceptance criteria, Constraints or Public
   surface worth finding later.
-- **Edited in place:** everything else — a typo, a Decision, an Open question, a criterion's proof, a one-line fix, a fix that
+- **Edited in place:** everything else — a typo, a Decision, an Open question, a Future plan, a criterion's proof, a one-line fix, a fix that
   makes the code do what a spec or an open change already says.
 - **A spec behind code that's already right:** corrected in place on the user's yes — which confirms criteria
   without proof, or reworded, as `Source: Manual`, never one for something not built — with a Change history row (its ticket, or "No ticket")
@@ -147,7 +150,7 @@ wherever the spec sits, in `.specs/` or in an open change.
    - **Its `## Change` section:** becomes a Change history row on an existing spec whose documented behaviour or requirements changed, or
      is deleted.
    - **Unchecked criteria:** each gets its own answer — the user confirms it (`Source: Manual`), drops it
-     (into an Open question when it's still wanted), or the change stays open. A spec written from code's
+     (into Future plans when it's still wanted), or the change stays open. A spec written from code's
      approval already gave these answers.
    - **Unticked tasks:** listed to the user.
    - **The plan:** a `Not` line someone reading only the code would propose again becomes a Decision in the spec, a flow across modules

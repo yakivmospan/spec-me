@@ -65,3 +65,10 @@ related: []
 <!-- spec-style-rules' *Question and action*. -->
 - [ ] **{{question}}**
   - **Action:** {{what resolves it, and who decides}}
+
+## Future plans
+<!-- spec-format-rules' *Future plans*. -->
+- **{{the plan, as what it does}}**
+  - **Why:** {{what it gives — delete when the title says it}}
+  - **Not yet because:** {{delete when there's no reason beyond "not now"}}
+  - **Take up when:** {{the condition — delete when unknown}}

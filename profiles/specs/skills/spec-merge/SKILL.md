@@ -14,7 +14,7 @@ there with `git mv`, and `.specs/` holds the rest.
 - **Only when the user says the change is done, or approves a spec written from code.** Unticked
   tasks are listed, never a reason to ask again. "Merge" alone may also mean the branch's MR or combining two rules or skills — ask which.
 - **Every criterion is confirmed before it merges.** List the unchecked ones — for a contract criterion, with the feature criteria a yes also confirms — and ask once, each its own
-  answer: confirmed by the user, as `Source: Manual`; dropped — into an Open question when it's still
+  answer: confirmed by the user, as `Source: Manual`; dropped — into Future plans when it's still
   wanted; or the change stays open. For a
   spec written from code, that answer comes with the approval.
 - **Show what the plan leaves behind before writing any of it**, so the user sees what is dropped.
@@ -38,7 +38,7 @@ there with `git mv`, and `.specs/` holds the rest.
 - **The Change section** — one Change history row on an existing spec whose documented behaviour or
   requirements changed; otherwise deleted.
 - **A removal** — a spec file whose Change section removes the spec deletes it instead.
-- **Criteria** — confirmed ones get `Source: Manual`; dropped ones leave the spec, into an Open question
+- **Criteria** — confirmed ones get `Source: Manual`; dropped ones leave the spec, into Future plans
   when still wanted. A contract criterion its checked feature criteria already cover isn't asked about
   (spec-format-rules' *How a criterion was confirmed*).
 

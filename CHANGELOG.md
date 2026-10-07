@@ -3,6 +3,50 @@
 What each builder version brings, in prose, and why — so a project comparing itself with a newer
 builder by hand can decide what to take.
 
+## 0.5.3 — unreleased
+
+### A criterion is named with its spec
+- **A reply names a spec criterion with its spec,** "AC-3 in `feature.checkout`" and a few words on
+  what it says, never a bare "AC-3". Every spec numbers its own criteria, so a bare id left the reader
+  guessing which spec it meant. `answer-format-rules` and the Claude project file say so.
+- **A spec is not the answer to a bug or a question.** A reply brings one up only to say, in one line,
+  whether something was decided on purpose, missed, or already open, and says plainly when that
+  decision looks wrong. Before, replies cited specs at every turn and leaned towards keeping the code
+  as the spec had it.
+
+### Specs keep future plans
+- **A spec has a Future plans section** for what the user wants later, decided or only an idea: a bold
+  title with optional *Why*, *Not yet because* and *Take up when*, the way a Decision reads. Before,
+  such a plan went in as an Open question with a made-up action, or as a Decision with nothing really
+  rejected. It is not a guarantee: nothing in it is built without a change, and a change that takes
+  one up deletes it. The format rules, the change rules, the feature template, the specs README and
+  `spec-create` say so, and a criterion dropped at merge but still wanted now goes there, not into an
+  Open question (`spec-merge`).
+
+### Every kind of test has its skill
+- **`testing` has `test-ui`,** an existing Compose UI test skill brought in with its text kept: it
+  mounts the screen the way production does, with its ViewModel mocked through Koin, then asserts each
+  state renders and each interaction reaches the ViewModel as the right event, or as none. Before it, a
+  screen's tests fell between `test-unit`, which leaves rendering out, and `test-e2e`, which needs a
+  device and the real apps. As in `test-unit`, the template and the rules only Compose and Koin need
+  are in its `reference.md`.
+- **`test-ui` works on any UI framework.** Its rules speak of a state holder — a ViewModel, a store, an
+  observable object — and of events or calls, so a Vue or SwiftUI writer can follow them; each rule's
+  Compose form sits word for word in a Compose section of `reference.md`, beside which another
+  platform adds its own. A framework whose finder returns the first match quietly now checks that only
+  one node matches, and what a screen asks for by itself when it opens is now tested too. Side by side
+  on the same Compose screen, the neutral version scored as the Compose-only one did.
+- **`test-e2e` tests a journey inside one app from inside that app,** in the app's own device tests
+  against its real dependency graph, and keeps the test-only module and UiAutomator for journeys that
+  cross apps. Side by side on the same tasks, the in-app route needed two build lines where the
+  cross-app one needed a new module, and it scored higher. Its reference gains wait helpers for content
+  that loads, and for a control that is disabled while it does.
+- **`test-e2e` is read-only by default:** a step that writes to the backend runs only behind a switch
+  the user turns on for a named test account. Before, it wrote to any account it took for a test one,
+  and asked only when unsure.
+- **`test-e2e` reads a case's log from the time the case started** instead of clearing the log first:
+  `logcat -c` wiped the log for everyone on the device, evidence of earlier failures included.
+
 ## 0.5.2
 
 ### A summary of anything, ready to send to another team

@@ -152,7 +152,35 @@ adb -s <serial> shell am instrument -w -e class com.example.e2e.FeatureToggleE2e
 | Back, home | `adb shell input keyevent KEYCODE_BACK`, `KEYCODE_HOME` |
 | Start an app | `adb shell monkey -p <package> 1`, or `am start -n <package>/<activity>` |
 | What is on top | `adb shell dumpsys activity activities \| grep -m1 mResumedActivity` |
-| Read the app's log | `adb logcat -c` before the case, `adb logcat -d -s <tag>` after |
+| Read the app's log | `adb shell date +%s` before the case, `adb logcat -d -T <those seconds>.000 -s <tag>` after — the epoch form has no space, so it also works from a test's shell call. Never `logcat -c`, which wipes the log for everyone on the device |
 
 Dump the screen again after every tap: coordinates from an earlier dump go stale as soon as anything
 moves.
+
+## A journey inside one app
+
+The real app, launched in the Compose test runner in its own device tests, with its real dependency
+graph — no new module, only the app's UI test library.
+
+```kotlin
+@get:Rule val compose = createAndroidComposeRule<ExampleActivity>() // the real app and its real dependency graph
+
+@After fun tearDown() { /* put back what the test changed, e.g. a debug switch */ }
+
+fun ComposeTestRule.waitForNodeWithTag(tag: String, timeoutMs: Long = 10_000): SemanticsNodeInteraction {
+    waitUntil(timeoutMs) { onAllNodesWithTag(tag).fetchSemanticsNodes().isNotEmpty() }
+    return onNodeWithTag(tag)
+}
+
+fun ComposeTestRule.waitForNodeWithContentDescriptionEnabled(description: String, timeoutMs: Long = 10_000): SemanticsNodeInteraction {
+    val node = hasContentDescription(description) and isEnabled()
+    waitUntil(timeoutMs) { onAllNodes(node).fetchSemanticsNodes().isNotEmpty() }
+    return onNode(node)
+}
+```
+
+- **Real I/O:** wait for content with these before asserting — never assume it loaded at once. Wait for
+  enabled where a control stays disabled while data loads.
+- **Another environment:** swap it with a module loaded over the app's, override allowed.
+- **Install with adb**, as in *Install and run without an IDE* — not `connectedDebugAndroidTest`, which
+  uninstalls the app after the run, and its data and sign-in with it.

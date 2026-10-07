@@ -9,7 +9,7 @@ A new spec, and any added, changed or removed guarantee worth finding later — 
 Public surface. `spec-create` writes the spec files, `spec-plan` plans and builds, and
 `spec-merge` folds the change in.
 
-Edited directly, with no change: a typo or a stale reference; a Decision, Open question, Pitfall or
+Edited directly, with no change: a typo or a stale reference; a Decision, Open question, Future plan, Pitfall or
 Reference; a criterion's checkbox or its `Verified:` proof; a one-line fix; and a fix that makes the code do what a spec
 or an open change already says. A `merged` spec the code has moved past, with the code right, is
 corrected in place too (spec-builder-rules' *Keeping it honest*).
@@ -117,7 +117,7 @@ rework happens when the user asks to build, and code kept after a removal is sai
 
 ## Merging
 A change merges when the user says it's done, and every criterion is confirmed first — confirmed by the
-user as `Source: Manual`, dropped — into an Open question when it's still wanted — or the change stays
+user as `Source: Manual`, dropped — into Future plans when it's still wanted — or the change stays
 open. How: `spec-merge`.
 
 ## Talking to the user

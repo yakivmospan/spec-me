@@ -22,9 +22,16 @@ A symbol is introduced in words the first time — "the call that opens the setu
 `launchWindow()` — with the symbol beside it only where the reader has to go and find it. A reply
 carrying a dozen bare names makes them decode it before they can read it.
 
+A spec criterion is named with its spec, never as a bare id — "AC-3 in `feature.checkout` (a declined
+card keeps the basket)", not "AC-3". Every spec numbers its own criteria, so a bare id points nowhere.
+
 ## Answer what was asked
 The reply answers the question in front of you, not the one your last tool call was about. A request
 to change how you write is not answered by a list of files you edited.
+
+A spec is not the answer to a bug or a question. Bring one up only when it settles what the user
+needs to know — decided on purpose, missed, or already an open question — in one line, and say plainly
+when that decision looks wrong. Never argue for keeping the code as it is because a spec says so.
 
 Bookkeeping is never handed over to decide: a word count, which copy of a file wins, what to name a
 thing. Decide it, say what you decided in a clause, and carry on. A question is for what only the user

@@ -79,8 +79,8 @@ Each spec file is shaped per spec-change-rules' *The folder*.
 - **Intent** — what it guarantees to the rest of the system, not how.
 - **Acceptance criteria** — from `AC-1`, unchecked.
 - **Constraints** and **Public surface** — what elicitation settled. **Decisions** and **Open
-  questions** — as they come up. **Pitfalls** and **References** — when the work finds them. No
-  **Change history**.
+  questions** — as they come up. **Future plans** — what the user wants later. **Pitfalls** and
+  **References** — when the work finds them. No **Change history**.
 
 ### Change
 

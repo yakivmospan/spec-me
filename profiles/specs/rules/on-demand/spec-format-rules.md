@@ -83,3 +83,15 @@ code outside a change. What qualifies and how to word it: spec-style-rules' *One
 Never resolve one by picking something plausible: capture the decision first — a Decisions entry,
 or the code itself for a pure implementation call. Format and resolve lifecycle: spec-style-rules'
 *Question and action*.
+
+## Future plans
+What the user wants later, decided or only an idea. Not a guarantee: nothing here is built or tested,
+and a change that takes one up deletes it and writes its criteria. Something undecided that blocks
+work now is an Open question instead.
+
+```markdown
+- **{the plan, as what it does}**
+  - **Why:** {what it gives, only when the title doesn't say it}
+  - **Not yet because:** {only when there's a reason beyond "not now"}
+  - **Take up when:** {the condition, if known}
+```

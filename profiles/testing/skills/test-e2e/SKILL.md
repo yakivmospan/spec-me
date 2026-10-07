@@ -1,6 +1,6 @@
 ---
 name: test-e2e
-description: Use when asked for "e2e tests", "end-to-end tests", "test it on the device", "run it on the emulator or the car", "check it on the device without me clicking", "automate this manual check" or "run the test plan on the device", or to prove a user journey across real apps on a real device — writes instrumented tests that drive the real apps and runs them, visibly on screen, or drives the device over adb through a manual test plan's cases. Not for one class or a few components (test-unit, test-integration), or writing a manual test plan (test-plan-manual).
+description: Use when asked for "e2e tests", "end-to-end tests", "test it on the device", "run it on the emulator or the car", "check it on the device without me clicking", "automate this manual check" or "run the test plan on the device", or to prove a user journey across real apps on a real device — writes instrumented tests that drive the real apps and runs them, visibly on screen, or drives the device over adb through a manual test plan's cases. Not for one class or a few components (test-unit, test-integration), single-screen rendering or event wiring (test-ui), or writing a manual test plan (test-plan-manual).
 ---
 
 # Test E2E
@@ -15,14 +15,17 @@ can see, sleeping instead of waiting, and a test that stops the app it runs insi
 - **Nothing mocked** — the real apps, against the backend the build points at.
 - **One journey per test, and no test relies on another** — each sets its own start state, so any one
   runs alone and in any order.
+- **A journey inside one app runs inside it** — in the app's own device tests, against its real
+  dependency graph, through its UI test library (`reference.md`). A test-only module and UiAutomator
+  only when the journey crosses apps or has to stop the app.
 - **A test never stops or clears the app it runs inside** — cross-app tests run from a test-only
   module in their own process (`reference.md`).
 - **Wait, never sleep** — on the element, the state or the log line, with a timeout whose failure
   names what was expected.
 - **Assert what a user or a client sees** — a screen, a dialog, a state a client reads, a line the app
   logs on purpose — never an internal field.
-- **Backend writes only on a test account**, undone at the end where the app offers a way. Not sure the
-  signed-in account is one: ask before the first run.
+- **Read-only by default.** A step that writes to the backend runs only behind a switch the user turns
+  on for a named test account, and is undone at the end where the app offers a way.
 - **Every failure is reported with its assertion and its log**; a pass by name.
 
 ## Before starting
@@ -32,11 +35,11 @@ can see, sleeping instead of waiting, and a test that stops the app it runs insi
    answer where the project keeps such facts.
 2. `adb devices -l` lists the device. None: stop and ask which to connect — an emulator, or a car over
    USB or the network. Read the build under test (`reference.md`) for the report.
-3. **For a written test:** a test-only module and a UI automation library that crosses apps —
-   UiAutomator on Android. Missing: propose the module, its build file and the dependency line as a
-   change of its own — a new module is a boundary change, and build files are sensitive paths
-   (`project-sensitive-paths-rules`) — and wait for a yes. A no: offer to drive the check over adb
-   instead.
+3. **For a written test:** inside one app, the app's own device tests and its UI test library; across
+   apps, a test-only module and a UI automation library that crosses apps — UiAutomator on Android.
+   Missing: propose the module, its build file and the dependency line as a change of its own — a new
+   module is a boundary change, and build files are sensitive paths (`project-sensitive-paths-rules`)
+   — and wait for a yes. A no: offer to drive the check over adb instead.
 
 ## Write a test
 
@@ -50,8 +53,9 @@ can see, sleeping instead of waiting, and a test that stops the app it runs insi
    never anything internal. A control with no text or description to find it by: say so, and ask
    before adding a test tag to production code.
 4. **Assert** per the non-negotiables — done when a failing assertion says what the user saw instead.
-5. **Place it** in the test-only module, the file ending in `E2eTest`, with Given/When/Then comments and
-   when/then names as the project names tests.
+5. **Place it** where the non-negotiables put it — the app's own device tests, or the test-only
+   module — the file ending in `E2eTest`, with Given/When/Then comments and when/then names as the
+   project names tests.
 6. **Run it** on the device without an IDE (`reference.md`, which also says how to watch). Done when
    it passed twice in a row, or its failure is reported.
 7. **A manual test plan has this journey as a case:** add `Automated:` to that case, naming the test.
@@ -85,7 +89,8 @@ For a check not worth a test, or a plan the user asks to run:
 
 Journeys across screens and apps; what shows once the backend or a dependency has answered; the state a
 stopped dependency or a revoked permission leaves — not a crash or a blank screen; and recovery once the
-cause is fixed. Not here: logic (`test-unit`), wiring between components (`test-integration`), each
+cause is fixed. Back returns to the right screen with its content intact — assert what is visible, not
+the back stack. Not here: logic (`test-unit`), wiring between components (`test-integration`), each
 render state of one screen.
 
 ## Report
