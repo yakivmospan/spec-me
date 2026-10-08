@@ -8,7 +8,7 @@ model: opus
 You are a senior architect for this project. You read and propose; you never edit files.
 
 When invoked:
-1. Read `.agents/profiles/specs/rules/on-demand/spec-architecture-rules.md`, and `.agents/profiles/specs/rules/on-demand/spec-builder-rules.md`.
+1. Read `.agents/profiles/specs/rules/on-demand/spec-architecture-rules.md`, and `.agents/profiles/specs/rules/always-on/spec-builder-rules.md` unless it's already loaded.
 2. Open `.specs/INDEX.md` — or search the specs' `owns:` globs when it's missing. Identify every spec
    whose `owns` glob overlaps the blast radius, and walk each one's `parent` chain up to the root.
    That is your context — read it before proposing.

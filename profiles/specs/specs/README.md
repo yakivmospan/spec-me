@@ -3,6 +3,10 @@
 What this codebase guarantees, written down so any person or agent can rely on it and keep it true.
 Plain Markdown: no tool, skill or script is needed to read a spec or to change one.
 
+A merged spec reads as short documentation of the code: what it does on purpose (Behaviour), and what
+plain docs lose — what was turned down and why (Decisions), and what is still undecided (Open
+questions). A spec in an open change leads the code instead: it says what the code will do.
+
 ## What's here
 
 ```
@@ -35,7 +39,7 @@ Frontmatter:
 
 - **Always:** `id` — unique and dot-namespaced, like `feature.logger`; `title`; `status`; and `parent` — the
   id of the spec above it.
-- **Optional:** `owns` — the code it describes, `[]` or left out when it owns none; `related`; `ticket`;
+- **Optional:** `owns` — the code it describes, its tests included, `[]` or left out when it owns none; `related`; `ticket`;
   and `updated` — the day it was last confirmed against the code.
 
 `status` says how far a spec has come:
@@ -51,27 +55,20 @@ Sections, each present only when it has something real:
 - **Change** — only in a spec inside `changes/`: why it is being written or changed.
 - **Intent** — what it guarantees to the rest of the system, not how — and, for a feature that carries
   part of a contract, which contract.
-- **Acceptance criteria** — each a named *Given / When / Then*, with its proof under `Verified:`:
-  - **Automated proof:** `Source:` a test file, with its test names under it.
-  - **Manual proof:** `Source: Manual`, with an optional description, like who or where.
-  - **Checkbox:** `[x]` when `Verified:` holds at least one source, `[ ]` when it holds none, or while a reworded criterion's tests are still to be changed — except a contract criterion (below).
+- **Behaviour** — one line per rule the code follows on purpose: the edge cases, failures, ordering and
+  callers a reader could get wrong, not the happy path anyone expects. Code that differs from a line is
+  a conflict to raise, never to settle quietly; behaviour not listed isn't promised. The tests are the
+  proof, found through `owns`. A rule the code breaks today keeps its line, with `Currently violated:`
+  under it. What the code does that nobody chose — a likely bug — is not a rule: it goes under
+  Pitfalls, with an Open question on whether it should change.
 
   ```markdown
-  - [x] **AC-1: A dropped upload is retried once**
-    - **Given** an upload in progress
-    - **When** the connection drops
-    - **Then** it is retried once, then reported as failed
-    - **Verified:**
-      - **Source:** `UploadRetryTest.kt`
-        - `when the connection drops then retries once`
-      - **Source:** Manual
-        - Dana, on a device, build 1.4.2
+  - A dropped upload is retried once, then reported as failed.
+  - Only the signed-in account's uploads are sent; another account's stay queued.
   ```
-- **Constraints** — obligations a change must not break.
-- **Public surface** — who may use what.
 - **Decisions** — a choice, and what it ruled out under *Instead of*. Don't bring back a rejected
-  option without saying so. Revising one: edit it in place and add `Replaced {date}:` with what it
-  overturned.
+  option without saying so. Revising one: edit it in place; the overturned choice joins *Instead of*,
+  with what was learned. A long list is grouped under the same bold labels as Behaviour.
 - **Open questions** — undecided, each a `[ ]` checkbox with an *Action*. Never settle one by guessing;
   ask. Once answered, tick it, strike it through, add `- Resolved: see Decisions → "{name}"` — or `see the doc comment in {file}` for a file-scoped answer — and leave it in place.
 - **Future plans** — wanted, but not now: a bold title with optional *Why*, *Not yet because* and *Take
@@ -80,26 +77,22 @@ Sections, each present only when it has something real:
 - **Pitfalls** — what a reader would get wrong; **References** — pointers; **Change history** — a table with one row
   per change in documented behaviour or requirements: the ticket, one sentence and the date.
 
-A contract spec (`contract.*`) owns no code, has an **Intent** like a feature, and adds **Source** — where it came from — and
-**Implementation** — which features and modules take part, and their role; which criteria each carries is
-named in the features' own criteria. A feature criterion that implements one of its criteria
-names it, like `(contract AC-2)` — or `` (`contract.x` AC-2) `` when it relates to several contracts; the contract criterion is checked by its own proof or, when feature criteria
-name it, once all of them are. Confirming it by hand confirms the unchecked ones too, as `Source: Manual`,
-wherever the spec sits, in `.specs/` or in an open change.
+A contract spec (`contract.*`) owns no code. It has an **Intent** and **Behaviour** like a feature — the
+rules that hold across its modules — and adds **Source** — where it came from — and **Implementation** —
+which features and modules take part, and their role. A feature taking part names the contract in its
+Intent.
 
 ## Change what a spec guarantees
 
-- **Through a change:** a new spec, or a change to Intent, Acceptance criteria, Constraints or Public
-  surface worth finding later.
-- **Edited in place:** everything else — a typo, a Decision, an Open question, a Future plan, a criterion's proof, a one-line fix, a fix that
+- **Through a change:** a new spec, or a change to Intent or Behaviour worth finding later.
+- **Edited in place:** everything else — a typo, a Decision, an Open question, a Future plan, a one-line fix, a fix that
   makes the code do what a spec or an open change already says.
-- **A spec behind code that's already right:** corrected in place on the user's yes — which confirms criteria
-  without proof, or reworded, as `Source: Manual`, never one for something not built — with a Change history row (its ticket, or "No ticket")
-  and `updated:`.
+- **A spec behind code that's already right:** corrected in place on the user's yes, with a Change
+  history row (its ticket, or "No ticket") and `updated:`.
 - **Not sure which way?** Ask whether the code is already right: if it is, an existing spec is corrected
   in place and a missing one is written from the code in a change; if not, the code follows the spec, through a change.
-- **Keeping it honest:** code moved or deleted → update `owns`; a listed test renamed or removed → update its
-  `Source:`; something a spec records as broken or pending fixed → correct every line that describes it.
+- **Keeping it honest:** code or tests moved or deleted → update `owns`; something a spec records as
+  broken or pending fixed → correct every line that describes it.
 
 1. **Open a change**
    - **Where:** a folder `.specs/changes/<branch-name>/` — a second change on the same branch adds what
@@ -118,10 +111,9 @@ wherever the spec sits, in `.specs/` or in an open change.
    the folder.
    - **`## Design`:** how the specs become true, with each option not taken as
      `- **Not {option}:** {why}`.
-   - **`## Tasks`:** numbered checkboxes in the order they run, each an instruction. An optional tag at the end,
-     like `[AC-3]`, names the criteria a task closes — with the spec's name when the change holds several,
-     like `[contract AC-2]`; an optional `- Check:` line under it names a test,
-     or what to try by hand. A check needing a real push, pipeline or device is a task of its own.
+   - **`## Tasks`:** numbered checkboxes in the order they run, each an instruction. An optional `- Check:`
+     line under it names a test, or what to try by hand. A check needing a real push, pipeline or device
+     is a task of its own.
    - **When needed:** `## Not in this change`. Anything undecided is an Open question in the spec.
    - **A new module, boundary or library:** `01-architecture.md` or `02-tech.md` moves into the
      change too; say so to the user before touching build files.
@@ -131,27 +123,22 @@ wherever the spec sits, in `.specs/` or in an open change.
    - **Who:** the user — the person the agent is working with — reads each spec file, and the plan.
    - **Approving:** set `status: approved` on each file the user approves, and ask whether the rest go too;
      the plan is approved once every spec file is. Asking for a draft to be built approves it.
-   - **A spec written from code that already exists:** approving it confirms its unchecked criteria as
-     `Source: Manual`, unless the user says otherwise, and merges it, folder and all — go to step 5. A criterion for something not
-     built yet is ahead of code: build it first, or drop it to a later change; the approval never confirms it,
-     and a change that also holds work to build merges once that's built.
+   - **A spec written from code that already exists:** approving it merges it, folder and all — go to
+     step 5. A Behaviour line for something not built yet is ahead of code: build it first, or drop it to
+     a later change; a change that also holds work to build merges once that's built.
 4. **Build**
    - **Tasks:** in order, re-reading the plan, and any spec file edited since, before each one. A task only a person can check waits
      for them, and what they saw goes on its Check line. If it didn't hold: fix it and try again, or change course
      when the design was wrong.
    - **Ticking:** a task when its checks hold. One blocked by an Open question waits; build what isn't
      blocked, and report it.
-   - **No plan:** the criteria are the work; build each, add any proof a test gives, and say in the report
-     what code was kept or dropped and which criteria wait for the user's word.
-   - **Criteria:** add each one's proof under `Verified:`, and check it.
-   - **Code behind its spec** while tasks — or, with no plan, criteria — are still open is expected, not a conflict.
+   - **No plan:** the Behaviour lines the change adds or edits are the work; build each, and say in the
+     report what code was kept or dropped.
+   - **Code behind its spec** while tasks — or, with no plan, Behaviour lines — are still open is expected, not a conflict.
 5. **Merge** — when the user says it's done:
    - **Each spec file:** set `status: merged` and `updated:`.
    - **Its `## Change` section:** becomes a Change history row on an existing spec whose documented behaviour or requirements changed, or
      is deleted.
-   - **Unchecked criteria:** each gets its own answer — the user confirms it (`Source: Manual`), drops it
-     (into Future plans when it's still wanted), or the change stays open. A spec written from code's
-     approval already gave these answers.
    - **Unticked tasks:** listed to the user.
    - **The plan:** a `Not` line someone reading only the code would propose again becomes a Decision in the spec, a flow across modules
      goes into the contract spec, and a module's non-obvious invariants into its `ARCHITECTURE.md` where it has
@@ -173,16 +160,12 @@ Any time before merging:
   learned. A new module, boundary or library moves `01-architecture.md` or `02-tech.md` into the change.
 - **Something already built:** a ticked task is never rewritten or unticked. The rework is a new task,
   placed among the pending ones where it should run.
-- **A criterion edited:** in the user's own words, or a proposed wording they OK — either keeps its
-  status. Its manual proof is cleared, and it's unchecked if no
-  proof is left; its tests stay while they still check the new
-  wording; where they or the built code don't, a new task changes them, and it's unchecked until that
-  task is ticked — with no plan, until they're changed. Pending tasks tagged with it are edited to fit.
-- **A criterion removed:** pending tasks tagged with it are deleted or re-tagged, and tests only it listed are
-  named. If its code is already built, the
-  user decides whether it goes — a removal task — or stays, noted under Not in this change. With no plan, kept code is said in the report.
-- **Criterion ids:** a new criterion takes one past the highest id in the spec, and a task when there's a plan — a removed highest id can come back. A ticked task's tags name the criteria as they
-  read when it was ticked.
+- **A Behaviour line edited:** in the user's own words, or a proposed wording they OK — either keeps
+  the spec's status. Pending tasks it touches are edited to fit; where built code or its tests no longer
+  match, a new task changes them — with no plan, they're changed.
+- **A Behaviour line removed:** pending tasks only it needed are deleted. If its code is already built,
+  the user decides whether it goes — a removal task — or stays, noted under Not in this change. With no
+  plan, kept code is said in the report.
 - **Back to draft:** only the user sets `status: draft`, to rethink. Building stops; a half-built task stays unticked, its code as
   it is, said in the report. Approving again approves the spec and its plan; building continues
   from the first unticked task when the user asks.
@@ -218,7 +201,7 @@ there — no big-bang migration.
 
 ### Converting out
 
-Not locked in — same Markdown shape everywhere: frontmatter, named sections, criteria with ids.
+Not locked in — same Markdown shape everywhere: frontmatter, named sections, one-line behaviour rules.
 
 - **Specs → OpenSpec/Kiro baseline:** rename + reformat. Minutes.
 - **Open change → delta or design+tasks:** diff + split. Minutes.

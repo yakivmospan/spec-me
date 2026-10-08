@@ -40,7 +40,7 @@ between files.
 
 | The guidance is… | Kind | Placed by |
 |---|---|---|
-| A fact or constraint every task needs, with no single moment to read it at | Always-on rule — only if a task would go wrong without it; carried whole with every request | a line on the loader's always-on list |
+| A fact or constraint every task needs | Always-on rule — only if a task would go wrong without it | a line on the loader's always-on list |
 | Facts one kind of work needs, no procedure: a format, a style, a project's conventions | On-demand rule | a line at the loader step it serves |
 | A procedure, a checklist, or guidance a request should pull in | Skill | its description — plus one trigger line where work already under way must reach it |
 | Deep reading or a run whose raw output shouldn't reach the conversation | Agent, in `.claude/agents/` and `.codex/agents/` | its description, and the rule or skill that hands it work |
@@ -56,7 +56,7 @@ other rule is the same in every project that has it. `project-*` skills manage t
 
 | Part | Target |
 |---|---|
-| Always-on rule | Under 300 words a file. Every word is carried with every request. By convention it sits in `rules/always-on/`, which is how a new loader places it. |
+| Always-on rule | Under 300 words a file. Every word loads every session. By convention it sits in `rules/always-on/`, which is how a new loader places it. |
 | On-demand rule | Under 1,000 words |
 | Skill description | 70–100 words; Claude's limit is 1,024 characters |
 | Skill body | Under 1,000 words; 1,500 at most, examples included. The rest goes to one `reference.md`, only if a run needs it. |

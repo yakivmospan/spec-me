@@ -18,7 +18,7 @@ the work or trying it shows something new. The file carries it between sessions.
   and proposes, never decides.
 - **Build only when asked.** Writing the plan never starts building: stop and say it's ready.
 - **A ticked task is never rewritten or unticked.** Rework is a new task among the pending ones.
-- **Never settle an Open question, or edit or remove a criterion, on your own.** Build what isn't blocked,
+- **Never settle an Open question, or edit or remove a Behaviour line, on your own.** Build what isn't blocked,
   and ask.
 - **A checkpoint waits for the person.** A task whose check only a person can make is ticked only after
   they say it held.
@@ -54,11 +54,10 @@ then with the user, a section at a time:
      `Not` line with why.
    - **A big change** — a contract, several modules: sub-headings such as Flow, Interfaces, State,
      Concurrency and failure, as spec-change-rules' *Implementation plan* lists. A story's plan says
-     which module change carries which contract criteria.
+     which module change carries which of the contract's Behaviour lines.
    - **Decisions** per spec-change-rules' *Implementation plan*. **A guarantee that has to change** goes back to the spec files, with
      the user, first.
-3. **Tasks.** Instructions in the order they run, tags at the end where a task closes a criterion,
-   checks under a task where one proves it. Suggest checkpoints where the user would want to see it working; they edit them at *The OK*.
+3. **Tasks.** Instructions in the order they run, checks under a task where one proves it. Suggest checkpoints where the user would want to see it working; they edit them at *The OK*.
 4. **The OK.** Run `spec-rebuild-overviews`, and report its drift with proposed fixes, and its warnings. Ask the user to approve the
    spec files per spec-change-rules' *Approval* — the plan is approved once every one is — and stop.
 
@@ -66,19 +65,19 @@ then with the user, a section at a time:
 
 1. **Scope:** the tasks the user named, or every unticked one. A draft asked to be built is approved by
    that request: set `approved` on every spec file it holds, unless the user names one, say so, and run
-   `spec-rebuild-overviews`. **No plan:** the spec files' criteria are the tasks — proof and checkboxes per spec-change-rules'
-   *While building*, and what a person saw goes in the report; when all are built, run `spec-rebuild-overviews` and say it's
-   ready to fold into the specs, naming the criteria still waiting for the user's word.
+   `spec-rebuild-overviews`. **No plan:** the Behaviour lines the change adds or edits are the work —
+   build each, and what a person saw goes in the report; when all are built, run `spec-rebuild-overviews` and say it's
+   ready to fold into the specs, naming the code kept or dropped.
 2. **Before code:** read the project's code-style rules, where it has them, and the code the tasks
    touch; match their patterns.
 3. **For each task, in order:**
    1. Re-read the plan, and any spec file edited since the last task.
-   2. Build it. Tests, when wanted, go to `spec-test-writer` / `spec_test_writer`, pointed at the change's spec files, the task's criteria and
-      its checks; runs go to `runner`.
+   2. Build it. Tests, when wanted, go to `spec-test-writer` / `spec_test_writer`, pointed at the change's spec files and
+      the task's checks; runs go to `runner`.
    3. **A checkpoint** — a check only a person can make: stop, say what to try, and wait. Write what they
       saw on its Check line. If it didn't hold: a bug in what the task built is fixed in place and
       tried again; a wrong design or guarantee goes to *Change course* with them.
-   4. **When every check holds:** tick the task; proof and checkboxes per spec-change-rules' *While building*.
+   4. **When every check holds:** tick the task.
    5. **Blocked by an Open question:** skip it and continue, per *While building*; report it.
 4. **The plan stops fitting** — a wrong design, a choice nobody made, a guarantee that doesn't hold:
    stop, and go to *Change course* with the user.
@@ -86,11 +85,11 @@ then with the user, a section at a time:
 
 ## 4. Change course
 
-Follow spec-change-rules' *Changing course* — its table covers a changed design, built work, criteria
-edited, added or removed, and work reaching another module. Beyond it:
+Follow spec-change-rules' *Changing course* — its table covers a changed design, built work, Behaviour
+lines edited, added or removed, and work reaching another module. Beyond it:
 
 - **Rework** usually goes right after the last ticked task.
-- **A removed criterion** — when the user already said whether its code goes, don't ask again.
+- **A removed Behaviour line** — when the user already said whether its code goes, don't ask again.
 - **Back to draft** applies to every spec file unless the user names one, and building stops until they
   ask again.
 
@@ -102,5 +101,5 @@ asked.
 
 - **Plan written:** what the design is, the choices the user made, what's still open and what each
   open question blocks, and "the plan is ready — say when to build".
-- **Building:** tasks ticked, criteria checked, where it paused and what to try, and what's blocked on
+- **Building:** tasks ticked, where it paused and what to try, and what's blocked on
   what. Every task ticked: say it's ready to fold into the specs.

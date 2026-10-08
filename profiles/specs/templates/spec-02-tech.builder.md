@@ -37,7 +37,7 @@ what's configured. The `spec-test-writer` subagent reads this section for its fr
 | Test framework | {{TEST_FRAMEWORK — e.g. JUnit5 + kotlinx-coroutines-test + mockk, pytest, Vitest}} |
 | Run with | `{{TEST_COMMAND}}` |
 | Test files live at | {{TEST_LOCATION_CONVENTION}} |
-| Naming convention | {{TEST_NAMING_CONVENTION — e.g. backtick-name Given/When/Then, `methodName_condition_expectedResult`}}. No criterion id in a test name: a test covering a criterion is listed under its `Verified:`. |
+| Naming convention | {{TEST_NAMING_CONVENTION — e.g. backtick-name Given/When/Then, `methodName_condition_expectedResult`}} |
 
 ## Key libraries
 {{LIBRARY — why it is here, and what it would cost to remove. Only load-bearing ones.}}

@@ -424,7 +424,7 @@
         <text x="322" y="76" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="var(--always)">CLAUDE.md</text>
         <text x="408" y="76" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--always)">imports</text>
         <text x="456" y="76" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="var(--always)">AGENTS.md</text>
-        <text x="322" y="93" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="currentColor" opacity=".65">the root: carries the rules, every request</text>
+        <text x="322" y="93" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="currentColor" opacity=".65">the root: points at the two loaders</text>
         <text x="286" y="84" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="currentColor" opacity=".75">session start</text>
 
         <!-- rail -->
@@ -433,13 +433,13 @@
         <!-- ROW 1 -->
         <circle cx="316" cy="140" r="7" fill="var(--always)"/>
         <text x="286" y="137" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="currentColor" opacity=".75">before anything else</text>
-        <text x="286" y="152" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="currentColor" opacity=".45">every request</text>
+        <text x="286" y="152" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="currentColor" opacity=".45">every session</text>
         <text x="336" y="137" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="600" fill="currentColor">Follow LOADER.md</text>
-        <text x="336" y="153" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="currentColor" opacity=".6">carried: always-on/ whole, on-demand/ as rows</text>
+        <text x="336" y="153" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="currentColor" opacity=".6">always-on/ now, on-demand/ by its rows</text>
         <line x1="640" y1="140" x2="686" y2="140" stroke="var(--always)" stroke-width="1.5" marker-end="url(#ar)" color="var(--always)"/>
         <rect x="694" y="127" width="220" height="26" rx="3" fill="var(--always-bg)"/>
         <text x="706" y="138" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--always)" data-wc=".agents/CONSTITUTION.md">constitution-rules.md · 0</text>
-        <text x="706" y="152" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--always)" data-wc=".agents/core/rules/always-on/project-ground-rules.md">project-ground-rules.md · 0</text>
+        <text x="706" y="152" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--always)" data-wc=".agents/profiles/specs/rules/always-on/spec-builder-rules.md">spec-builder-rules.md · 0</text>
 
         <!-- ROW 2 -->
         <circle cx="316" cy="212" r="11" fill="var(--surface)" stroke="var(--always)" stroke-width="1.8"/>
@@ -590,8 +590,8 @@
 
         <!-- always tier -->
         <rect x="122" y="36" width="466" height="52" rx="3" fill="var(--always-bg)" stroke="var(--always)" stroke-width="1.5"/>
-        <text x="138" y="60" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="var(--always)">constitution-rules.md + project-ground-rules.md</text>
-        <text x="138" y="77" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="var(--always)">carried in AGENTS.md — spec-builder-rules.md is a row, read before spec work</text>
+        <text x="138" y="60" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="var(--always)">constitution-rules.md + spec-builder-rules.md</text>
+        <text x="138" y="77" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="var(--always)">core: constitution · which instruction wins — specs: the 8 steps · keeping it honest</text>
 
         <rect x="700" y="36" width="240" height="52" rx="3" fill="none" stroke="var(--always)" stroke-width="1.2" stroke-dasharray="4 3" opacity=".7"/>
         <text x="716" y="60" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="var(--always)">LOADER.md table</text>
@@ -773,7 +773,7 @@
         <tr>
           <td class="file">AGENTS.md</td>
           <td><span class="tag t-always">always</span></td>
-          <td>The project in one line, then the rules every request carries, written by the sync between its markers: the constitution, each always-on rule whole, and the loader's table. This file is put in front of an agent again on every request, so what it carries is never skipped or compacted away. Stack, commands and structure live in the specs.</td>
+          <td>The project in one line and the pointer to both loaders — the only part of the setup that survives a context compaction, because this file is put in front of an agent again on every request. Stack, commands and structure live in the specs.</td>
           <td class="num" data-wc="AGENTS.md">658</td>
         </tr>
 
@@ -781,7 +781,7 @@
         <tr>
           <td class="file">rules/LOADER.md</td>
           <td><span class="tag t-always">always</span></td>
-          <td>What loads, and the source the sync carries into <code>AGENTS.md</code>: each listed <code>always-on/</code> rule whole, then each <code>on-demand/</code> file when its row applies. Seeded; the project adds its own rows.</td>
+          <td>What loads: every file in <code>always-on/</code>, then each <code>on-demand/</code> file when its row applies. Rows point only at rules — skills load by their description. Seeded; the project adds its own rows.</td>
           <td class="num" data-wc=".agents/LOADER.md">0</td>
         </tr>
         <tr>
@@ -791,25 +791,25 @@
           <td class="num" data-wc=".agents/CONSTITUTION.md">0</td>
         </tr>
         <tr>
+          <td class="file">rules/always-on/spec-builder-rules.md</td>
+          <td><span class="tag t-always">always</span></td>
+          <td>The always-on file <code>specs</code> brings. The two constitution principles that need specs; <em>Ground rules</em> for spec ownership; <em>Every task</em> — the eight-step flow in Figure 1, written nowhere else; <em>Keeping it honest</em> — what a code change owes its spec.</td>
+          <td class="num" data-wc=".agents/profiles/specs/rules/always-on/spec-builder-rules.md">0</td>
+        </tr>
+        <tr>
           <td class="file">rules/always-on/project-ground-rules.md</td>
           <td><span class="tag t-always">always</span></td>
           <td>From <code>core</code>. KISS, no invented facts, the code over any document on what the system does today, one feature or module per change, and "I don't know" over a confident guess.</td>
           <td class="num" data-wc=".agents/core/rules/always-on/project-ground-rules.md">0</td>
         </tr>
+        <tr>
+          <td class="file">rules/always-on/project-sensitive-paths-rules.md</td>
+          <td><span class="tag t-always">always</span></td>
+          <td>Optional, chosen at install. This project's paths to ask about before touching — build config, CI, signing keys. Answered at install.</td>
+          <td class="num" data-wc=".agents/core/rules/always-on/project-sensitive-paths-rules.md">0</td>
+        </tr>
 
         <tr class="group"><td colspan="4">Rules — on demand</td></tr>
-        <tr>
-          <td class="file">on-demand/spec-builder-rules.md</td>
-          <td><span class="tag t-cond">conditional</span></td>
-          <td>The rule <code>specs</code> brings for every task on specs, from its row. The two constitution principles that need specs; <em>Ground rules</em> for spec ownership; <em>Every task</em> — the eight-step flow in Figure 1, written nowhere else; <em>Keeping it honest</em> — what a code change owes its spec.</td>
-          <td class="num" data-wc=".agents/profiles/specs/rules/on-demand/spec-builder-rules.md">0</td>
-        </tr>
-        <tr>
-          <td class="file">on-demand/project-sensitive-paths-rules.md</td>
-          <td><span class="tag t-cond">conditional</span></td>
-          <td>Optional, chosen at install. Before touching a file, from its row. This project's paths to ask about first — build config, CI, signing keys. Answered at install.</td>
-          <td class="num" data-wc=".agents/core/rules/on-demand/project-sensitive-paths-rules.md">0</td>
-        </tr>
         <tr>
           <td class="file">on-demand/project-code-style-rules.md</td>
           <td><span class="tag t-cond">conditional</span></td>
@@ -1029,6 +1029,12 @@
           <td><span class="tag t-cond">on request</span></td>
           <td>Optional. Keeps a pinned list of open tasks and questions, updated as you answer them in any order.</td>
           <td class="num" data-wc=".agents/skills/pin-the-task/SKILL.md">1,406</td>
+        </tr>
+        <tr>
+          <td class="file">pin-the-rules</td>
+          <td><span class="tag t-cond">on request</span></td>
+          <td>Optional. Shows under every reply which rules and skills the session loaded, used and when, and missed.</td>
+          <td class="num" data-wc=".agents/skills/pin-the-rules/SKILL.md">0</td>
         </tr>
         <tr>
           <td class="file">decipher-message</td>

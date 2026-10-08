@@ -6,7 +6,7 @@
   A list of several named things (jobs, config blocks, modules), each carrying more than one fact,
   reads better as one bold label per item with its facts as sub-bullets than as a single dense line
   of inline code — the same rhythm Decisions use for Instead of/Because. The same goes for a Task
-  that packs a file path, more than one change, and criterion tags into one line: pull each fact onto
+  that packs a file path and more than one change into one line: pull each fact onto
   its own bold-labeled sub-bullet instead of blurring them together.
 
   Tasks and checkpoints: spec-change-rules' *Implementation plan*.
@@ -20,12 +20,12 @@
 - **Not {{the option not taken}}:** {{why not}}
 
 ## Tasks
-1. [ ] **{{a short, bolded instruction}}** [AC-{{N}}]
+1. [ ] **{{a short, bolded instruction}}**
    - **{{File}}:** {{the file it touches}}
    - **{{Add}}:** {{one change, when there's more than one to list}}
    - Check: `{{test name}}` in `{{TestFile.kt}}`
-2. [ ] **{{a task that closes no criterion}}**
-3. [ ] **Add {{the thing}}**, per Design's *{{section}}*. [AC-{{N}}]
+2. [ ] **{{a task with nothing to check on its own}}**
+3. [ ] **Add {{the thing}}**, per Design's *{{section}}*.
 4. [ ] **Verify {{the thing}} for real** — {{what a person does: push a tag, open the MR, run it on
    a device}}.
    - Check: {{what they should see}}

@@ -342,20 +342,20 @@ def starter_loader(rules, local: bool):
 
 What you, and only you, read and run at each step. Your file: edit it by hand. It adds to
 `.agents/LOADER.md` and never replaces a line in it; within a step, the shared lines come first.
-`project-sync-profiles-and-skills` carries it into `CLAUDE.local.md` and `AGENTS.override.md`, removes
-a line whose file is gone and reports a rule of yours no line places.
+`project-sync-profiles-and-skills` removes a line whose file is gone and reports a rule of yours no
+line places.
 
-**Carried whole with every request, after the shared ones** — a rule of yours with no single moment:"""
+**Every session, after the shared loader:**"""
     else:
         head = """# Rule loader
 
 What an agent reads, and what it runs, at each step of the work — the project's file, edited by hand.
-`project-sync-profiles-and-skills` carries it into `AGENTS.md`, with every request, and keeps it
-honest: it removes a line whose file is gone, and reports a rule no line places, which never loads.
-Name only what every clone has; your own go in `.agents/.local/LOADER.md`.
+`project-sync-profiles-and-skills` keeps it honest: it removes a line whose file is gone, and reports a
+rule no line places, which never loads. Name only what every clone has; your own go in
+`.agents/.local/LOADER.md`.
 
-**Carried whole with every request, after `.agents/CONSTITUTION.md`** — only a rule with no single
-moment; every other rule is a row below:"""
+**Every session, before any task:** read `.agents/CONSTITUTION.md` first — it outranks everything
+below — then each of these:"""
     return f"""{head}
 
 <!-- always-on -->
@@ -449,117 +449,44 @@ def check_loaders(root: Path, check: bool, report, warnings):
                         f"when it is read or run; delete the key")
 
 
-# --- the carried rules --------------------------------------------------------------------------
-
-# What reaches the agent with every request. A pointer to a rule is skipped and a file read by a tool
-# call can be compacted away, but AGENTS.md and CLAUDE.local.md are sent again each time. So the rules
-# with no single moment travel whole, and every other rule as the loader row naming its moment.
-CARRIED = ("<!-- carried rules -->", "<!-- /carried rules -->")
-OVERRIDE_MARK = ("<!-- Written by project-sync-profiles-and-skills: AGENTS.md, then the rules only you "
-                 "have. Codex reads this file instead of AGENTS.md. Edit those, never this file. -->")
-TABLE_INTRO = ("What to read, and what to run, at each moment of the work. A row applies every time its\n"
-               "moment comes — read the files it names before going on, and run a skill it names as\n"
-               "\"the `name` skill\".")
-LOCAL_INTRO = "Rows only you have. They add to the table in `AGENTS.md`; within a step, its rows come first."
+def carried_core(root: Path):
+    """The part of the constitution marked to survive a compaction, or "" when nothing is marked."""
+    text = (root / ".agents/CONSTITUTION.md").read_text() if (root / ".agents/CONSTITUTION.md").is_file() else ""
+    if "<!-- carried -->" not in text or "<!-- /carried -->" not in text:
+        return ""
+    return text.split("<!-- carried -->", 1)[1].split("<!-- /carried -->", 1)[0].strip()
 
 
-def rule_text(path: Path):
-    """A rule as the agent should read it: the front matter is for whoever edits the rule."""
-    text = path.read_text(errors="replace")
-    if text.startswith("---\n") and "\n---\n" in text[3:]:
-        text = text[3:].split("\n---\n", 1)[1]
-    return text.strip()
+def write_agents_core(root: Path, check: bool, report):
+    """Copy the constitution's carried section into AGENTS.md, between its own markers.
 
+    `AGENTS.md` is put in front of an agent again on every request; a file read by a tool call is
+    not, and a long session's compaction can summarise it away. So the part that would cause harm if
+    it were forgotten is carried here, generated from the one source so the two cannot drift.
 
-def between(text, head, tail):
-    return text.split(head, 1)[1].split(tail, 1)[0] if head in text and tail in text else ""
-
-
-def carried_body(root: Path, rel, heading, intro, lead=()):
-    """One loader made into what is carried: its always-on rules' text, then its table, if it has rows."""
-    loader = root / rel
-    text = loader.read_text() if loader.is_file() else ""
-    always = [p for p in named_paths(between(text, "<!-- always-on -->", "<!-- /always-on -->"))
-              if (root / p).is_file()]
-    table = [line for line in between(text, "<!-- on-demand table -->", "<!-- /on-demand table -->")
-             .splitlines() if line.startswith("|")]
-    parts = list(lead) + [rule_text(root / p) for p in always]
-    if table[2:]:
-        parts.append(f"{heading}\n\n{intro}\n\n" + "\n".join(table))
-    return "\n\n".join(parts)
-
-
-def splice(text, block):
-    """`text` with the carried markers and what sits between them replaced by `block`, or it added at the end."""
-    if CARRIED[0] in text and CARRIED[1] in text:
-        before, rest = text.split(CARRIED[0], 1)
-        return before + block + rest.split(CARRIED[1], 1)[1]
-    return (text.rstrip() + "\n\n" if text.strip() else "") + block + "\n"
-
-
-def marked(body):
-    return f"{CARRIED[0]}\n{body}\n{CARRIED[1]}"
-
-
-def write_carried(root: Path, check: bool, report, warnings):
-    """Write the rules every request carries, and return the personal files written, for the exclude.
-
-    `AGENTS.md` gets the constitution, the shared always-on rules and the shared table, between its
-    markers; one without them is reported, never edited. What only you have goes to `CLAUDE.local.md`
-    for Claude, and to `AGENTS.override.md` for Codex, which reads that instead of `AGENTS.md`, so it
-    holds both. Nothing outside the markers is touched, and an override this did not write is left alone.
+    A project whose `AGENTS.md` has no markers is left completely alone — this never adds a section
+    to someone's file, it only keeps one that is already there up to date.
     """
-    def put(path, text, why):
-        if (path.read_text() if path.is_file() else None) == text:
-            return
-        report(f"carried {path.relative_to(root)} — {why}")
-        if not check:
-            path.write_text(text)
-
-    def drop(path):
-        report(f"pruned  {path.relative_to(root)} — no rules of yours left to carry")
-        if not check:
-            path.unlink()
-
-    constitution = root / ".agents/CONSTITUTION.md"
-    lead = [rule_text(constitution)] if constitution.is_file() else []
-    shared = carried_body(root, LOADERS[0][0], "# Rule loader", TABLE_INTRO, lead)
-    mine = carried_body(root, LOADERS[1][0], "# Rule loader — yours alone", LOCAL_INTRO)
-
     agents = root / "AGENTS.md"
-    agents_text = agents.read_text() if agents.is_file() else ""
-    if CARRIED[0] in agents_text and CARRIED[1] in agents_text:
-        agents_text = splice(agents_text, marked(shared))
-        put(agents, agents_text, "the constitution, the shared always-on rules and the shared table")
-    elif agents.is_file():
-        warnings.append(f"AGENTS.md has no {CARRIED[0]} markers, so no rule reaches the agent with every "
-                        f"request — add the pair under its rules section; the sync skill offers to")
-
-    private = set()
-    claude = root / "CLAUDE.local.md"
-    old = claude.read_text() if claude.is_file() else ""
-    if mine:
-        put(claude, splice(old, marked(mine)), "the rules only you have, for Claude")
-        private.add("/CLAUDE.local.md")
-    elif CARRIED[0] in old and CARRIED[1] in old:
-        rest = splice(old, "")
-        if rest.strip():
-            put(claude, rest, "no rules of yours left to carry")
-        else:
-            drop(claude)
-
-    override = root / "AGENTS.override.md"
-    written = override.is_file() and override.read_text().startswith(OVERRIDE_MARK)
-    if override.exists() and not written:
-        warnings.append("AGENTS.override.md is not the sync's, so it was left alone — Codex reads it "
-                        "instead of AGENTS.md, so the carried rules reach Codex only if it has them")
-    elif mine and agents_text:
-        put(override, f"{OVERRIDE_MARK}\n\n{agents_text.rstrip()}\n\n{mine}\n",
-            "AGENTS.md and the rules only you have, for Codex")
-        private.add("/AGENTS.override.md")
-    elif written:
-        drop(override)
-    return private
+    head, tail = "<!-- constitution core -->", "<!-- /constitution core -->"
+    if not agents.is_file():
+        return
+    text = agents.read_text()
+    if head not in text or tail not in text:
+        return
+    core = carried_core(root)
+    if not core:
+        report("warn    .agents/CONSTITUTION.md has no <!-- carried --> section, so AGENTS.md's "
+               "copy of it cannot be rebuilt")
+        return
+    before, rest = text.split(head, 1)
+    _, after = rest.split(tail, 1)
+    body = f"{before}{head}\n{core}\n{tail}{after}"
+    if body == text:
+        return
+    report("core    AGENTS.md — the constitution's carried section, refreshed")
+    if not check:
+        agents.write_text(body)
 
 
 def rebuild_map(root: Path, check: bool, report):
@@ -719,13 +646,14 @@ def main():
             if not args.check:
                 remove(existing)
 
+    if not args.check:
+        write_excludes(root, private, warnings.append)
+
     for who, need in unmet_requirements(root):
         warnings.append(f"`{who}` says it depends on `{need}`, which is not here. Drop that in, or take "
                         f"`{who}` out — half of a pair does less than nothing.")
     check_loaders(root, args.check, lines.append, warnings)
-    private |= write_carried(root, args.check, lines.append, warnings)
-    if not args.check:
-        write_excludes(root, private, warnings.append)
+    write_agents_core(root, args.check, lines.append)
     rebuild_map(root, args.check, lines.append)
 
     print("\n".join(lines) if lines else "nothing to do")

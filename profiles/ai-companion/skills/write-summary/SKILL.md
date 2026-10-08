@@ -15,7 +15,7 @@ internal names left in for a reader who can't look them up.
 - **Only facts that are true.** Every "how it works today" is checked in the code; one that can't be is
   attributed to its source ("seen on a car"), never guessed. What still happens today stays, even when
   an analysis found it.
-- **For a reader outside the team, nothing internal:** no criterion ids, spec, file, class, function or
+- **For a reader outside the team, nothing internal:** no spec, file, class, function or
   test names, code calls, version labels or constant-style names, no design point still open inside the
   team, no history of how we got here. Links go to the tracker only. The reader's own words stay — a
   value in an API they use, a message format they receive, a label on their screen; a call is named by

@@ -40,8 +40,9 @@ is actually verified.
 | Review unit | {{pull requests / merge requests, and how they're referenced in commits}} |
 | Never stage | {{paths deliberately excluded, and where that exclusion lives}} |
 
-Commit or push only when asked. A commit message is the subject and as many short bullets as the
-change needs — one line each, never paragraphs. The diff carries the detail. The subject says what
+Commit or push only when asked. A commit message is the subject and a bullet for each important
+change only — what a reviewer needs to know, never every file or edit; one line each, never
+paragraphs. The diff carries the rest. The subject says what
 the change does overall; each bullet starts with Added, Changed or Removed and says in a few words
 what, readable without the diff.
 

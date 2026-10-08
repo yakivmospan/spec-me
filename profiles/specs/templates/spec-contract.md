@@ -29,18 +29,11 @@ related: []
 ## Source
 {{Where this came from — spec-format-rules' *Contracts*.}}
 
-## Acceptance criteria
+## Behaviour
 
-<!-- Shape and own proof: spec-format-rules' *Acceptance criteria* and *How a criterion was confirmed*;
-     feature specs name these: *Criteria a contract delegates*. -->
+<!-- spec-format-rules' *Behaviour* and *Contracts*. -->
 
-- [ ] **AC-1: {{descriptive name}}**
-  - **Given** {{precondition}}
-  - **When** {{trigger}}
-  - **Then** {{observable outcome}}
-  - **Verified:**
-    - **Source:** Manual
-      - {{who, where — delete this source when nobody has confirmed it by hand}}
+- {{a rule that holds across the modules, in one sentence}}
 
 ## Implementation
 

@@ -64,6 +64,10 @@ naming the file it keeps:
 - **Combine** — one file holds both, with a draft of the combined text and where it lives.
 - **Leave it** — deliberate, with the reason.
 
+Competing skills or agents from two different profiles are an install choice, not a wording fix: the
+options are which one stays installed, or both, with your recommendation. Neither profile's files are
+rewritten to make room for the other's.
+
 Show the exact before and after for the recommended option. **Wait for the answers.**
 
 ## 5. Apply and recheck

@@ -5,12 +5,11 @@ process for people and agents without it, and follows this file. The spec files 
 `spec-format-rules.md` and `spec-style-rules.md`.
 
 ## What goes through a change
-A new spec, and any added, changed or removed guarantee worth finding later — Intent, Acceptance criteria, Constraints,
-Public surface. `spec-create` writes the spec files, `spec-plan` plans and builds, and
-`spec-merge` folds the change in.
+A new spec, and any added, changed or removed guarantee worth finding later — Intent or Behaviour.
+`spec-create` writes the spec files, `spec-plan` plans and builds, and `spec-merge` folds the change in.
 
 Edited directly, with no change: a typo or a stale reference; a Decision, Open question, Future plan, Pitfall or
-Reference; a criterion's checkbox or its `Verified:` proof; a one-line fix; and a fix that makes the code do what a spec
+Reference; a one-line fix; and a fix that makes the code do what a spec
 or an open change already says. A `merged` spec the code has moved past, with the code right, is
 corrected in place too (spec-builder-rules' *Keeping it honest*).
 
@@ -27,10 +26,9 @@ the code is already right before starting either.
 | `merged` | Merged into `.specs/` — describes the code as it is |
 
 - **Ahead of code:** draft → approved → merged.
-- **A new spec from code:** draft → merged. There is nothing to build: the user's yes confirms the reading —
-  its unchecked criteria included, as `Source: Manual`, unless they say otherwise — and the change
-  merges, folder and all. A criterion describing something not built yet is ahead of code: build it
-  first, or drop it to a later change — the yes never confirms it, and a change that also holds work ahead of
+- **A new spec from code:** draft → merged. There is nothing to build: the user's yes confirms the
+  reading, and the change merges, folder and all. A Behaviour line describing something not built yet is
+  ahead of code: build it first, or drop it to a later change; a change that also holds work ahead of
   code merges once that work is built.
 - **Back to draft:** only the user sets it. Building stops; ticked tasks and the code stay, and a half-built task stays
   unticked with its code as it is, said in the report. Approving again approves the spec and its plan; building continues from the first unticked task when the user asks.
@@ -76,12 +74,10 @@ design or is worth splitting.
     propose again is also a Decision in the owning spec file, written as it's made.
   - **A new module, a moved boundary, a new library:** `01-architecture.md` or `02-tech.md` moved into
     the change, flagged to the user. Build files are sensitive paths.
-  - **A story folder holding a contract:** its Design covers the flow across modules and which module
-    change carries which contract criteria; its tasks are the module changes. A module's own plan covers
-    that module only.
+  - **A story folder holding a contract:** its Design covers the flow across modules and what each
+    module change does for it; its tasks are the module changes. A module's own plan covers that module
+    only.
 - **Tasks** — numbered checkboxes, each an instruction in plain words, in the order they run.
-  - **Tags:** at the end and optional — `[AC-3]`, `[AC-3, AC-4]`, or `[contract AC-2]` naming the spec when it
-    isn't the change's only one. A task may close no criterion.
   - **Checks:** optional `- Check:` sub-bullets — a test name and its file, or what to try by hand. A
     check only a person can make turns its task into a checkpoint. A check that needs something outside
     the session — a real push, pipeline or device — is a task of its own, holding only the check; the
@@ -93,8 +89,6 @@ design or is worth splitting.
 - **Order:** the tasks in order, re-reading the plan, and any spec file edited since, before each one.
 - **Ticking:** a task when its checks hold. A checkpoint waits for the person; what they saw goes on its
   Check line.
-- **Proof:** a passing test goes under its criterion's `Verified:`; a person's confirmation as
-  `Source: Manual`.
 - **Blocked:** an Open question blocking a task is never settled by picking an interpretation. Build what
   isn't blocked, and report the rest.
 
@@ -106,19 +100,16 @@ At any stage before merging:
 | Pending tasks | Edit, add, reorder or delete them. |
 | The design | Rewrite Design to what's true now; the old approach becomes a `Not` line saying what was learned. The pending tasks follow. A new module, boundary or library moves `01-architecture.md` or `02-tech.md` into the change, flagged to the user. |
 | Something already built | A ticked task is never rewritten or unticked. The rework is a new task, placed among the pending ones where it should run; fixing a task number another task cites isn't a rewrite. |
-| A criterion's wording | The user's own wording is applied and shown; wording you had to interpret is shown and asked first. Either way the spec keeps its status. Clear its manual proof — the person confirmed the old wording. Tests or built code that no longer match get a new task; its checkbox follows spec-format-rules' *How a criterion was confirmed*. Pending tasks tagged with it are edited to fit. |
-| A new criterion | One past the highest id in the spec, and a task for it. |
-| A removed criterion | Deleted. Pending tasks tagged with it are deleted or re-tagged — say which. Already built: ask once whether the code goes; yes is a removal task, no is a line under Not in this change. Name any tests only it listed. |
+| A Behaviour line's wording | The user's own wording is applied and shown; wording you had to interpret is shown and asked first. Either way the spec keeps its status. Built code or tests that no longer match get a new task. Pending tasks it touches are edited to fit. |
+| A new Behaviour line | Added, with a task for it. |
+| A removed Behaviour line | Deleted — into Future plans when it's still wanted. Pending tasks only it needed are deleted — say which. Already built: ask once whether the code goes; yes is a removal task, no is a line under Not in this change. |
 | The work reaches another module | Say so, and ask: another spec file in this change, or a change of its own. |
 
-A ticked task's tags are history: they name the criteria as they read when it was ticked, even when an id
-has since been removed and given to a new criterion — never updated, never a question. With no plan there are no tasks to add:
-rework happens when the user asks to build, and code kept after a removal is said in the report.
+With no plan there are no tasks to add: rework happens when the user asks to build, and code kept after
+a removal is said in the report.
 
 ## Merging
-A change merges when the user says it's done, and every criterion is confirmed first — confirmed by the
-user as `Source: Manual`, dropped — into Future plans when it's still wanted — or the change stays
-open. How: `spec-merge`.
+A change merges when the user says it's done. How: `spec-merge`.
 
 ## Talking to the user
 Plain words — *waiting for your OK*, *building*, *ready to fold into the specs* — never "phase",

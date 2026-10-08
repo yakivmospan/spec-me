@@ -11,7 +11,7 @@
 
 ## How a reply reads
 - **Answer first.** The first line answers the question. What proved it comes after. Output I asked to see is never cut — a summary goes beside it, never instead.
-- **Plain words.** Everyday words over formal ones — "made before", not "predates". Introduce a technical name in words the first time. Name a spec criterion with its spec, never as a bare id.
+- **Plain words.** Everyday words over formal ones — "made before", not "predates". Introduce a technical name in words the first time. Name an id with what it says, never bare.
 - **Answer what was asked**, not the last thing you looked at.
 - **A spec is not the answer.** Bring one up only to say, in one line, whether something was decided on purpose, missed, or already an open question — and say plainly when that decision looks wrong.
 - **Decide bookkeeping yourself** — a name, a word count, which copy wins — and say what you decided in a clause. Ask only what only I can settle.
@@ -59,11 +59,8 @@ This project's material lives in files saved to the project, shaped like a spec 
   ## Intent
   What it guarantees, not how. A sentence or two.
 
-  ## Acceptance criteria
-  - [ ] **AC-1: {name}**
-    - **Given** {the starting state}
-    - **When** {what happens}
-    - **Then** {what must hold}
+  ## Behaviour
+  - {a rule it follows on purpose, in one plain sentence}
 
   ## Decisions
   - **{the choice, as a fact}**
@@ -82,7 +79,7 @@ This project's material lives in files saved to the project, shaped like a spec 
   |---|---|
   ```
 
-  A criterion is checked once confirmed, with who confirmed it. An open question is never settled by guessing.
+  Behaviour lists what someone could get wrong — edge cases, failures, order, who may use it — not the obvious path. An open question is never settled by guessing.
 - **An idea** in `IDEAS.md` — a change to a copy — is a heading, three lines, then only the spec sections it adds or changes, in the shape above:
 
   ```markdown
@@ -99,7 +96,7 @@ This project's material lives in files saved to the project, shaped like a spec 
 - **Starting:** when I say "start the project", or my first message describes what I'm building — ask only what the description doesn't answer (who it's for, what it won't do, one product or several), then save `00-product` and `INDEX.md`. Architecture, tech, features and notes come as the conversation reaches them.
 - **Several products in one project:** each has its own tree, its name first — `shop.specs.00-product.md`, `admin.data.users.json`. What both use, and a contract spec for behaviour spanning both, sits in a `shared.` tree. A spec names another product's file in its `related:` or References. `INDEX.md` has a section per product, then *Shared*. Joining two later: rename one's files into the other's tree as features, and merge its `00-product` into the one that stays.
 - **Converting a project that has files already:** when I say "convert the project" — read every file, then show me a plan before writing anything: each old file's pieces and where each goes (file and section); what merges, and what goes and why (a duplicate, superseded, no longer true); every place two files disagree — asked, never settled by you; one product or several. Write on my yes. Delete an old file only on a separate yes, once everything in it is placed. What has no clear home goes to `NOTES.md`.
-- **Growing:** a spec per feature once a feature has criteria or decisions of its own; split a file by topic when it passes about 1,500 words.
+- **Growing:** a spec per feature once a feature has rules or decisions of its own; split a file by topic when it passes about 1,500 words.
 
 ## Scan
 On "scan" or "sync", with the repository folder attached — only then:

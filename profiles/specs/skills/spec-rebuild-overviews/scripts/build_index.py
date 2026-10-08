@@ -34,11 +34,9 @@ a change is Draft, Approved, or Partly approved. Its `## Change` section is pros
 INDEX.md lists open changes and routes a spec's code to the change holding it; DECISIONS.md and
 OPEN-QUESTIONS.md include the specs in open changes.
 
-A checkbox is a claim a person may make, and its proof sits under one `**Verified:**` sub-bullet: one
-nested `**Source:**` per proof — a backticked test file with the test names declared in it nested
-under it, or `Source: Manual` with an optional free description that is never read as test names.
-Tests are welcome, never required. What doesn't line up is a warning: a checked box naming no proof,
-proof under an unchecked one, and a listed test that doesn't resolve.
+A spec's `## Behaviour` is one bullet per rule; a rule the code breaks today carries a
+`Currently violated:` sub-bullet, which INDEX.md counts. The rules themselves are never checked here:
+the tests are their proof, found through `owns`.
 
 Usage:
     python3 build_index.py [--specs-dir .specs] [--repo-root <path>] [--check]
@@ -114,33 +112,6 @@ class OpenQuestion:
 
 
 @dataclass
-class Source:
-    """One automated proof under `Verified:`: the test file it names, and the tests declared in it."""
-    files: list[str]
-    tests: list[str]
-
-
-@dataclass
-class Criterion:
-    """One acceptance criterion: its id (`AC-3`), whether it's checked, and the proof it names."""
-    ac_id: str
-    checked: bool
-    # Automated proofs: each `Source:` under `Verified:`.
-    sources: list[Source] = field(default_factory=list)
-    # A `Source: Manual` under `Verified:` — done by a person.
-    manual: bool = False
-    # Any `Source:`, automated or manual, nested under a `Verified:` sub-bullet.
-    verified_sources: bool = False
-    # Contract criteria this one implements, as (contract spec id or None, `AC-3`). None means
-    # the prose wrote a bare `contract AC-3` and the target is resolved from `related`/`parent`.
-    contract_refs: list[tuple[str | None, str]] = field(default_factory=list)
-
-    @property
-    def proven(self) -> bool:
-        return bool(self.sources) or self.manual
-
-
-@dataclass
 class Spec:
     path: Path
     id: str
@@ -151,8 +122,7 @@ class Spec:
     updated: str = ""
     decisions: list[Decision] = field(default_factory=list)
     questions: list[OpenQuestion] = field(default_factory=list)
-    criteria: list[Criterion] = field(default_factory=list)
-    # `Currently violated:` lines under Constraints, as "constraint — violation".
+    # `Currently violated:` lines under Behaviour, as "rule — violation".
     violations: list[str] = field(default_factory=list)
     # Change history rows too long to be one sentence, as "ticket date (n words)".
     long_history_rows: list[str] = field(default_factory=list)
@@ -235,23 +205,7 @@ def parent_of(meta: dict[str, object]) -> str | None:
 
 
 BOLD = re.compile(r"\*\*(.+?)\*\*", re.DOTALL)
-AC_ID = re.compile(r"\*\*\s*(AC-\d+)\s*[:\]]?", re.IGNORECASE)
 ACTION = re.compile(r"\*\*Action:\*\*\s*(.*)", re.DOTALL)
-# `contract AC-2, AC-3` inside a criterion, optionally qualified (`contract.checkout's AC-1`) when
-# the spec relates to more than one. Ranges ("AC-1 – AC-9") are deliberately not matched: a range
-# in a criterion is a claim too vague to resolve, and goes unclaimed rather than half-understood.
-CONTRACT_REF = re.compile(
-    r"contract(?:\.([A-Za-z0-9._-]+?))?`?(?:'s)?\s+(AC-\d+(?:\s*(?:,|and)\s*AC-\d+)*)",
-    re.IGNORECASE,
-)
-AC_PLAIN = re.compile(r"AC-\d+", re.IGNORECASE)
-TICKED = re.compile(r"`([^`]+)`")
-# A test function: `@Test`, or JUnit5's `@ParameterizedTest` or `@RepeatedTest`, any arguments or further
-# annotations after it, then `fun` and its name, backticked or plain.
-TEST_FUN = re.compile(
-    r"@(?:Test|ParameterizedTest|RepeatedTest)\b(?:\([^)]*\))?(?:\s*@\w+(?:\([^)]*\))?)*\s*(?:(?:suspend|internal|public|override)\s+)*"
-    r"fun\s+(`[^`]+`|\w+)"
-)
 
 
 def squash(text: str) -> str:
@@ -391,109 +345,44 @@ def parse_open_questions(body: str) -> list[OpenQuestion]:
     return out
 
 
-# A labelled sub-bullet with its indent kept. Proof nests `Source:` under `Verified:`, so it is read by
-# depth — SUBFIELD, matching a label at any depth, would let nested labels overwrite each other.
-FIELD_BULLET = re.compile(
-    r"^(\s*)-\s*(?:\*\*(?P<bold>.+?)\*\*|(?P<plain>(?:verified|source):))\s*(?P<value>.*)$", re.IGNORECASE
-)  # proof labels are read unbolded too, as a person may write them by hand
+BULLET = re.compile(r"^(\s*)-\s+(.*)$")
+VIOLATED = re.compile(r"^(\s*)-\s+(?:\*\*)?Currently violated:?(?:\*\*)?:?\s*(.*)$", re.IGNORECASE)
 
 
-def field_label(match: re.Match[str]) -> str:
-    return (match.group("bold") or match.group("plain")).strip().rstrip(":").strip().lower()
-
-
-def block_end(lines: list[str], start: int, depth: int) -> int:
-    """The index past the lines after `start` that are blank or indented deeper than `depth`."""
-    end = start + 1
-    while end < len(lines) and (not lines[end].strip() or len(lines[end]) - len(lines[end].lstrip()) > depth):
-        end += 1
-    return end
-
-
-def ticked(text: str) -> list[str]:
-    return [" ".join(t.split()) for t in TICKED.findall(text)]
-
-
-def is_manual(value: str) -> bool:
-    return value.strip().strip("`*_: ").lower().startswith("manual")
-
-
-def read_verified(block: list[str], criterion: Criterion) -> None:
-    """A `Verified:` sub-bullet: each nested `Source:` is a proof; anything else in it is ignored."""
-    i = 0
-    while i < len(block):
-        match = FIELD_BULLET.match(block[i])
-        label = field_label(match) if match else ""
-        if label != "source" and not label.startswith("source:"):  # `**Source: Manual**` bolds the value too
-            i += 1
-            continue
-        end = block_end(block, i, len(match.group(1)))
-        criterion.verified_sources = True
-        if is_manual(match.group("value")) or is_manual(label[len("source:"):]):
-            criterion.manual = True  # what's nested under it is a description, never test names
-        else:
-            criterion.sources.append(Source(ticked(match.group("value")), ticked("\n".join(block[i + 1:end]))))
-        i = end
-
-
-def read_proof(entry: str, criterion: Criterion) -> str:
-    """Read a criterion's proof into it, and return the rest of the entry — where its claims are.
-
-    Test names and descriptions are left out of what's returned, so a `contract AC-n` inside one is
-    never read as a claim.
-    """
-    lines = entry.splitlines()
-    rest: list[str] = []
-    i = 0
-    while i < len(lines):
-        match = FIELD_BULLET.match(lines[i])
-        label = field_label(match) if match else ""
-        if label != "verified" and not label.startswith("verified:"):
-            rest.append(lines[i])
-            i += 1
-            continue
-        end = block_end(lines, i, len(match.group(1)))
-        read_verified(lines[i + 1:end], criterion)
-        i = end
-    return "\n".join(rest)
-
-
-def parse_criteria(body: str) -> list[Criterion]:
-    out: list[Criterion] = []
-    for entry in iter_entries(extract_section(body, "Acceptance criteria")):
-        stripped = entry.lstrip()
-        if not stripped.startswith("["):
-            continue
-        id_match = AC_ID.search(entry)
-        if not id_match:
-            continue
-        criterion = Criterion(
-            ac_id=id_match.group(1).upper(),
-            checked=stripped[:3].lower() == "[x]",
-        )
-        for ref in CONTRACT_REF.finditer(read_proof(entry, criterion)):
-            target = f"contract.{ref.group(1)}" if ref.group(1) else None
-            for ac in AC_PLAIN.findall(ref.group(2)):
-                pair = (target, ac.upper())
-                if pair not in criterion.contract_refs:
-                    criterion.contract_refs.append(pair)
-        out.append(criterion)
-    return out
+def indent(line: str) -> int:
+    return len(line) - len(line.lstrip())
 
 
 def parse_violations(body: str) -> list[str]:
-    """`Currently violated:` sub-bullets under `## Constraints`, as "constraint — violation".
+    """`Currently violated:` sub-bullets under `## Behaviour`, as "rule — violation".
 
     A violation is the one line in a spec that goes false the moment someone fixes the code, and
     nothing about the fix points back at it — a spec edited after the code still looks fresh.
-    Counting them in INDEX.md is what gets them re-read.
+    Counting them in INDEX.md is what gets them re-read. The rule is the nearest bullet above it
+    with less indent, so lines grouped under bold labels read the same as a flat list.
     """
+    lines = extract_section(body, "Behaviour").splitlines()
     out: list[str] = []
-    for entry in iter_entries(extract_section(body, "Constraints")):
-        headline, fields = split_fields(entry)
-        violation = fields.get("currently violated", "")
-        if violation:
-            out.append(f"{headline} — {violation}")
+    for i, line in enumerate(lines):
+        match = VIOLATED.match(line)
+        if not match:
+            continue
+        depth = len(match.group(1))
+        # The violation's own text, with any lines it wraps onto.
+        end = i + 1
+        while end < len(lines) and lines[end].strip() and indent(lines[end]) > depth \
+                and not BULLET.match(lines[end]):
+            end += 1
+        violation = squash(" ".join([match.group(2)] + lines[i + 1:end]))
+        # The rule it sits under, with any lines that rule wraps onto.
+        start = next((j for j in range(i - 1, -1, -1)
+                      if BULLET.match(lines[j]) and indent(lines[j]) < depth), None)
+        rule = ""
+        if start is not None:
+            head = [BULLET.match(lines[start]).group(2)]
+            head += [l for l in lines[start + 1:i] if l.strip() and not BULLET.match(l)]
+            rule = squash(" ".join(head))
+        out.append(f"{rule} — {violation}" if rule else violation)
     return out
 
 
@@ -568,7 +457,6 @@ def load_specs(specs_dir: Path) -> tuple[list[Spec], list[str], list[str]]:
                 updated=scalar(meta.get("updated")),
                 decisions=parse_decisions(body),
                 questions=parse_open_questions(body),
-                criteria=parse_criteria(body),
                 violations=parse_violations(body),
                 long_history_rows=parse_long_history_rows(body),
             )
@@ -604,7 +492,6 @@ class ChangeSpec:
     status: str = ""
     owns: list[str] = field(default_factory=list)
     related: list[str] = field(default_factory=list)
-    criteria: list[Criterion] = field(default_factory=list)
     decisions: list[Decision] = field(default_factory=list)
     questions: list[OpenQuestion] = field(default_factory=list)
     landing: Spec | None = None
@@ -635,10 +522,6 @@ class ChangeSpec:
 class Task:
     title: str
     done: bool
-    # Criterion ids from the task's trailing `[AC-3, AC-4]` tag, if any.
-    tags: list[str] = field(default_factory=list)
-    # Spec names the tag gives, as in `[contract AC-2]` or `[feature.logger AC-1]`.
-    specs: list[str] = field(default_factory=list)
 
 
 @dataclass(eq=False)
@@ -684,7 +567,6 @@ def parse_change_spec(path: Path, by_path: dict[str, Spec]) -> ChangeSpec:
         status=scalar(meta.get("status")),
         owns=as_list(meta.get("owns")),
         related=as_list(meta.get("related")),
-        criteria=parse_criteria(body),
         decisions=parse_decisions(body),
         questions=parse_open_questions(body),
         landing=by_path.get(rel),
@@ -693,12 +575,11 @@ def parse_change_spec(path: Path, by_path: dict[str, Spec]) -> ChangeSpec:
 
 PLAN = "implementation-plan.md"
 TASK_LINE = re.compile(r"^\d+\.\s+\[([ xX])\]\s+(.*)$")
-TASK_TAG = re.compile(r"\[([^\[\]]*AC-\d+[^\[\]]*)\]\s*$", re.IGNORECASE)
 
 
 def parse_tasks(change: Change, text: str) -> None:
     """Numbered checkboxes under `## Tasks`. A task's headline may wrap onto indented lines; its
-    `- Check:` sub-bullets and `>` notes aren't part of it. Its tag is a trailing `[AC-3, AC-4]`."""
+    `- Check:` sub-bullets and `>` notes aren't part of it."""
     body = body_after_frontmatter(text)
     section = extract_section(body, "Tasks") or body
     entries: list[tuple[bool, list[str]]] = []
@@ -715,14 +596,7 @@ def parse_tasks(change: Change, text: str) -> None:
         else:
             in_headline = False
     for done, headline in entries:
-        title = squash(" ".join(headline))
-        tag = TASK_TAG.search(title)
-        change.tasks.append(Task(
-            title=title,
-            done=done,
-            tags=[t.upper() for t in AC_PLAIN.findall(tag.group(1))] if tag else [],
-            specs=[n.lower() for n in re.findall(r"([A-Za-z][\w.-]*)\s+AC-\d+", tag.group(1))] if tag else [],
-        ))
+        change.tasks.append(Task(title=squash(" ".join(headline)), done=done))
 
 
 def load_change(folder: Path, root: Path, by_path: dict[str, Spec]) -> Change:
@@ -803,9 +677,6 @@ def validate_changes(
             for ref in spec.related:
                 if ref not in known:
                     errors.append(f"{where}: related '{ref}' is not a known spec id")
-            ids = [c.ac_id for c in spec.criteria]
-            for ac in sorted({a for a in ids if ids.count(a) > 1}):
-                warnings.append(f"{where} lists {ac} twice")
             if spec.landing is not None:
                 errors.append(f"{where}: .specs/{spec.rel} is still there — a change moves the spec it "
                               f"edits with `git mv`, never copies it")
@@ -815,24 +686,6 @@ def validate_changes(
                     errors.append(f"duplicate id '{spec.spec_id}': {where} and {other}")
                 new_at.setdefault(spec.spec_id, []).append((where, spec.rel))
             by_rel.setdefault(spec.rel, []).append((change, spec))
-
-        # A story's plan and a module's plan may tag the enclosing contract's criteria too.
-        known_acs: set[str] = set()
-        known_ids: set[str] = set()
-        cursor: Change | None = change
-        while cursor is not None:
-            known_acs |= {c.ac_id.upper() for s in cursor.specs for c in s.criteria}
-            known_ids |= {s.spec_id.lower() for s in cursor.specs if s.spec_id}
-            cursor = cursor.parent
-        for task in change.tasks:
-            if task.done:
-                continue  # a ticked task's tags are history
-            if task.specs and not any(i == n or i.startswith(n + ".") for n in task.specs for i in known_ids):
-                continue  # the tag names a spec outside this change; its ids aren't this change's to judge
-            for ac in task.tags:
-                if ac not in known_acs:
-                    warnings.append(f"{rel}: task \"{task.title[:60]}\" is tagged {ac}, which no spec "
-                                    f"file in the change has")
 
     for spec_id, entries in sorted(new_at.items()):
         if len({r for _, r in entries}) > 1:
@@ -866,23 +719,20 @@ def render_pending(changes: list[Change], specs_dir: Path) -> str:
     out = [
         "Work being written or agreed that `.specs/` doesn't show yet. Before editing code a listed "
         "spec owns, read its spec file in the change; its `implementation-plan.md` only when building "
-        "the change. Status comes from each spec file's `status:`; Checked counts the criteria someone has "
-        "confirmed, across the change's spec files.",
+        "the change. Status comes from each spec file's `status:`.",
         "",
-        "| Change | Status | Specs | Checked | Tasks done |",
-        "|---|---|---|---|---|",
+        "| Change | Status | Specs | Tasks done |",
+        "|---|---|---|---|",
     ]
     for change in changes:
         spec_cells = ", ".join(
             f"[`{s.spec_id or s.file}`]({spec_file_link(change, s, specs_dir)})"
             for s in change.specs
         ) or "—"
-        criteria = [c for s in change.specs for c in s.criteria]
-        checked = f"{sum(c.checked for c in criteria)}/{len(criteria)}" if criteria else "—"
         done = f"{sum(t.done for t in change.tasks)}/{len(change.tasks)}" if change.tasks else "—"
         out.append(
             f"| [{change_label(change)}]({change.link(specs_dir)}) | {change.status()} | "
-            f"{spec_cells} | {checked} | {done} |"
+            f"{spec_cells} | {done} |"
         )
     return "\n".join(out)
 
@@ -968,8 +818,6 @@ def find_gaps(
     return gaps
 
 
-TEST_DIRS = ("/src/test/", "/src/androidTest/", "/src/commonTest/", "/tests/", "/test/")
-
 # Above this, two decisions in different specs are near-certainly the same decision written twice.
 # Tuned to catch rewordings ("Version negotiation stays in X, not in the API module" vs
 # "Version-negotiation semantics stay in X, not here") without flagging two decisions that merely
@@ -980,8 +828,8 @@ DUPLICATE_RATIO = 0.6
 def find_decision_problems(specs: list[Spec]) -> list[str]:
     """Decisions that aren't decisions, and decisions owned by two specs at once.
 
-    Both are informational. "No `Instead of`" is a strong hint the entry is really a constraint or
-    a scope note, but judging that needs a human read. Duplication is a similarity heuristic, and
+    Both are informational. "No `Instead of`" is a strong hint the entry is really a Behaviour rule
+    or a scope note, but judging that needs a human read. Duplication is a similarity heuristic, and
     the fix (which spec should own it) is never mechanical.
     """
     import difflib
@@ -994,7 +842,7 @@ def find_decision_problems(specs: list[Spec]) -> list[str]:
             rel = spec.path.name
             out.append(
                 f"{rel}: \"{decision.text[:70]}\" has no `Instead of` — if nothing was rejected, "
-                f"this is a constraint or a scope note, not a decision"
+                f"this is a Behaviour rule or a scope note, not a decision"
             )
 
     for i, (spec_a, dec_a) in enumerate(flat):
@@ -1012,98 +860,6 @@ def find_decision_problems(specs: list[Spec]) -> list[str]:
     return out
 
 
-def test_files_under(owns: list[str], repo_root: Path) -> list[Path]:
-    """Kotlin test files under a spec's `owns` globs."""
-    files: set[Path] = set()
-    for pattern in owns:
-        # A trailing `**` matches files only from Python 3.13 on; `**/*` does everywhere.
-        expanded = f"{pattern}/*" if pattern.endswith("**") else pattern
-        for path in repo_root.glob(expanded):
-            posix = path.as_posix()
-            if (path.is_file() and path.suffix == ".kt" and "/build/" not in posix
-                    and any(d in posix for d in TEST_DIRS)):
-                files.add(path)
-    return sorted(files)
-
-
-def declared_tests(path: Path) -> set[str]:
-    try:
-        text = path.read_text(encoding="utf-8", errors="ignore")
-    except OSError:
-        return set()
-    return {" ".join(name.strip("`").split()) for name in TEST_FUN.findall(text)}
-
-
-def listed_test_problems(criterion: Criterion, files: list[Path]) -> list[str]:
-    """What in a criterion's automated Sources doesn't resolve against its spec's test files.
-
-    A Source's file is named by file name or by a path suffix, and must match exactly one test file;
-    each test under it must be declared in that file — not merely in some other Source's. A test
-    renamed, moved or deleted in a refactor is the case this exists for — the spec keeps naming it,
-    and nothing else would notice.
-    """
-    problems: list[str] = []
-    for source in criterion.sources:
-        if not source.files:
-            problems.append("has a Source: naming no test file — backtick the file name, or write Source: Manual")
-            continue
-
-        resolved: list[Path] = []
-        for name in source.files:
-            matches = [f for f in files if f.as_posix().endswith("/" + name.lstrip("/"))]
-            if not matches:
-                problems.append(f"Source `{name}` is not a test file under the spec's `owns`")
-            elif len(matches) > 1:
-                problems.append(f"Source `{name}` matches {len(matches)} test files — give more of its path")
-            else:
-                resolved.extend(matches)
-        if not resolved:
-            continue
-
-        declared = {path: declared_tests(path) for path in resolved}
-        names = ", ".join(f"`{path.name}`" for path in resolved)
-        for test in source.tests:
-            hits = [path for path, tests in declared.items() if test in tests]
-            if not hits:
-                problems.append(f"test `{test}` is not declared in {names} — renamed, moved or deleted?")
-            elif len(hits) > 1:
-                problems.append(f"test `{test}` is declared in more than one Source file")
-    return problems
-
-
-def find_listed_test_problems(
-    specs: list[Spec], changes: list[Change], repo_root: Path
-) -> list[str]:
-    """Proof that doesn't line up with its checkbox, and listed tests that don't resolve, in specs and in open changes — warnings only. A spec owning no code, like a contract, proves
-    its criteria through the feature criteria naming them, so it's exempt from the no-proof check."""
-    targets: list[tuple[str, list[str], list[Criterion]]] = [
-        (spec.path.relative_to(repo_root).as_posix(), spec.owns, spec.criteria) for spec in specs
-    ]
-    targets += [
-        (f"{change.path.relative_to(repo_root).as_posix()}/{spec.file}", spec.owns, spec.criteria)
-        for change in changes for spec in change.specs
-    ]
-    out: list[str] = []
-    for where, owns, criteria in targets:
-        files: list[Path] | None = None
-        for criterion in criteria:
-            head = f"{where}: {criterion.ac_id}"
-            if criterion.checked and owns and not criterion.proven:
-                out.append(f"{head} is checked but names no proof — add a Source: under its Verified: (a test file, or Manual)")
-            if not criterion.checked and criterion.verified_sources:
-                hint = ", or leave it while its tests are still to be changed" if criterion.sources else ""
-                out.append(f"{head} lists proof under Verified: but isn't checked — check it if the proof holds{hint}")
-            if not criterion.sources:
-                continue
-            if not owns:
-                out.append(f"{head} lists tests, but its spec owns no code to find them in")
-                continue
-            if files is None:
-                files = test_files_under(owns, repo_root)
-            out += [f"{head} {problem}" for problem in listed_test_problems(criterion, files)]
-    return out
-
-
 SPEC_CHECKS = Path(".agents") / ".cache" / "spec-checks.json"
 
 
@@ -1118,7 +874,7 @@ def load_spec_checks(repo_root: Path) -> dict[str, dict]:
 
 
 def check_note(check: dict | None) -> str:
-    """` — last checked 2026-09-14: tests 46/47 passed; differs: AC-5`, or "" with no check recorded."""
+    """` — last checked 2026-09-14: tests 46/47 passed; differs: retry count`, or "" with no check recorded."""
     if not isinstance(check, dict):
         return ""
     passed, failed = int(check.get("passed") or 0), int(check.get("failed") or 0)
@@ -1177,56 +933,6 @@ def find_stale(specs: list[Spec], repo_root: Path) -> list[str]:
                 f"{spec.updated}` (latest {commits[0]}) — `spec-sync-with-code` can confirm it{note}"
             )
 
-    return out
-
-
-def find_contract_problems(specs: list[Spec], changes: list[Change], repo_root: Path) -> list[str]:
-    """Resolve every `(contract AC-n)` a criterion names, across specs and open changes — warnings only.
-
-    A bare `contract AC-3` resolves against the spec's own `parent`/`related`, reading a spec in an
-    open change where it has moved. What can't be resolved is reported rather than guessed at; so is
-    a checked contract criterion whose implementing feature criterion is unchecked.
-    """
-    # (where, id, parent, related, owns, criteria) — specs first, then change files, which win by id.
-    views = [(s.path.relative_to(repo_root).as_posix(), s.id, s.parent, s.related, s.owns, s.criteria)
-             for s in specs]
-    views += [(f"{c.path.relative_to(repo_root).as_posix()}/{s.file}", s.spec_id, s.parent, s.related,
-               s.owns, s.criteria) for c in changes for s in c.specs if s.spec_id]
-    latest = {view[1]: view for view in views}
-    contracts = {i: v for i, v in latest.items() if not v[4] and v[5]}
-
-    out: list[str] = []
-    claims: dict[tuple[str, str], list[tuple[str, Criterion, bool]]] = {}
-    for where, spec_id, parent, related, _owns, criteria in views:
-        candidates = sorted({ref for ref in ([parent] if parent else []) + related if ref in contracts})
-        for criterion in criteria:
-            for target, ac_id in criterion.contract_refs:
-                if target is None:
-                    if len(candidates) != 1:
-                        detail = ("no contract spec is in its `related`" if not candidates
-                                  else f"several are ({', '.join(candidates)}) — qualify it")
-                        out.append(f"{where}: {criterion.ac_id} names a bare `contract {ac_id}` but "
-                                   f"{detail}")
-                        continue
-                    target = candidates[0]
-                if target not in latest:
-                    out.append(f"{where}: {criterion.ac_id} names `{target} {ac_id}`, which is not a "
-                               f"known spec id")
-                    continue
-                claims.setdefault((target, ac_id), []).append((spec_id, criterion, "/changes/" in "/" + where))
-
-    for where, spec_id, _parent, _related, owns, criteria in views:
-        if owns or latest.get(spec_id, (where,))[0] != where:
-            continue
-        for criterion in criteria:
-            if not criterion.checked:
-                continue
-            in_change = "/changes/" in "/" + where  # a current contract isn't judged by work in progress
-            unchecked = [f"{i} {c.ac_id}" for i, c, from_change in claims.get((spec_id, criterion.ac_id), [])
-                         if not c.checked and (in_change or not from_change)]
-            if unchecked:
-                out.append(f"{where}: {criterion.ac_id} is checked, but {', '.join(unchecked)} — which "
-                           f"names it as implemented there — is not; confirmed by hand, that one is too")
     return out
 
 
@@ -1305,8 +1011,6 @@ def validate(
 
     change_errors, warnings = validate_changes(changes, by_id, repo_root)
     errors.extend(change_errors)
-    warnings += find_contract_problems(specs, changes, repo_root)
-    warnings += find_listed_test_problems(specs, changes, repo_root)
 
     return errors, warnings, gaps, find_decision_problems(specs), find_stale(specs, repo_root)
 
@@ -1553,13 +1257,13 @@ def render_index(
         s.path.relative_to(specs_dir).as_posix(): len(s.violations) for s in specs if s.violations
     }
     violations = (
-        f"{sum(violated.values())} constraint(s) recorded as currently violated. Each goes false "
+        f"{sum(violated.values())} Behaviour line(s) recorded as currently violated. Each goes false "
         f"silently when the code is fixed — re-check it against the code before trusting it, and "
-        f"remove it in the same change as the fix.\n\n"
+        f"remove the note in the same change as the fix.\n\n"
         + ", ".join(f"`{p}` {n}" for p, n in sorted(violated.items()))
         + "\n\nRun `spec-rebuild-overviews` for the list."
         if violated
-        else "_No constraint is recorded as currently violated._"
+        else "_No Behaviour line is recorded as currently violated._"
     )
     return f"""{HEADER}
 
@@ -1677,7 +1381,7 @@ def main() -> int:
                   file=sys.stderr)
         n_violations = sum(len(s.violations) for s in specs)
         if n_violations:
-            print(f"({n_violations} constraint(s) recorded as currently violated — informational)",
+            print(f"({n_violations} Behaviour line(s) recorded as currently violated — informational)",
                   file=sys.stderr)
         if tasks_done:
             print(f"({len(tasks_done)} approved change(s) with every task done: {', '.join(tasks_done)} "
@@ -1710,7 +1414,7 @@ def main() -> int:
             print(f"  - {item}")
     violations = [(s, v) for s in specs for v in s.violations]
     if violations:
-        print(f"\n{len(violations)} constraint(s) recorded as currently violated — re-check each "
+        print(f"\n{len(violations)} Behaviour line(s) recorded as currently violated — re-check each "
               f"against the code:")
         for spec, item in violations:
             print(f"  - {spec.path.relative_to(repo_root).as_posix()}: {item}")

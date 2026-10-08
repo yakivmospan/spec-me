@@ -21,7 +21,7 @@
 
 ## Cases a team must handle — a table under the question that asks for it
 
-- **Rows:** from the specs' criteria and the code, one per situation, not per value. Go through: an
+- **Rows:** from the specs' Behaviour lines and the code, one per situation, not per value. Go through: an
   account switch, a restart, boot, an interrupted step, and each dependency before and during use — each
   that applies gets a row, or is left out knowingly. Situations share a row only when they have the same
   cause; a situation naming either of two values (microphone or location) is one row.

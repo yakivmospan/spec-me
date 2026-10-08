@@ -60,11 +60,7 @@ builder/
 
 Two loaders are not in the tree: `.agents/LOADER.md` and `.agents/.local/LOADER.md` are the project's
 own files. The sync starts one where it is missing and reports every rule no line places; `SETUP.md`
-places each on your yes. The sync then carries them to the agent with every request: the constitution,
-each always-on rule whole and the shared table into `AGENTS.md`, between its `<!-- carried rules -->`
-markers, and the local loader's into `CLAUDE.local.md` and `AGENTS.override.md`. Always-on is only for a
-rule with no single moment; the rest are rows. Measured in fresh Claude Code sessions on Sonnet 5;
-after a compaction, and on Codex, it is untested.
+places each on your yes.
 
 The profiles here: `specs` (spec-driven development), `code-review`, `documentation` (comments and
 READMEs kept true, with the rule that runs them mid-work), `testing`, `graphify` (dependency

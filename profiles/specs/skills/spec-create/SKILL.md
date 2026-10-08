@@ -14,18 +14,18 @@ back at `spec-merge`; nothing else under `.specs/` changes — except a stale sp
 
 - **Ask what nobody has written down, before writing any spec file** — in one message, only what
   matters for this change: typically who consumes it and what breaks if it's wrong, the failure path,
-  what isn't this change's job, which constraints are fixed, what proves it done. Put your inference
+  what isn't this change's job, what is already fixed, what proves it done. Put your inference
   beside each, and skip what a spec, ticket or the code already answers — saying which.
 - **Never fill a gap with a plausible default.** Every unanswered question, and every assumption made to
   keep going, is an Open question with an Action.
-- **Every criterion is Given/When/Then, confirmable without asking you, failure path covered by it or a sibling, and states
-  a guarantee, not implementation** — no tunables, internal names or call sites.
-- **From code, the code is ground truth.** Write what it does; unclear or wrong-looking behaviour is an
-  Open question. Never loosen a constraint it no longer honours, or delete what it stopped doing, on
+- **Every Behaviour line states a guarantee, not implementation** — no tunables, internal names or call
+  sites — and the failure path has a line.
+- **From code, the code is ground truth.** Write what it does, as a Behaviour line or a Pitfall. An Open
+  question is only an important real issue — a bug, or an inconvenience that matters. Never loosen a rule it no longer honours, or delete what it stopped doing, on
   your own — ask whether that was on purpose.
 - **A Decision names what it rejected; a request that would re-decide one is raised as exactly that.**
 - **Only the user approves, in chat.** Set `status: approved` only on an explicit yes. For a new spec
-  written from code, that yes folds the change in and confirms its unchecked criteria, unless they say otherwise — say so when asking.
+  written from code, that yes folds the change in — say so when asking.
 
 ## 1. Find the starting point
 
@@ -45,8 +45,8 @@ Each spec file is shaped per spec-change-rules' *The folder*.
 - **One change can mix them** — a new spec and a moved one, or a new spec, written *From code*, for the part no
   spec covers.
 - **The spec is already in an open change** — continue that change and edit it there as spec-change-rules'
-  *Changing course* says. If it's unclear whether the work belongs there, ask
-  whether to add it to that change or wait for that change to merge.
+  *Changing course* says. If unsure the work belongs there, ask whether to add it or wait for that
+  change to merge.
 - **Unscoped** ("the specs are stale") — ask which area. A tree-wide sweep needs its own go-ahead.
 - **Not a feature at all** — code callers merely borrow — gets no spec (spec-format-rules' *What counts
   as a feature*); say so and stop.
@@ -77,20 +77,16 @@ Each spec file is shaped per spec-change-rules' *The folder*.
   of, or the contract it implements.
 - **`owns`** — the code and test globs the feature will live in; they may match nothing yet.
 - **Intent** — what it guarantees to the rest of the system, not how.
-- **Acceptance criteria** — from `AC-1`, unchecked.
-- **Constraints** and **Public surface** — what elicitation settled. **Decisions** and **Open
-  questions** — as they come up. **Future plans** — what the user wants later. **Pitfalls** and
-  **References** — when the work finds them. No **Change history**.
+- **Behaviour** — the rules elicitation settled.
+- **Decisions** and **Open questions** — as they come up. **Future plans** — what the user wants later.
+  **Pitfalls** and **References** — when the work finds them. No **Change history**.
 
 ### Change
 
 - **Move the spec** into the folder per spec-change-rules' *The folder*, read it whole — Decisions and
   Open questions included — and edit it as it should read afterwards.
-- **Handed new requirements** (a ticket, a document) — map them onto the criteria they add, change or
-  remove, and show that mapping first.
-- **Criteria** — ids per spec-change-rules' *Changing course*; a changed one is rewritten in place,
-  keeping its id unless it no longer names the same guarantee. The report names any tests only a removed
-  criterion listed.
+- **Handed new requirements** (a ticket, a document) — map them onto the Behaviour lines they add,
+  change or remove, and show that mapping first.
 - **What is approved with the change** and what is added any time: spec-change-rules' *What goes through a
   change*. A question this change
   answers is struck through in place, pointing at its Decision (spec-style-rules' *Question and action*).
@@ -99,29 +95,25 @@ Each spec file is shaped per spec-change-rules' *The folder*.
 
 - **Gather** the code and its tests. For a stale spec: the
   spec whole, and what changed since its `updated:` (`spec-rebuild-overviews`'s *Possibly stale*, then `git log` on
-  its `owns`). Criteria in other open changes aren't the code's yet — leave them there. If you can't find the change described, show what you found and
+  its `owns`). Behaviour lines in other open changes aren't the code's yet — leave them there. If you can't find the change described, show what you found and
   ask first.
 - **Ask only what the code can't answer** — usually intent, the consumer and what's out of scope.
 - **A stub is not behaviour.** A hardcoded return or a `// later` comment is an Open question, or — if the
-  user wants it — a criterion built first (spec-change-rules' *Stages*).
-- **Scope `owns` to what you describe** — narrow, real coverage beats a wide glob.
+  user wants it — a Behaviour line built first (spec-change-rules' *Stages*).
+- **Scope `owns` to what you describe**, its tests included — narrow, real coverage beats a wide glob.
 - **A Decision only where the user can name what was rejected** — the code rarely shows it, so ask.
-- **A stale spec** — describe the code: new public surface gets criteria for success,
-  failure and edge cases; changed behaviour is rewritten as the guarantee; an open question the code
+- **A stale spec** — describe the code: new behaviour gets lines for its failures and edge cases;
+  changed behaviour is rewritten as the guarantee; an open question the code
   plainly answered becomes a Decision, or a doc comment when it's file-scoped, and is struck through.
-- **Checkboxes** — a criterion a test already proves is checked, with the test under its
-  `Verified:`; one the user confirms from the code is checked with `Source: Manual` under it; the rest stay unchecked.
-- **Before asking for approval, re-read every criterion** — reading from code is where one
-  turns into a transcript of the implementation.
 
 ## 3. The OK
 
-Re-check every criterion against the non-negotiables, and that every open question names what it blocks.
+Re-check every Behaviour line against the non-negotiables — read from code, one easily becomes a
+transcript of the implementation — and that every open question names what it blocks.
 Then:
-- **A stale spec corrected in place** — show the edited criteria and ask once, per spec-builder-rules' *Keeping it
-  honest*, saying what the yes confirms. Nothing merges; a no leaves it untouched.
-- **From code** — ask for approval, saying the yes confirms any criterion without proof as
-  `Source: Manual`, unless they say otherwise; the yes folds the change in through `spec-merge`.
+- **A stale spec corrected in place** — show the edited lines and ask once, per spec-builder-rules' *Keeping it
+  honest*. Nothing merges; a no leaves it untouched.
+- **From code** — ask for approval; the yes folds the change in through `spec-merge`.
 - **A change mixing them** — follows *Ahead of code*: its new part is built before anything merges.
 - **Ahead of code, one obvious way** — ask for approval now. An implementation plan comes only when
   the work is worth splitting (`spec-plan`).

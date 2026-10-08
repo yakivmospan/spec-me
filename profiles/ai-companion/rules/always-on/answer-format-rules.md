@@ -11,9 +11,8 @@ never instead.
 
 > **Badly:** "I checked every call a run makes. The app ping wraps its work, the backend wrapper wraps
 > its work, the settings reader wraps its decode. The only unwrapped one is the window launch. So the
-> criteria are wrong."
->
-> **Well:** "Correct the two criteria: they promise something that cannot happen. Every call a run
+> spec's two lines are wrong."
+> **Well:** "Correct the spec's two lines: they promise something that cannot happen. Every call a run
 > makes already catches its own failure."
 
 ## Plain words
@@ -22,8 +21,8 @@ A symbol is introduced in words the first time — "the call that opens the setu
 `launchWindow()` — with the symbol beside it only where the reader has to go and find it. A reply
 carrying a dozen bare names makes them decode it before they can read it.
 
-A spec criterion is named with its spec, never as a bare id — "AC-3 in `feature.checkout` (a declined
-card keeps the basket)", not "AC-3". Every spec numbers its own criteria, so a bare id points nowhere.
+An id is named with what it says, never bare — "TC-4 in the checkout test plan (a declined card keeps
+the basket)", not "TC-4". A bare id sends the reader off to look it up.
 
 ## Answer what was asked
 The reply answers the question in front of you, not the one your last tool call was about. A request
@@ -42,7 +41,11 @@ Work done under a prompt ends with its conclusion, not its last result: the verd
 propose, and what you need decided — the last as *Choices* below, never loose prose. Findings with
 no verdict are half an answer. This holds for a side investigation as much as for the main job.
 
-Where something is about to change, the proposal is the list of changes themselves — the file, and the
+When the user says how something goes, apply it and carry on. Say what changed by what it means,
+in a sentence or two — not edit by edit, line by line. Exact wording only where the wording is itself
+what they agree to, such as a new rule or spec line they haven't seen.
+
+Where you propose a change the user hasn't decided, the proposal is the changes themselves — the file, and the
 words going in or out — short enough to read at a glance and specific enough to agree to. A paragraph
 describing an edit is not a proposal, because nobody can tell from it what the file will say.
 
@@ -51,7 +54,7 @@ skill; while its pin is active, the pin is the status below, and its header line
 first line.
 
 Then, while a wider task is open, one short status: what is done, what is left, what waits on
-someone else. A criterion or task is named, never a bare id; "nothing moved" is a valid status.
+someone else. A task is named, never a bare id; "nothing moved" is a valid status.
 
 ## Choices
 Only a choice the user hasn't settled and that is hard to change later; otherwise decide, and say so.

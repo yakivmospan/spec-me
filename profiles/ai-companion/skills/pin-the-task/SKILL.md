@@ -1,6 +1,6 @@
 ---
 name: pin-the-task
-description: Use when the user says "pin it", "pin the task", "pin and fold it", "unpin", "resume Task 1", "activate Task 1", "pin to file", "pin in chat", or answers by a pinned id — "1.2 B", "resolve Task 1", "Task 1 rest as recommended" — and when answer-format-rules sends a reply here because it leaves two or more questions open. Keeps a pinned list of open tasks and questions in PINNED.md or at the end of every reply, updated as the user answers them in any order. Not for a handoff to a new conversation (session-snapshot) or remembering a preference across sessions.
+description: Use when the user says "pin it", "pin the task", "pin and fold it", "unpin", "unpin Task 1", "resume Task 1", "activate Task 1", "pin to file", "pin in chat", or answers by a pinned id — "1.2 B", "resolve Task 1", "Task 1 rest as recommended" — and when answer-format-rules sends here a reply leaving two or more questions open. Keeps open tasks and questions pinned in PINNED.md or under every reply, updated as the user answers in any order. Not for "pin rules" or "unpin rules" (pin-the-rules), a handoff to a new conversation (session-snapshot), or remembering a preference across sessions.
 ---
 
 # Pin the Task
@@ -14,7 +14,8 @@ item updated from a guess at what an aside meant.
 - **While a pin is active, every reply keeps it current** where its mode puts it (*Where the pin
   goes*) — a short answer or a side question included — until the user says "unpin".
 - **Only the user's words close or change an item.** An aside that might touch one is asked about in a
-  line, never applied on a guess.
+  line, never applied on a guess. An item an answer leaves pointless closes with that answer, as
+  "(not needed — {why})".
 - **Ids never move.** A task keeps its number until it is unpinned; its items keep theirs, closed
   ones included. A new task takes the next number.
 - **The pin is the latest state.** Where it and an earlier message disagree, the pin is right, and the

@@ -309,13 +309,17 @@ The common case, and the one that shapes the most.
   - **Replaced 2026-09-24:** the loader generated from each rule's `load-when:`, which 0.5.0 chose to
     stop a hand-written table leaving a row behind a removed profile; the sync's pruning does that job
     now, and the key goes from every rule
-- **The rules reach the agent with every request: the sync carries the constitution and each
-  always-on rule whole, and the loader's table, into `AGENTS.md` between its markers; what one person
-  has goes to `CLAUDE.local.md` and `AGENTS.override.md`. Always-on is only for a rule with no single
-  moment; every other rule is a row**
-  - **Instead of** `AGENTS.md` pointing at the constitution and the loaders for the agent to read at
-    session start; every rule as a row; or every rule as text
-  - **Because** a pointer is skipped and text in front of the agent is followed. In behaviour runs of
+- **`AGENTS.md` points at the constitution and the two loaders, read at session start; the always-on
+  rules are read then, every other rule at its row**
+  - **Instead of** the sync carrying the constitution, each always-on rule whole and the table into
+    `AGENTS.md`, and what one person has into `CLAUDE.local.md` and `AGENTS.override.md`
+  - **Because** in daily use the carried version did worse than the scores below promised: a row's
+    rule was skipped at its moment — the builder's own rule, at "change anything under `.agents/`",
+    in three sessions of three — where the session-start reads had held
+  - **Replaced 2026-10-07:** the carried rules, with always-on only for a rule with no single moment
+    and sensitive paths, file edits, second look and spec builder as rows. What that choice rested on
+    follows; the files, runs and scores are in `BEHAVIOUR-FINDINGS.md`
+  - **It rested on** a pointer being skipped and text in front of the agent being followed. In behaviour runs of
     the suite's 15 cases, 3 takes each, on Claude Code with `claude-sonnet-5`: the table carried alone
     lifted the on-demand cases (code style 33% to 100%, commits 0% to 67%) and left the always-on ones
     at 0%; carrying every always-on rule's text as well took those to 100%, after a compaction too, at
@@ -486,7 +490,7 @@ The common case, and the one that shapes the most.
 
 ### Updating
 - **The constitution has one source — `core/CONSTITUTION.seed.md` — seeded once and the project's
-  from then on, carried whole into `AGENTS.md` by the sync**
+  from then on, read first at session start through `AGENTS.md`'s pointer**
   - **Changed 0.5.0:** it is a form, not a copied rule. A project that already has a constitution
     keeps it; the form is shown, what it would add is named, and it changes only on the user's yes,
     because changing a constitution is the setup's own red flag
@@ -503,7 +507,9 @@ The common case, and the one that shapes the most.
     alone survives a compaction
   - **Replaced 2026-09-27:** the marked `<!-- carried -->` part and its own markers in `AGENTS.md`, and
     the pointer default. The behaviour runs showed the pointer is skipped, so the whole constitution is
-    carried with the always-on rules (*The rules reach the agent with every request*)
+    carried with the always-on rules
+  - **Replaced 2026-10-07:** carried whole with the always-on rules; the pointer is back
+    (*`AGENTS.md` points at the constitution and the two loaders*)
   - **Changed 0.4.0:** it was the *Constitution* section of `spec-builder-rules.md`; the setup-wide
     principles and *Which instruction wins* moved to core, the two spec ones stayed with the specs
   - **Instead of** `CONSTITUTION.md` at the builder's root, copied by setup into a seeded
@@ -621,10 +627,10 @@ The common case, and the one that shapes the most.
     diff in git, the IDE and the merge request, and leaves no second version to reconcile at merge —
     at the cost of one spec being in only one change at a time
   - **Replaced 2026-09-19:** a whole copy of each spec, folded in by copying it over its place
-- **A spec's criteria stay in the spec file**
+- **A spec's Behaviour stays in the spec file**
   - **Instead of** a separate requirements file beside each spec
-  - **Because** criteria outlive the change that added them, and Constraints, Pitfalls and Change
-    history refer to them by id
+  - **Because** the rules outlive the change that added them, and sit beside the Decisions and
+    Pitfalls that explain them
 - **Every spec has a `status`: `draft` or `approved` inside a change, `merged` everywhere else; only the
   user approves**
   - **Instead of** no `status`, with an `approved:` date in a change's `proposal.md`; `active` for the
@@ -664,51 +670,45 @@ The common case, and the one that shapes the most.
   - **Replaced 2026-09-14:** every change with the same files and two approvals; then a `proposal.md`
     holding the why and the approval; then separate `design.md` and `tasks.md`
 - **Changing course adds, never rewrites: a ticked task stays, rework is a new task, and an edited
-  criterion keeps its approval on the user's OK**
+  Behaviour line keeps the spec's approval on the user's OK**
   - **Instead of** rewriting or unticking built tasks; or any edit to an approved guarantee sending the
     spec back to `draft`
   - **Because** building is where the user tests and adapts, so the plan stays a record of what was
     tried and what was found, and an approval survives the ordinary back-and-forth. Only the user sets a
     spec back to `draft`, to stop and rethink
-- **A new criterion's id is one past the highest in the spec**
-  - **Instead of** never reusing a removed id
-  - **Because** the highest id is always in the file, while a removed one leaves no trace to check
-    against. A removed highest id coming back is fine: a ticked task's tags are history, naming the
-    criteria as they read when it was ticked
-  - **Replaced 2026-09-14:** removed ids never reused
 - **A spec written from code that already exists goes from `draft` straight to `merged`**
   - **Instead of** approving it, then folding it in as a second step
   - **Because** there is nothing to build: the approval is the user confirming the reading
-- **Nothing folds in unconfirmed: each unchecked criterion is confirmed by the user, dropped, or keeps
-  the change open**
-  - **Instead of** criteria folding in unchecked, marked not confirmed yet
-  - **Because** a `merged` spec describes the code as it is, so an unconfirmed criterion in it is a
-    claim nobody made — and a person's word is enough, so one question settles every one of them
 - **Reports to the user use plain words, not phase or skill names**
   - **Instead of** "Phase: Planning", "delta", "sub-change"
   - **Because** the lifecycle is the agent's to know; the user should never have to learn it
-- **A criterion lists its proof under `Verified:` — test files with their tests, or `Source: Manual` —
-  and its checkbox shows whether it has any; a spec may hold unchecked criteria**
-  - **Instead of** a spec holding complete criteria only, with `--check` failing a checked box without a
-    listed test or `verified:` escape; a bare checkbox with its proof optional; a `Verified: Yes/No` field beside the checkbox; flat
-    `Source:`/`Tests:` fields beside a one-line `Verified:`; or a baseline ratcheting
-    down unverified criteria
-  - **Because** a person's word is enough (the constitution), but has to be written down to be seen at a
-    glance rather than dug out of `git blame` — so a checked box with no proof is a warning, never a failure
-  - **Replaced 2026-09-14:** complete, evidenced criteria only; then a bare checkbox with its proof
-    optional; then flat `Source:`/`Tests:` fields beside a one-line `Verified:`
+- **A spec's guarantees are a Behaviour list: one plain line per rule the code follows on purpose, with
+  no id, checkbox or proof; the tests are the proof, found through `owns`, which lists them**
+  - **Instead of** acceptance criteria — a numbered Given/When/Then each, a checkbox, and its proof under
+    `Verified:` — with Constraints and Public surface beside them; or no list at all, leaving only
+    Decisions and the tests
+  - **Because** in daily use nobody reread the criteria: they were written by the agent, approved
+    unread, and reworded to match the code once it was built, while the approval that mattered
+    happened in chat and the plan. The test lists went stale with every rename, and a criterion's
+    id meant nothing without opening the spec. What the spec still owes a reader is which behaviour is
+    on purpose — a line says that, and code differing from it is a conflict to raise
+  - **Replaced 2026-10-08:** acceptance criteria with ids, checkboxes and `Verified:` proof, each
+    confirmed or dropped before a change merged, a new id one past the highest; before that, complete,
+    evidenced criteria only; then a bare checkbox with its proof optional; then flat
+    `Source:`/`Tests:` fields beside a one-line `Verified:`
 - **Work across modules gets a contract spec its features point at; each change folds in on its own**
   - **Instead of** a contract change holding a sub-change per feature, merged together
   - **Because** a story's tickets finish at different times, and gating one on another blocked finished
     work
   - **Replaced 2026-09-14:** contract changes merged together with their sub-changes
-- **A contract's Implementation table names who takes part and their role; which contract criteria a
-  feature carries is written once, as `(contract AC-n)` in the feature's own criteria**
-  - **Instead of** a `Satisfies` column listing criteria per feature beside the same tags in the features
-  - **Because** two mappings drift, and the one beside the criterion is the one updated when it changes.
-    A contract criterion is checked by its own proof or once its feature criteria are; confirming it by
-    hand confirms them too, since a person trying the whole flow tried each part of it
+- **A contract's Implementation table names who takes part and their role; a feature taking part
+  names the contract in its Intent**
+  - **Instead of** a `Satisfies` column listing criteria per feature; or `(contract AC-n)` tags in the
+    features' own criteria
+  - **Because** any rule-by-rule mapping drifts, and the role in the table already says what each
+    feature does for the flow
   - **Replaced 2026-09-14:** a traceability matrix in the contract's Implementation table
+  - **Replaced 2026-10-08:** `(contract AC-n)` tags in the features' criteria
 - **A change's spec files sit flat in its folder, one per spec, each named after the path it lands at
   (`specs.feature.logger.md`) and each the whole spec as it should read afterwards**
   - **Instead of** a delta applied section by section — ADDED, MODIFIED, REMOVED, RESOLVED; one
@@ -749,6 +749,10 @@ The common case, and the one that shapes the most.
     model is read only when the setup changes, so it belongs in a skill; a Claude-only skill reaches one
     tool; and settling a conflict takes the user's pick and an edit, which a read-only review can't make
   - **Replaced 2026-09-16:** `setup-rules.md` and `project-skill`
+  - **Two profiles doing the same job is the user's install choice,** raised when the profiles are
+    chosen and again by `project-resolve-conflicts`, each time with a recommendation — never settled
+    by rewriting one profile's descriptions around the other's: a profile describes its own work and
+    knows nothing of the others
 - **The setup is validated by a mandatory, read-only skill run on request — `project-test-setup`**
   - **Instead of** a prompt kept beside `SETUP.md`, which a user install deletes with the builder; a
     scoring script; or a check that runs every session or in CI

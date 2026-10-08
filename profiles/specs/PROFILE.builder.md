@@ -42,7 +42,7 @@ The parts are not independently useful:
 - The **spec templates** without `spec-create` are shapes nothing copies, and `.specs/README.md`
   without the tree is a guide to a folder that does not exist.
 - The **agents** read a change's spec files and `.specs/02-tech.md`. With no spec tree, `spec-architect`
-  compares designs against nothing and `spec-test-writer` has no acceptance criteria to derive cases from.
+  compares designs against nothing and `spec-test-writer` has no Behaviour lines to derive cases from.
 
 A project that wants specs without the process wants `.specs/README.md` and a text editor — the
 constitution says a spec reads and changes correctly without any of this.
@@ -52,7 +52,7 @@ constitution says a spec reads and changes correctly without any of this.
 | Block | Lands at |
 |---|---|
 | `skills/spec-*/` | `.agents/skills/` |
-| `rules/on-demand/spec-builder-rules.md` | stays here; a line in `.agents/LOADER.md` places it at "work on anything under `.specs/`, or any task a spec owns" |
+| `rules/always-on/spec-builder-rules.md` | stays here; `LOADER.md`'s always-on list names it where it sits |
 | `rules/on-demand/spec-*-rules.md` | stays here; a line in `.agents/LOADER.md` places each at its step, proposed when the sync reports it unplaced |
 | `templates/spec-feature.md`, `spec-contract.md`, `implementation-plan.md` | `.agents/profiles/specs/templates/` |
 | `templates/spec-0*.builder.md` | nowhere — read by `SETUP.md` to write the root specs |

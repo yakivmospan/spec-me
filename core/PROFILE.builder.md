@@ -58,7 +58,7 @@ Its spec-process checks are skipped, not failed, where `specs` was not installed
 | `CLAUDE.md` | `CLAUDE.md` |
 | `README.seed.md` | `.agents/README.md` |
 | `rules/always-on/project-ground-rules.md` | `.agents/core/rules/always-on/` |
-| `rules/on-demand/project-sensitive-paths-rules.seed.md` | `.agents/core/rules/on-demand/project-sensitive-paths-rules.md` |
+| `rules/always-on/project-sensitive-paths-rules.seed.md` | `.agents/core/rules/always-on/project-sensitive-paths-rules.md` |
 | `rules/on-demand/project-code-style-rules.seed.md` | `.agents/core/rules/on-demand/project-code-style-rules.md` |
 | `rules/on-demand/project-workflow-rules.seed.md` | `.agents/core/rules/on-demand/project-workflow-rules.md` |
 | `skills/project-*/` | `.agents/core/skills/`; the sync links each into `.agents/skills/` |

@@ -29,30 +29,13 @@ related: []
 ## Intent
 {{One paragraph: what this feature guarantees to the rest of the system. Not how. When it carries part of a contract, name the contract here.}}
 
-## Acceptance criteria
+## Behaviour
 
-<!-- Shape and proof: spec-format-rules' *Acceptance criteria* and *How a criterion was confirmed*;
-     wording: spec-style-rules' *Guarantee, not implementation*. -->
+<!-- Shape: spec-format-rules' *Behaviour*; wording: spec-style-rules' *Guarantee, not implementation*. -->
 
-- [ ] **AC-1: {{descriptive name}}**
-  - **Given** {{the state before the trigger}}
-  - **When** {{a single, specific action}}
-  - **Then** {{observable outcome}} {{(contract AC-N), if it implements a contract criterion}}
-  - **And** {{additional outcome, if there is one}}
-  - **Verified:**
-    - **Source:** `{{TestFile.kt — delete this source when no test proves it}}`
-      - `{{test function name, exactly as declared}}`
-    - **Source:** Manual
-      - {{who, where, which build — optional; delete this source when there's no manual proof}}
-
-## Constraints
-<!-- spec-style-rules' *Obligation, not description*; a dependency edge is `01-architecture.md`'s Boundaries. -->
-- **{{the obligation, as an imperative}}** — {{why, only when it isn't obvious}}
-  - **Currently violated:** {{what breaks it today, and where that's tracked}}
-
-## Public surface
-<!-- Only what visibility modifiers can't state (*Point, don't repeat*, `Public surface`). -->
-- **{{audience}}** — {{what it may use, as a rule rather than a list}}
+- {{a rule the code follows on purpose, in one sentence}}
+- {{a rule the code breaks today}}
+  - **Currently violated:** {{what breaks it, and where that's tracked — delete when nothing does}}
 
 ## Decisions
 <!-- spec-style-rules' *What was rejected*, *One owner per decision*, *Revising, not replacing*. -->

@@ -125,7 +125,7 @@ should be argued from the curve, not from a table.
 ## What one rule is actually buying
 
 ```bash
-python3 run.py --ablate .agents/profiles/specs/rules/on-demand/spec-builder-rules.md --load 25
+python3 run.py --ablate .agents/profiles/specs/rules/always-on/spec-builder-rules.md --load 25
 ```
 
 runs everything with that file taken out, using the real uninstall — delete it, run the sync,

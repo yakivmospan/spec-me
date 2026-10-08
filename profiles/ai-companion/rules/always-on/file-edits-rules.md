@@ -1,6 +1,6 @@
 # File edits
 
-Change and create files with the agent's own file-editing tool — Edit or Write in Claude
+Always-on. Change and create files with the agent's own file-editing tool — Edit or Write in Claude
 Code — never through a shell command: no `sed -i`, no heredoc, no short `python` script that rewrites
 a file.
 

@@ -3,16 +3,63 @@
 What each builder version brings, in prose, and why — so a project comparing itself with a newer
 builder by hand can decide what to take.
 
-## 0.5.3 — unreleased
+## 0.6.0
 
-### A criterion is named with its spec
-- **A reply names a spec criterion with its spec,** "AC-3 in `feature.checkout`" and a few words on
-  what it says, never a bare "AC-3". Every spec numbers its own criteria, so a bare id left the reader
-  guessing which spec it meant. `answer-format-rules` and the Claude project file say so.
+### Rules load from the loaders again
+- **`AGENTS.md` points at the constitution and the two loaders again,** read at session start, and
+  the sync no longer carries rules into `AGENTS.md`, `CLAUDE.local.md` or `AGENTS.override.md`. In
+  daily use the carried version did worse than its scores: a row's rule was skipped at its moment —
+  the builder's own rule, at "change anything under `.agents/`", in three sessions of three — where
+  the session-start reads had held.
+- **Sensitive paths, file edits, second look and spec builder are always-on again,** back in
+  `always-on/` and on the loaders' always-on lists, and the builder's developer rule with them.
+- **A project taking this version** replaces `AGENTS.md`'s rules section with `AGENTS.seed.md`'s; moves
+  those five rules back to `always-on/` and their loader rows to the always-on lists; deletes
+  `CLAUDE.local.md` and `AGENTS.override.md` where the sync wrote them; and runs the sync.
+
+### Overlapping profiles are an install choice
+- **Two profiles doing the same job are named when the profiles are chosen,** with a recommendation —
+  keep one, or both — and the user picks (`SETUP.md` Step 4). `project-resolve-conflicts` offers the
+  same choice for ones found later, instead of rewriting one profile's descriptions around the other.
+
+### A spec and the code disagreeing is said, not a stop
+- **`spec-builder-rules`' *Specs vs. code* row now defers to the ground rules' *Code first*** — say so,
+  and what each expects — keeping only its own exception for code behind an open change. "Stop before
+  writing anything" halted fixes the user had already asked for. `AGENTS.seed.md` says "say so" too.
+- **Two sources disagreeing about what the system does today are settled by reading the code,** not
+  by asking: *Code first* now leaves the user only what the code can't settle, such as what it
+  should do. "Which side is wrong is the user's call" had an agent ask about two spec lines that
+  disagreed about a screen the code answered in one read.
+
+### A spec from code asks only what matters
+- **`spec-create` writes what the code does as a criterion or a Pitfall,** and keeps Open questions
+  for important real issues — a bug, or an inconvenience that matters. Turning every odd-looking
+  behaviour into a question left a new spec full of questions the code had already answered.
+
+### Commit messages carry only what matters
+- **`project-workflow-rules`' seed asks for a bullet per important change only** — what a reviewer
+  needs to know, never every file or edit. "As many bullets as the change needs" grew into a list of
+  every edit.
+
+### Which rules a session used, under every reply
+- **`ai-companion` has `pin-the-rules`.** On "pin rules" every reply ends with a status for the
+  whole session: what this reply used and how, what earlier replies used and in which, what was loaded
+  and not needed yet, and what was missed — a step reached without its rule or skill, or a rule not
+  followed. Before, whether a rule was read at its moment, or ignored, showed only when a transcript
+  was scored. `pin-the-task`'s description now names "unpin Task 1" and sends "unpin rules" there, so
+  the two pins don't answer each other's words.
+
+### An id is named with what it says
+- **A reply names an id with a few words on what it says,** "TC-4 in the checkout test plan (a
+  declined card keeps the basket)", never a bare "TC-4"; a bare id sent the reader off to look it up.
+  `answer-format-rules` and the Claude project file say so.
 - **A spec is not the answer to a bug or a question.** A reply brings one up only to say, in one line,
   whether something was decided on purpose, missed, or already open, and says plainly when that
   decision looks wrong. Before, replies cited specs at every turn and leaned towards keeping the code
   as the spec had it.
+- **A decision the user states is applied, not proposed back.** The reply says what changed by what
+  it means, in a sentence or two; exact wording only where the wording is what they agree to.
+  Before, a one-line decision came back as a list of plan edits to approve (`answer-format-rules`).
 
 ### Specs keep future plans
 - **A spec has a Future plans section** for what the user wants later, decided or only an idea: a bold
@@ -20,8 +67,37 @@ builder by hand can decide what to take.
   such a plan went in as an Open question with a made-up action, or as a Decision with nothing really
   rejected. It is not a guarantee: nothing in it is built without a change, and a change that takes
   one up deletes it. The format rules, the change rules, the feature template, the specs README and
-  `spec-create` say so, and a criterion dropped at merge but still wanted now goes there, not into an
-  Open question (`spec-merge`).
+  `spec-create` say so, and a Behaviour line dropped but still wanted goes there, not into an Open
+  question.
+
+### Specs list behaviour, not acceptance criteria
+- **A spec's guarantees are a `## Behaviour` list:** one plain line per rule the code follows on
+  purpose, with no id, Given/When/Then, checkbox or `Verified:` proof. Constraints and Public surface
+  go too: an obligation is a Behaviour line, with `Currently violated:` under it where the code breaks
+  it today, and what visibility can't say is a Behaviour line. In daily use nobody reread the criteria
+  — the agent wrote them, they were approved unread and reworded to match the code — and their test
+  lists went stale with every rename. The tests are the proof, found through `owns`, which now lists
+  them. Plan tasks lose their `[AC-n]` tags, and a merge no longer confirms criteria one by one.
+- **Every spec file follows:** the specs README, the format, style and change rules,
+  `spec-builder-rules` (*a person's word is enough* now means a Behaviour line the user agreed to
+  needs no test), the templates, `spec-create`, `spec-plan`, `spec-merge`, `spec-sync-with-code`
+  (runs the tests under `owns`, reads the code for the lines they don't settle),
+  `spec-check-style`, `spec-test-writer` (cases from Behaviour lines; none that pins a line marked
+  currently violated), and `spec-rebuild-overviews`, whose script drops every criteria check and
+  reads `Currently violated:` under Behaviour. `write-summary`, the Claude project file and one
+  behaviour test case follow too.
+- **A project taking this version** rewrites each spec's criteria as Behaviour lines, folds its
+  Constraints and Public surface in, and adds its test folders to `owns`.
+
+### Decisions say what was chosen, what it beat and why — no history
+- **`Replaced {date}:` is gone.** A revised Decision is edited in place, and the overturned choice
+  joins its *Instead of* with what went wrong, in a clause; git keeps the dated story. Chains of four
+  dated lines retold versions nobody needed to choose well.
+- **A rule the choice produces is a Behaviour line,** not part of the Decision; *Because* is a
+  sentence or two, and a trade-off is one *Cost* line.
+- **Past about ten, Decisions are grouped** under the same bold labels as the spec's Behaviour, so
+  a rule and the reason for it sit under the same heading in both. The style rules, the specs README,
+  `spec-builder-rules` and `spec-check-style`'s examples say so.
 
 ### Every kind of test has its skill
 - **`testing` has `test-ui`,** an existing Compose UI test skill brought in with its text kept: it

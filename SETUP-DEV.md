@@ -28,7 +28,7 @@ in.
 
 ## Switch to the developer setup
 
-If `.agents/.local/profiles/builder-dev/rules/on-demand/builder-dev-rules.md` already resolves, the project already has the
+If `.agents/.local/profiles/builder-dev/rules/always-on/builder-dev-rules.md` already resolves, the project already has the
 developer setup: say so, and stop — unless the developer asked to switch between a link and a copy
 (*Link or copy*).
 
@@ -50,10 +50,9 @@ developer setup: say so, and stop — unless the developer asked to switch betwe
       a missing section or question. Nothing naming this project goes into `profiles/` — say so, and
       skip it.
    4. **Apply** the choices, then rebuild the map: `python3 .agents/core/skills/project-sync-profiles-and-skills/scripts/build_setup_map.py`.
-3. **Link the developer rule** — `.agents/.local/profiles/builder-dev/rules/on-demand/builder-dev-rules.md` →
+3. **Link the developer rule** — `.agents/.local/profiles/builder-dev/rules/always-on/builder-dev-rules.md` →
    `../../../../../builder/builder-dev-rules.builder.md`, a relative symlink; copy it only where
-   symlinks aren't available. Then add a row for it to `.agents/.local/LOADER.md`'s table, at "change
-   anything under `.agents/`", and run the sync, which carries it into `CLAUDE.local.md` and `AGENTS.override.md`. It loads
+   symlinks aren't available. Then add it to `.agents/.local/LOADER.md`'s always-on list. It loads
    from the next session: say so.
 
 ## Switch back to the user setup

@@ -204,6 +204,12 @@ it cannot show you *why*, *for whom*, or *what is deliberately excluded*. You ne
 
    **A profile is one yes or no, never a list of its parts.** Taking half of one is a thing to do
    later, by deleting folders inside it — not a question to answer before anyone has used it.
+
+   **Two profiles that do the same job** — two test-writing agents, say, or two skills claiming one
+   request — are named in this question: read the skill and agent descriptions of every profile you
+   recommend, say which job two of them share, and recommend what to do — keep one, or keep both and
+   accept that either may answer. The user picks; neither profile's files are rewritten to make room
+   for the other's.
 2. **Shared, or only you** — for each profile taken: `.agents/profiles/<name>/` for everyone, or
    `.agents/.local/profiles/<name>/` to keep it to yourself, gitignored. That is the whole choice.
    A profile declaring *All or nothing* in its `PROFILE.builder.md` still installs whole either way.
@@ -276,8 +282,9 @@ Then:
   overwritten. Put each one in the report with the ways out the sync printed, and let the user
   choose — renaming or deleting someone's file to make a conflict go away is not yours to do.
 - **Run `project-resolve-conflicts`** once everything is linked, and settle what it finds with the
-  user. Profiles don't know about each other, so two can bring the same job under different names —
-  two test-writing agents, say; a name clash is only the obvious case.
+  user. Profiles don't know about each other, so two can bring the same job under different names;
+  Step 4 raised the ones their descriptions show, and one found only now goes to the user the same
+  way — what collides, and what you recommend.
 - **Record nothing.** No version file, no manifest. Which profile a file came from, and how it differs
   from this builder, are computed whenever the builder is present — the only time either question is
   asked. A stored version would be wrong the first time an add run left a file it did not install.
@@ -299,7 +306,7 @@ comment explaining how to fill the file, a `_comment` key) once a file is answer
   before touching: show what the form would add, say which of its own principles that overrides, and
   change it only on a yes. If it had none, the form is the starting point and is the project's from
   then on.
-- **`.agents/core/rules/on-demand/project-sensitive-paths-rules.md`**, where installed — only paths that exist: build config, CI, signing
+- **`.agents/core/rules/always-on/project-sensitive-paths-rules.md`**, where installed — only paths that exist: build config, CI, signing
   keys, local machine config, lint and formatter config, migrations, infra, code generators.
 - **`.agents/core/rules/on-demand/project-code-style-rules.md`**, where installed — 3-8 real rows with code evidence, per the form's
   comment. Delete every row you have no evidence for; a table of general good practice is
@@ -341,11 +348,11 @@ A spec describes the code as it is. Work agreed or in progress lives in change f
 `.specs/changes/`; setup writes only the feature changes above.
 
 For each feature change:
-- Set the new spec's `owns` to a glob you have **verified matches files on disk**.
+- Set the new spec's `owns` to globs you have **verified match files on disk**, its tests included.
 - You are describing existing code from the outside, and the user has not confirmed your reading of
   it yet — Step 9's report says so; don't present it as settled.
-- Write acceptance criteria from behaviour you can actually see in the code and its tests. Where the
-  intent is unclear, write it as an **Open question** rather than a criterion. Under-specifying is
+- Write Behaviour lines from behaviour you can actually see in the code and its tests. Where the
+  intent is unclear, write it as an **Open question** rather than a rule. Under-specifying is
   recoverable; a confident wrong requirement is not.
 
 If the repo already has specs, ADRs, or design docs elsewhere, do not migrate them silently. List

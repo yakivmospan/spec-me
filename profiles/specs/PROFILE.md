@@ -11,7 +11,7 @@ files, and the skills, rules, templates and agents that work them.
 - **Self-check:**
   - **Read first:** `.specs/README.md`, the root specs (`.specs/0*.md`) and one open change, if there is one; measure with the two principles `spec-builder-rules.md` adds to the constitution as well. With no `.specs/`, skip every check below and say so, rather than scoring them as missing.
   - **Constitution:** with `.specs/README.md`, `spec-builder-rules.md`, `spec-change-rules.md`, `spec-format-rules.md`, `spec-create`, `spec-plan`, `spec-merge`, `spec-sync-with-code`, `spec-rebuild-overviews` with its script's messages, and the `spec-test-writer` agent open, walk each scenario below.
-  - **Constitution:** a person confirms a criterion by hand, with no test — is it complete, with nothing warning, failing or asking for a test?
+  - **Constitution:** a Behaviour line the user agreed to has no test behind it — is it complete, with nothing warning, failing or asking for a test?
   - **Constitution:** an agent with none of this setup opens `.specs/README.md` — can it find a file's owner, the tie-break included, read, change, plan, build, merge and abandon a change, and read every frontmatter value and section a spec uses?
   - **Constitution:** a spec written from existing code — how many questions stand between it and `merged`, and is that the shortest path?
   - **Constitution:** someone changes their mind mid-build — does the flow stop building, or add an approval, beyond what *Back to draft* does?

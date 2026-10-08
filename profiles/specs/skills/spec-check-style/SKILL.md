@@ -15,8 +15,6 @@ checks structure, never prose. This skill is that second read.
 - **Without `--fix`, report only.** With it, apply the high-confidence findings; judgement calls stay
   flagged for the user.
 - **Verify against code** before calling a Decision, a guarantee or a citation wrong — open the file.
-- **A checked criterion's proof — a test, or `Source: Manual` with its description — is never a
-  finding**, and never stripped: that turns a verified criterion back into an unverified one.
 - **A finding names its place, the rule it breaks and the fix.** "This is bloated" alone isn't one.
 
 ## Before reviewing
@@ -32,9 +30,7 @@ section most often goes wrong:
 
 | Section | Check hardest |
 |---|---|
-| Acceptance criteria | *Guarantee, not implementation*; *Sub-bullet per field*; three "And"s that are two criteria |
-| Constraints | *Obligation, not description* — a dependency edge, a gotcha or a behaviour isn't one |
-| Public surface | *Point, don't repeat* — a symbol inventory; a stub on a leaf module |
+| Behaviour | *Guarantee, not implementation* — a class, tunable or dependency edge; three clauses that are two lines; *Point, don't repeat* — a symbol inventory; *Sub-bullet per field* |
 | Decisions | *What was rejected*; *One owner per decision*; doc comment or spec (`spec-builder-rules.md`'s *Where a decision lives*) |
 | Pitfalls, References | *Point, don't repeat* — a file map, restated behaviour, a summary of the target |
 | Change history | *One row, one sentence* — no rows for prose edits |
@@ -44,7 +40,7 @@ Tag each finding:
 - **High-confidence** — one fact stated at two exact locations, a Decision with no **Instead of**, a
   Change history row with no behaviour in it, a missing sub-bullet, a stubbed section.
 - **Judgement call** — whether a Pitfall is really non-obvious, whether a decision is file-scoped, whether
-  an AC is really two.
+  a Behaviour line is really two.
 
 ## With `--fix`
 
