@@ -153,3 +153,28 @@ class ExampleTemplateTest {
 
 ---
 
+## Template — a Vue composable (Vitest)
+
+A composable is tested by calling it. One using a lifecycle hook runs inside an effect scope —
+`entities/item/model/__tests__/useItems.spec.ts`:
+
+```ts
+import { effectScope } from 'vue'
+import { describe, expect, it } from 'vitest'
+import { useItems } from '../useItems'
+
+describe('useItems', () => {
+  it('flags a failed load', async () => {
+    const scope = effectScope()
+    const state = scope.run(() => useItems(() => Promise.reject(new Error('offline'))))!
+
+    await state.refresh()
+
+    expect(state.failed.value).toBe(true)
+    scope.stop()
+  })
+})
+```
+
+---
+

@@ -1,56 +1,50 @@
 ---
 name: spec-merge
-description: Use when asked to "merge the spec", "fold the change into the specs", "close/finish the change", "I think it's done", or when the user approves a new spec written from existing code — merges a finished change under .specs/changes/ into .specs/: marks each spec file merged and moves it back to its place, keeps what the plan decided, adds Change history, deletes the folder, then syncs. Not for building a change (spec-plan), or a git merge request; abandoning a change is moving its specs back with their edits undone and deleting the rest on the user's yes.
+description: Use when asked to "fold in", "save what we did", "close/finish the change", "I think it's done", or "abandon the change" — folds a planned change under .specs/changes/ in: checks the specs document what's built, writes what the plan decided, then deletes the plan or cuts it to the unbuilt rest for later. Not for building a change (spec-plan), or a git merge request.
 ---
 
 # Spec Merge
 
-A change merges when the user says it's done — or, for a spec written from code that already exists,
-when they approve the reading. Until then, each spec the change edits lives in its folder, moved
-there with `git mv`, and `.specs/` holds the rest.
+A change is a plan; the specs were updated in place as it was built. Folding in makes sure they say
+everything the build settled, and decides what happens to the plan.
 
 ## Non-negotiables
 
-- **Only when the user says the change is done, or approves a spec written from code.** Unticked
-  tasks are listed, never a reason to ask again. "Merge" alone may also mean the branch's MR or combining two rules or skills — ask which.
-- **A Behaviour line for something not built yet doesn't merge as true** — build it first, or drop it to
-  a later change, or into Future plans when it's still wanted (spec-change-rules' *Stages*).
-- **Show what the plan leaves behind before writing any of it**, so the user sees what is dropped.
-- **Ask before deleting the change folder — approving a new spec written from code is that yes.** Where
-  `.specs/` isn't committed, nothing brings it back. A change nested in it is never deleted with it.
+- **Fold in what's built; never stop the user's work for it.** Unticked tasks never block the fold.
+  "Merge" alone may also mean the branch's MR or combining two rules or skills — ask which, in one line.
+- **A spec documents only what's built** — a requirement not built yet stays out of Behaviour.
+- **One question at most:** where the unbuilt rest goes, when the user hasn't said
+  (spec-change-rules' *Folding in*).
+- **Where `.specs/` isn't committed, ask before deleting the plan** — nothing brings it back.
 
-## 1. Before merging
+## 1. Read
 
-1. Read, if not already read this session, `.agents/profiles/specs/rules/on-demand/spec-change-rules.md`, `spec-format-rules.md` and
-   `spec-style-rules.md`.
-2. List any unticked tasks.
+Read, if not already read this session, `.agents/profiles/specs/rules/on-demand/spec-change-rules.md`, `spec-format-rules.md` and
+`spec-style-rules.md`, the plan, and each spec it touches.
 
-## 2. Move the spec files back
+## 2. Bring the specs up to date
 
-- **Each `specs.<path>.md`** moves to `.specs/<path>` with `git mv` — plain `mv` where `.specs/` isn't
-  in git — so its history follows it: `specs.feature.logger.md` lands at `.specs/feature/logger.md`.
-  Something already at that path is a conflict: show it and ask. Delete template comments and every
-  heading left empty.
-- **Status and date** — `status: merged` and `updated:` to today.
-- **The Change section** — one Change history row on an existing spec whose documented behaviour or
-  requirements changed; otherwise deleted.
-- **A removal** — a spec file whose Change section removes the spec deletes it instead.
+For each spec the built tasks touched — missed while building, or settled since:
 
-## 3. What the plan leaves behind
-
-Show it as a list before writing any of it:
-
+- **Behaviour, Intent, `owns`** — to what's built; `updated:` to today.
+- **A Change history row** for this change, if it has none yet, on a spec whose documented behaviour
+  or requirements changed.
 - **A `Not` line** someone reading only the code would propose again, with no Decision yet, becomes one.
-- **A flow across modules** goes into the contract spec as who does what.
-- **A module's non-obvious internal invariants** go into its `ARCHITECTURE.md`, where the module has one.
-- **Interfaces and state machines** already live in the code and its doc comments; they and the rest are
-  dropped.
-- **Unticked tasks** are listed.
+- **A Finding that still holds** goes into the spec it concerns: a Behaviour line when the code does it
+  on purpose, a Pitfall when a reader would get it wrong.
+- **A flow across modules** goes into the contract spec as who does what; **a module's non-obvious
+  invariants** into its `ARCHITECTURE.md`, where it has one.
+
+## 3. The plan
+
+- **Nothing left, or the rest into Future plans:** each unbuilt requirement becomes a Future plan in
+  the spec it belongs to, then delete the folder — only its own plan while a change is nested in it, and a parent
+  folder left empty.
+- **Kept for later:** cut the plan to the unbuilt requirements and tasks, with a line under its
+  title saying what they wait on; add a Future plan pointing at it to each spec it touches.
+- **Abandoned:** delete the folder; built code and spec edits stay unless the user asks to undo them.
 
 ## 4. Finish
 
-- For a change made ahead of code, offer `spec-check-style --fix` on the specs it touched; run it only on a
-  yes.
-- Report what merged, which tasks were left, what the plan
-  left behind and what was dropped. Then delete the change folder — only its own files while a change is nested in it, and a parent folder left empty — on the user's yes, or on the
-  approval of a new spec written from code. Whether or not the folder goes, run `spec-rebuild-overviews` and report its drift and warnings.
+Run `spec-rebuild-overviews`. Report in a few lines: what the specs gained, where the rest went, and
+drift the rebuild found. Then go back to what the user was doing.

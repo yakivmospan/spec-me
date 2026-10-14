@@ -17,39 +17,48 @@ what it adds where a project has specs:
 
 | Rule | Detail |
 |---|---|
-| Specs vs. code | As *Code first* in the ground rules says. Inside a change, code behind its spec files while its tasks — or, with no plan, its Behaviour lines — are still open is expected, not a conflict. |
+| Specs vs. code | As *Code first* in the ground rules says. A spec documents what's built; a plan says what will be — code behind an open plan is expected, not a conflict. |
 | One owner per file | The most specific glob in `owns` wins — fewest wildcards, then most path segments. Two equal globs matching one file is a bug — flag it. |
 | Where a decision lives | Inside one file → its doc comment; anywhere else, including a single-file decision that contradicts a project-wide rule → a spec Decision (spec-style-rules' *One owner per decision*). |
+
+## Two ways to work
+
+- **Shaping, the default.** Build what the user asks, let them try it, adjust, repeat — no change
+  folder, plan or approval. A spec the work moves is edited in place as you go: Behaviour to what's
+  built, a Decision for an option tried and dropped, one Change history row for the work, not per
+  tweak. Inside a planned change too, where a tweak adds no task.
+- **Planning, only when asked** — "plan", "design", "spec this out": `spec-create`, then `spec-plan`.
+  Work that adds a module, moves a boundary or has a real design choice: suggest planning once.
+- **Only a red flag interrupts:** the work would break something the request didn't mean to change —
+  another feature, saved data, the build — or goes against a Decision. Say it in one line and wait.
+  A Behaviour line the request itself changes is no red flag; spec bookkeeping is done and reported,
+  never asked.
+- **Every question or suggestion is one line,** readable at a glance; while shaping, one at a time.
 
 ## Every task
 
 1. Read `.specs/README.md` up to *Change what a spec guarantees*, once a session. For each file you'll
-   edit, find its owning spec by `owns` — `INDEX.md` routes it when current — and read it; when it has moved into an open
-   change, read it there — its `git diff -M` against the branch the change will merge into is what the change adds. No owner is normal, not a blocker. A spec `INDEX.md` lists as possibly
-   stale: say so in one line, offer `spec-sync-with-code` once a session per spec — unless `spec-create`
-   is about to move it into a change, which runs it — and carry on.
+   edit, find its owning spec by `owns` — `INDEX.md` routes it when current — and read it, and the
+   plan of any open change that touches it. No owner is normal, not a blocker. A spec
+   `INDEX.md` lists as possibly stale: say so in one line, offer `spec-sync-with-code` once a session
+   per spec, and carry on.
 2. Before proposing an approach or explaining why something is built as it is, read the Decisions that
-   bind it — the owning spec's, its parents', its `related` specs' and any pending change's
-   (`.specs/DECISIONS.md` groups them); all of them only when the approach cuts across the tree.
+   bind it — the owning spec's, its parents' and its `related` specs' (`.specs/DECISIONS.md` groups
+   them); all of them only when the approach cuts across the tree.
    A Decision in the way is raised, never enforced: name it, say what changing it would affect and
    what it bought, weigh that against what the change gains, and give your read. Any Decision may be
    questioned unless it says otherwise — "we wrote it once" is not a reason, and a Decision whose
    *Instead of* names an option tried and dropped is one the project has revised before. Answering an Open question, and
    the call on a Decision, stay the user's.
-3. Anything that adds, changes or removes what a spec guarantees, worth finding later, starts as a
-   change through `spec-create` before any code. Not needed for a one-line fix, a fix that makes code
-   meet a Behaviour line already written, or correcting a stale spec to code that's already right.
+3. Shape, or plan when asked (*Two ways to work*).
 4. A module is added, a boundary moves, or there's a real choice between designs: design it with the
    user — inside a change through `spec-plan`, outside one in chat, recorded per
    `spec-architecture-rules.md`. The `spec-architect` subagent reads and compares; the user decides. It's
    not a file count.
-5. Implement — inside a change, only when asked, through `spec-plan`.
+5. Implement — inside a planned change, only when asked, through `spec-plan`.
 6. New or changed public surface, when tests are wanted: the `spec-test-writer` / `spec_test_writer` subagent,
    pointed at the owning spec's Behaviour and `.specs/02-tech.md`'s Testing section.
 7. Build, lint or tests to check the result: the `runner` subagent, instead of reading raw output.
-8. Work outside a change moved something a spec states — behaviour, surface, owned paths, something it
-   records as broken or pending: update that spec alongside the code (*Keeping it honest*); inside a
-   change, its spec files. No spec, and the work turned out substantial: consider `spec-create`.
 
 On Codex, a step that hands work to a subagent or the background needs an explicit ask; without one,
 work inline.
@@ -58,7 +67,7 @@ work inline.
 
 | When | Do |
 |---|---|
-| You fixed or changed something a spec records as broken, missing or pending — a `Currently violated`, a Pitfall, an Open question | Search `.specs/` for it and correct every line that describes it; nothing detects this for you. |
+| You fixed or changed something a spec records as broken, missing or pending — a Pitfall, a Future plan, an Open question | Search `.specs/` for it and correct every line that describes it; nothing detects this for you. |
 | Code or tests are deleted or moved | Update `owns`. |
-| A spec is confirmed against its code — merged, corrected in place, a clean check, or a design recorded with its code | Set `updated` to that day — not while differences are still open. |
-| A spec is behind code that's already right | On the user's yes, correct it in place, with a Change history row (its ticket, or "No ticket") and `updated`. |
+| A spec is confirmed against its code — updated as the code moved, corrected in place, a clean check, or a design recorded with its code | Set `updated` to that day — not while differences are still open. |
+| A spec is behind code that's already right | Correct it in place, with a Change history row (its ticket, or "No ticket") and `updated` — straight away when your own work moved it, otherwise on the user's yes. |

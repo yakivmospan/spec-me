@@ -1,6 +1,6 @@
 ---
 name: spec-check-style
-description: Use when asked to "review this spec", "check the spec for style issues", "is this spec well written", or when the user accepts spec-merge's offer of --fix on the specs a change touched — reviews existing specs against spec-style-rules.md and reports findings, or with --fix applies the high-confidence ones. Not for writing or changing a spec (spec-create), checking structure and drift (spec-rebuild-overviews), or reviewing the spec setup as a whole (project-test-setup).
+description: Use when asked to "review this spec", "check the spec for style issues", "is this spec well written", "fix the spec's style" — reviews existing specs against spec-style-rules.md and reports findings, or with --fix applies the high-confidence ones. Not for writing or changing a spec (spec-create), checking structure and drift (spec-rebuild-overviews), or reviewing the spec setup as a whole (project-test-setup).
 ---
 
 # Spec Review

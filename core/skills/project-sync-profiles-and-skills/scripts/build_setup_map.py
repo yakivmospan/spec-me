@@ -46,15 +46,15 @@ SIDECAR = ".agents/.cache/map-local.js"
 
 
 def rule_paths(root: Path, kind: str) -> list[Path]:
-    """Every rule of this kind that loads: the project's own, then each profile's, shared and local.
+    """Every shared rule of this kind that loads: the project's own, then each shared profile's.
 
     A rule is no longer copied into `.agents/core/rules/` — it stays in the profile that brought it, and
-    `LOADER.md` names it by path. This has to look in the same places that file does.
+    `LOADER.md` names it by path. Personal profiles under `.agents/.local/` go to the Local section only.
     """
     found = list((root / ".agents/core/rules" / kind).glob("*.md"))
-    for base in (root / ".agents/profiles", root / ".agents/.local/profiles"):
-        for profile in sorted(base.iterdir()) if base.is_dir() else []:
-            found += list((profile / "rules" / kind).glob("*.md"))
+    base = root / ".agents/profiles"
+    for profile in sorted(base.iterdir()) if base.is_dir() else []:
+        found += list((profile / "rules" / kind).glob("*.md"))
     return sorted(p for p in found if ".seed." not in p.name)
 
 
@@ -126,10 +126,10 @@ def sidecar(root: Path) -> str | None:
         return None
     files = []
     for load, pattern, note in (
-        ("always", "rules/LOADER.md", "Your loader, read every session after the shared one."),
-        ("always", "rules/always-on/*.md", "Personal rule, read every session."),
-        ("on demand", "rules/on-demand/*.md", "Personal rule; a row in your LOADER.md says when."),
-        ("invoked", "skills/*/SKILL.md", "Personal skill, linked so both tools see it; its description loads every session."),
+        ("always", "LOADER.md", "Your loader, read every session after the shared one."),
+        ("always", "profiles/*/rules/always-on/*.md", "Personal rule, read every session."),
+        ("on demand", "profiles/*/rules/on-demand/*.md", "Personal rule; a row in your LOADER.md says when."),
+        ("invoked", "profiles/*/skills/*/SKILL.md", "Personal skill, linked so both tools see it; its description loads every session."),
     ):
         for path in sorted(base.glob(pattern)):
             files.append({

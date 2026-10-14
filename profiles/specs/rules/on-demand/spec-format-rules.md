@@ -6,14 +6,13 @@ is the reader's view of the same shape; this adds what a writer needs. Read with
 pointer into `.agents/`, no skill name, no meaning only a script supplies.
 
 ## Frontmatter
-Required: `id`, `title`, `status`, `parent`. `status` is `merged` for a spec in `.specs/`, and `draft` or
-`approved` for a spec file in a change (`spec-change-rules.md`'s *Stages*).
+Required: `id`, `title`, `parent`. A spec has no status: it always documents what's built, and what's
+planned lives in a change's plan.
 
 ```yaml
 ---
 id: feature.checkout          # unique, dot-namespaced
 title: Checkout flow
-status: merged                # draft or approved in a change; merged once merged
 parent: architecture          # id of the parent spec, not its filename; only product has parent: null
 owns:                         # glob(s) this spec is the source of truth for, its tests included; [] is valid
   - "src/checkout/**"
@@ -27,13 +26,8 @@ updated: 2026-01-01           # the day this spec was last confirmed against its
 `owns` lists the spec's tests as well as its code, where they don't already fall under a code glob:
 the tests are the proof of its Behaviour, and this is how a reader finds them.
 
-`updated:` moves when the spec is confirmed against its code: merging, a correction in place, a clean
-check against its code, or a design recorded alongside its code (spec-architecture-rules' *Recording a decision*).
-
-## Change
-Only in a spec file inside a change, right under the title: why the spec is being written or changed,
-in a sentence or two — or that the change removes it. When the change merges, it becomes the Change
-history row, or is deleted.
+`updated:` moves when the spec is confirmed against its code: an edit as the code moves, a clean check
+against its code, or a design recorded alongside its code (spec-architecture-rules' *Recording a decision*).
 
 ## Behaviour
 One bullet per rule the code follows on purpose, a sentence or two at most: what a caller can rely on.
@@ -41,18 +35,15 @@ List what a reader could get wrong or that was a real choice — an edge case, a
 order, who may call, a wire format, an obligation a change must not break — and leave out the happy
 path anyone would expect. Past about ten lines, group them under bold labels. No ids, Given/When/Then,
 checkboxes or test names: the tests are the proof, found through `owns`, and a line no test covers is
-still a rule. A rule the code breaks today keeps its line, with
-`- **Currently violated:** {what breaks it, and where that's tracked}` under it. What the code does
-that nobody chose — found while writing a spec from code, a likely bug — is not a rule: it goes under
-Pitfalls, with an Open question on whether it should change. Wording:
+still a rule. A rule the code breaks, or something it does that nobody chose — a likely bug — is
+not a Behaviour line: the line says what the code really does, or goes; the gap goes under Pitfalls;
+and the fix under Future plans when it's wanted, or an Open question when that's undecided. Wording:
 spec-style-rules' *Guarantee, not implementation*.
 
 ```markdown
 ## Behaviour
 - A dropped upload is retried once, then reported as failed.
 - Only the signed-in account's uploads are sent; another account's stay queued.
-- Calls before `init` fail without reaching the network.
-  - **Currently violated:** `refresh()` still sends; PROJ-1300.
 ```
 
 ## Contracts
@@ -69,9 +60,9 @@ Code that callers merely borrow, like a retry helper, gets no spec: document it 
 `01-architecture.md`'s Cross-cutting concerns or `02-tech.md`'s Key libraries.
 
 ## Change history
-A `| Ticket | Change | Date |` table, one row per change in documented behaviour or requirements — "No ticket" is
-valid for a hotfix or a code-first reconciliation — written when a change merges, or alongside the
-code outside a change. What qualifies and how to word it: spec-style-rules' *One row, one sentence*.
+A `| Ticket | Change | Date |` table, one row per change in documented behaviour or requirements, or a revised Decision — "No ticket" is
+valid for a hotfix or a code-first reconciliation — at most one row per piece of work or planned
+change, written alongside the code. What qualifies and how to word it: spec-style-rules' *One row, one sentence*.
 
 ## Open questions
 Never resolve one by picking something plausible: capture the decision first — a Decisions entry,
@@ -80,7 +71,8 @@ or the code itself for a pure implementation call. Format and resolve lifecycle:
 
 ## Future plans
 What the user wants later, decided or only an idea. Not a guarantee: nothing here is built or tested,
-and a change that takes one up deletes it and writes its Behaviour lines. Something undecided that blocks
+and the work that builds one deletes it and writes its Behaviour lines. One may point at a kept plan
+under `.specs/changes/`. Something undecided that blocks
 work now is an Open question instead.
 
 ```markdown

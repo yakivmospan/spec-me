@@ -131,7 +131,6 @@ fixture = [
   { path = ".specs/feature/refunds.md", content = """---
 id: feature.refunds
 title: Refunds
-status: merged
 parent: architecture
 ---
 
@@ -163,7 +162,6 @@ fixture = [
   { path = ".specs/feature/refunds.md", content = """---
 id: feature.refunds
 title: Refunds
-status: merged
 parent: architecture
 ---
 

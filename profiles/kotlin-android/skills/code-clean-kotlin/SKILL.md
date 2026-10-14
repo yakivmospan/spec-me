@@ -14,6 +14,30 @@ description: Use after changing any Kotlin file and before reporting code work d
   named extension, `val ServiceState.isReady`; one computed from a flow's current values and again from
   its emissions — `state.value.isReady && …` beside `combine(state, …) { s, … -> s.isReady && … }` — becomes
   one function taking the values, called from both.
+- **Names** — three principles for every new name; the names beside each show a miss, not a list to
+  match against:
+  - **One idea, one word, the file's.** A new name takes the word the file or codebase already uses
+    for that idea; a second word for the same idea is never added, and your own word is the last
+    choice. Beside `verifyRequirements` and `verifySilently` the new one is `verifyWithoutLeavingReady`, not
+    `recheck`; a sibling that already says `NotSupported` is not joined by `TooOld`. Poor words are
+    improved where the task touches them, said out loud.
+  - **What it does, for any reader and any caller.** Said in words someone new reads without opening
+    it — `saveWithRetry`, not `saveBehindSaver`. A member of a shared class is named for every caller,
+    not the first one. A dependency a class takes is named by what the class asks of it, in the class's
+    own verb — `isConnectionAllowed`, not `isSuperEvaReady`: the assistant asks whether it may
+    connect, and need not know who answers.
+  - **Read once, read right.** No two names a letter apart for different things — `SyncReason` beside
+    `SyncerReason` — and no name that reads as something else: `verifyWhileReady` reads as a loop.
+- **What's there stays** — a change touches existing code only as far as it needs: a name, where it
+  lives and its comments stay unless they are wrong, and "I'd have named it differently" is not wrong.
+  Opening something to a new caller changes its visibility and nothing else: `private const val
+  BILLING_PACKAGE` another module needs becomes `const val BILLING_PACKAGE`, not `BillingClient.PACKAGE`;
+  a case `CardDeclined` that now also covers an expired card keeps its name, not renamed `NotPaid`: the
+  reason it carries says which. A rename to fit a new case is asked for first, never made on the way.
+- **One class, one job; reuse before adding** — a class gets no method of a different kind because a
+  caller needs both answers. First find what already gives it — a use case, an extension, a flow — and
+  use that: `UploadFilesUseCase` doesn't grow `isOnline()` when `NetworkStateUseCase` already hands
+  out the state and `NetworkState.isOnline` reads it.
 - **Reads like a book** — top-down by the step-down rule: public entry points first, each function
   followed by the ones it calls, each at one level of abstraction, so a reader goes from what happens to
   how without jumping around. The same holds for packages: a glance at one shows what it offers — entry
@@ -44,6 +68,10 @@ description: Use after changing any Kotlin file and before reporting code work d
   mockk, not a subclass. A return whose meaning needs its KDoc to be read — a `Boolean` that doesn't
   mean success, a `null` standing for two different outcomes — is one of these sets: name each outcome
   in a sealed result instead.
+- **One channel per outcome** — a function reports an outcome through its return value or through a
+  callback, never both: `suspend fun verify(onFailure: suspend () -> Unit): Boolean` says "failed"
+  twice. A `suspend` function already waits, so it answers by returning; a callback is only for a step
+  the caller must run at a moment it can't reach itself, and then returns nothing.
 - **KISS** — the simplest code that meets the requirement; nothing for a hypothetical.
 - **Robust** — every failure and state handled; coroutine cancellation never swallowed.
 - **Android** — work lives as long as its owner; nothing slow on the main thread; the process can die
@@ -55,10 +83,10 @@ description: Use after changing any Kotlin file and before reporting code work d
   handed out, easiest in a `final` class. A test passes its own scope and calls `runCurrent()` after
   building it.
 - **Wired, not hardcoded** — a dependency, or a value that differs by build type or environment, comes
-  in through the constructor and is chosen where the object is wired (the DI module), never hardcoded
-  in the class. An object lives as long as what it holds: one that keeps nothing between calls is
-  created per use (a DI factory); a single shared instance is only for one that holds state or must be
-  shared.
+  in through the constructor and is chosen where the object is wired (the DI module), never hardcoded.
+  An object lives as long as what it holds: one keeping nothing between calls is a DI factory, and
+  state that must be shared — a pool bounding calls to one app — is owned once and passed in, never
+  rebuilt per class (example: `reference.md`).
 - **Complete** — nothing the change orphaned or made untrue stays.
 
 ## Steps
@@ -66,11 +94,16 @@ description: Use after changing any Kotlin file and before reporting code work d
 1. **Check what is being reviewed.** When the request could mean reviewing a merge request rather
    than cleaning up code, stop and ask which: a review is a different job with a different skill
    behind it. A branch diff to clean up is this skill's.
-2. **Write or review** against the non-negotiables.
-3. **Leftovers sweep** — from the repository root, run `python3 <this skill's folder>/scripts/stale_refs.py`
+2. **Vocabulary before naming** — before any new name, write down the word the file and its siblings
+   already use for that idea, and who reads the member; the name takes that word. Done when the name
+   holds no word of your own, or you said why.
+3. **Write or review** against the non-negotiables.
+4. **Leftovers sweep** — from the repository root, run `python3 <this skill's folder>/scripts/stale_refs.py`
    (with `--base <commit>` when part of the change is already committed) and fix what it lists; delete
    what the change left unused.
-4. **Run the tests or build** covering the change.
+5. **A fresh reader before reporting** — a fresh agent, where the tool has them, reviews the diff's
+   names and structure with this skill; fix what it finds. Without one, say so.
+6. **Run the tests or build** covering the change.
 
 **Reviewing:** one line per finding — `**defect|risk|clarity** — file:line — what's wrong. Fix: …` —
 by severity, then position. Asked only to review, stop there.

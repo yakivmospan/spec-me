@@ -20,6 +20,13 @@ internal names left in for a reader who can't look them up.
   team, no history of how we got here. Links go to the tracker only. The reader's own words stay — a
   value in an API they use, a message format they receive, a label on their screen; a call is named by
   the action they know it as, a new version by what it brings, an app by what it is.
+- **Written for a reader who opens it cold.** Every step or claim says what the person does, where,
+  and what they then see or hear, in full sentences. A word the project uses for an action, and a
+  state the system keeps — "Enable", "blocked", "ready" — is never what the reader sees: write out
+  what they do and what the product does or shows, in every step where it comes up. Never a glossary
+  at the top ("'X answers' below means …") the reader has to keep in mind. "Give the microphone back, Enable: ready" → "Turn the microphone back
+  on for the voice assistant app and turn the assistant on again in the Settings app. Expected: saying
+  the wake word opens a conversation."
 - **Stored nowhere, sent nowhere.** The summary is a file in the session's scratch space, handed to the
   user; it goes into the project only when they ask, where they say. Sending or posting it is theirs.
 

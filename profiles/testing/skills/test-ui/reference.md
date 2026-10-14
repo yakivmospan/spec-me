@@ -248,3 +248,39 @@ class ExampleScreenTest {
         }
 }
 ```
+
+## Vue (TypeScript)
+
+### Tech Stack
+
+Vitest and `@vue/test-utils` — confirm against the project's own test setup.
+
+### How the rules look in Vue
+
+| Rule | Detail |
+|------|--------|
+| **Mount with props** | `mount(Component, { props })`. A component that calls a composable or a store gets it mocked with `vi.mock` — never the real one with real requests |
+| **Find by role, label or text** | Never by a CSS class |
+| **Verify events with `emitted()`** | Trigger the interaction, then assert `wrapper.emitted('select')`; an interaction that must do nothing leaves it `undefined` |
+| **`await` after each change** | Every `trigger`, `setValue` and `setProps` |
+| **Plugins as test instances** | Router, i18n or store the component needs go in `global.plugins`, as test instances |
+
+### Template
+
+`entities/item/ui/__tests__/ItemRow.spec.ts` — in the project's test location:
+
+```ts
+import { describe, expect, it } from 'vitest'
+import { mount } from '@vue/test-utils'
+import ItemRow from '../ItemRow.vue'
+
+describe('ItemRow', () => {
+  it('emits select with the item id when pressed', async () => {
+    const wrapper = mount(ItemRow, { props: { item: { id: '7', title: 'Seven' } } })
+
+    await wrapper.get('button').trigger('click')
+
+    expect(wrapper.emitted('select')).toEqual([['7']])
+  })
+})
+```

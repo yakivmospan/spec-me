@@ -1,7 +1,6 @@
 ---
 id: tech
 title: Tech context
-status: merged
 parent: product
 owns: []
 related: [architecture]

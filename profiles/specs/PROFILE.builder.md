@@ -41,7 +41,7 @@ The parts are not independently useful:
   rows point at method for work that never starts.
 - The **spec templates** without `spec-create` are shapes nothing copies, and `.specs/README.md`
   without the tree is a guide to a folder that does not exist.
-- The **agents** read a change's spec files and `.specs/02-tech.md`. With no spec tree, `spec-architect`
+- The **agents** read the owning spec, a change's plan and `.specs/02-tech.md`. With no spec tree, `spec-architect`
   compares designs against nothing and `spec-test-writer` has no Behaviour lines to derive cases from.
 
 A project that wants specs without the process wants `.specs/README.md` and a text editor — the

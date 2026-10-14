@@ -1,7 +1,6 @@
 ---
 id: product
 title: {{PROJECT_NAME}}
-status: merged
 parent: null
 owns: []
 related: [architecture, tech]
@@ -19,6 +18,12 @@ updated: {{DATE}}
 ## Users
 {{TARGET_USERS — one line. "N/A, internal tooling" is a valid answer; don't pad this if there
   isn't a distinct user beyond the team building it.}}
+
+## Features
+{{FEATURES — what a user can do today, one line each in their words (spec-style-rules' *Features,
+  as a user says it*), grouped under bold headings a user would use. Product features only, not
+  plumbing; not an index of every spec — INDEX.md is that. Delete this heading until there is
+  something built to list.}}
 
 ## Non-goals
 {{NON_GOALS — what this deliberately will not do or support, and why. This is what stops an

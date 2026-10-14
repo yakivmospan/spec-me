@@ -68,7 +68,7 @@ This project's material lives in files saved to the project, shaped like a spec 
     - **Because** {why, when it isn't obvious}
 
   ## Open questions
-  - [ ] **{the question}**
+  - **{the question}**
     - **Action:** {what settles it, and who decides}
 
   ## References

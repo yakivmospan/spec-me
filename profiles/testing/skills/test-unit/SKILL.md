@@ -1,6 +1,6 @@
 ---
 name: test-unit
-description: Use when writing unit tests, or tests that name no kind, for ViewModels, view models, repositories, interactors, or other business-logic classes — testing coroutine flows, state emissions, error handling, or mocking dependencies with mockk, Mockito or any other mocking library. Ready templates for JUnit4 and JUnit5 are in reference.md; check what this project configures first. Not for tests asked to run several real components together or to replace mocks with fakes, or UI rendering tests.
+description: Use when writing unit tests, or tests that name no kind, for ViewModels, view models, Vue composables, stores, repositories, interactors, or other business-logic classes — testing coroutine flows, state emissions, error handling, or mocking dependencies with mockk, Mockito or any other mocking library. Ready templates for JUnit4 and JUnit5 are in reference.md; check what this project configures first. Not for tests asked to run several real components together or to replace mocks with fakes, or UI rendering tests.
 ---
 
 # Test Unit
@@ -31,6 +31,7 @@ Unit tests verify individual functions and methods in isolation. Each test cover
 | **When/then naming** | No camelCase. Say the condition and the expected result in words, in whatever form the language allows — backticks in Kotlin, underscores elsewhere. Keep them concise |
 | **Full API surface coverage** | For classes with multiple public entry points that share underlying logic (e.g. `execute()` and `executionFlow()`), every behaviour — happy path, error, edge case — must be verified through each public entry point explicitly |
 | **Orchestration, not just invocation** | When a method coordinates multiple dependencies, verify it as a whole: call order (`coVerifyOrder`), *actual* data flowing between calls (not `any()`), full state-transition sequence (not just the end value), all side effects of one call asserted together in one test, and one test per failure source showing *that* failure surfaces correctly |
+| **Framework from the project's rule, not the neighbour** | The framework a new test runs on comes from the project's testing rule, never from the test file next to it: under a "new tests are JUnit5" rule, a module whose old tests are JUnit4 still gets a JUnit5 test, and a module missing the engine gets its build file set up first — asked for, where build files are sensitive. The only exception is the one the rule names, such as a test needing a runner the new framework has none for. Bad: `org.junit.Test` and a `@Rule` copied from the file next door → good: `org.junit.jupiter.api.Test` and the project's extension |
 
 ---
 
@@ -50,7 +51,7 @@ Unit tests verify individual functions and methods in isolation. Each test cover
 ## Templates
 
 Concrete templates live in `reference.md` — a full test class for each of JUnit4 and JUnit5, with
-the coroutine, flow and mocking setup spelled out. They are written in Kotlin because that is where
+the coroutine, flow and mocking setup spelled out, and a Vue composable under Vitest. They are written in Kotlin because that is where
 they came from; the shape they show is the shape any framework's version takes. Open them when you
 want something to copy, and translate the annotations to what this project actually runs.
 

@@ -153,22 +153,20 @@ itself, whether a handoff line is followed mid-work, and whether Codex has anyth
 <!-- specs -->
 ### How a change flows
 
-The specs describe themselves in `.specs/README.md`, for any agent. Here, the skills walk a change
-through that process:
+The specs describe themselves in `.specs/README.md`, for any agent. Most work is shaping: you ask,
+try, adjust, and the specs are updated in place as the code moves. When you ask to plan, the skills
+walk a change through that process:
 
-1. **Describe it** — `spec-create` writes the spec files, each the whole spec as it should read afterwards,
-   with `status: draft` and a `## Change` section saying why.
-2. **Plan it, when the work needs it** — `spec-plan` writes `implementation-plan.md` with
-   you: the design, then the tasks in order.
-3. **Approve it** — you, in chat: each spec file you approve gets `status: approved`, and you're asked whether the rest go too. A spec written from
-   code that already exists merges on that yes, unless the change also holds work still to build.
-4. **Build it** — when you ask (asking approves a draft), `spec-plan` works through the tasks, stops where a task
-   needs you to try it, and changes the plan with you when something turns out different.
-5. **Merge it** — when you say it's done, `spec-merge` lists any unticked tasks, marks the spec files
-   `merged`, copies them over their places in `.specs/`, and deletes the folder on your yes.
+1. **Describe it** — `spec-create` opens `.specs/changes/<name>/implementation-plan.md` and agrees with
+   you its Requirements: why, and what must hold once built.
+2. **Plan it** — `spec-plan` adds the design and the tasks with you.
+3. **Approve it** — your OK in chat sets the plan's `status: approved`; asking to build is that OK.
+4. **Build it** — when you ask, `spec-plan` works through the tasks, updating the specs as each lands,
+   stops where a task needs you to try it, and reshapes the plan with you any time.
+5. **Fold it in** — when you say it's done, or want to save what's built, `spec-merge` checks the specs
+   say everything that's built, then deletes the plan or keeps the unbuilt rest for later.
 
-What each file holds, and what changing course mid-way does:
-`profiles/specs/rules/on-demand/spec-change-rules.md`.
+What the plan holds, and how it's reshaped mid-way: `profiles/specs/rules/on-demand/spec-change-rules.md`.
 
 <!-- /specs -->
 

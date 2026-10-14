@@ -1,7 +1,6 @@
 ---
 id: feature.{{SLUG}}
 title: {{FEATURE_NAME}}
-status: draft
 parent: architecture
 owns:
   - "{{CODE_GLOB}}"
@@ -23,9 +22,6 @@ related: []
 
 # {{FEATURE_NAME}}
 
-## Change
-{{Why this spec is being written or changed, in a sentence or two.}}
-
 ## Intent
 {{One paragraph: what this feature guarantees to the rest of the system. Not how. When it carries part of a contract, name the contract here.}}
 
@@ -34,8 +30,6 @@ related: []
 <!-- Shape: spec-format-rules' *Behaviour*; wording: spec-style-rules' *Guarantee, not implementation*. -->
 
 - {{a rule the code follows on purpose, in one sentence}}
-- {{a rule the code breaks today}}
-  - **Currently violated:** {{what breaks it, and where that's tracked — delete when nothing does}}
 
 ## Decisions
 <!-- spec-style-rules' *What was rejected*, *One owner per decision*, *Revising, not replacing*. -->
@@ -46,7 +40,7 @@ related: []
 
 ## Open questions
 <!-- spec-style-rules' *Question and action*. -->
-- [ ] **{{question}}**
+- **{{question}}**
   - **Action:** {{what resolves it, and who decides}}
 
 ## Future plans

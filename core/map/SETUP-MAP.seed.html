@@ -473,10 +473,10 @@
         <!-- ROW 4 -->
         <circle cx="316" cy="368" r="11" fill="var(--surface)" stroke="var(--conditional)" stroke-width="1.8"/>
         <text x="316" y="372" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="var(--conditional)">3</text>
-        <text x="286" y="365" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="currentColor" opacity=".75">new or changed behaviour</text>
-        <text x="286" y="380" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="currentColor" opacity=".45">a one-line fix needs none</text>
-        <text x="336" y="365" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="600" fill="currentColor">Start a change first</text>
-        <text x="336" y="381" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="currentColor" opacity=".6">spec files, then a plan, one approval</text>
+        <text x="286" y="365" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="currentColor" opacity=".75">asked to plan</text>
+        <text x="286" y="380" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="currentColor" opacity=".45">shaping needs none</text>
+        <text x="336" y="365" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="600" fill="currentColor">Plan it first</text>
+        <text x="336" y="381" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="currentColor" opacity=".6">requirements, design, tasks — one OK</text>
         <line x1="640" y1="368" x2="686" y2="368" stroke="var(--conditional)" stroke-width="1.5" marker-end="url(#ar)" color="var(--conditional)"/>
         <rect x="694" y="355" width="126" height="26" rx="3" fill="var(--conditional-bg)" stroke="var(--conditional)" stroke-width="1"/>
         <text x="706" y="372" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--conditional)">skill spec-create</text>
@@ -793,7 +793,7 @@
         <tr>
           <td class="file">rules/always-on/spec-builder-rules.md</td>
           <td><span class="tag t-always">always</span></td>
-          <td>The always-on file <code>specs</code> brings. The two constitution principles that need specs; <em>Ground rules</em> for spec ownership; <em>Every task</em> — the eight-step flow in Figure 1, written nowhere else; <em>Keeping it honest</em> — what a code change owes its spec.</td>
+          <td>The always-on file <code>specs</code> brings. The two constitution principles that need specs; <em>Ground rules</em> for spec ownership; <em>Two ways to work</em> — shaping by default, planning when asked; <em>Every task</em> — the flow in Figure 1, written nowhere else; <em>Keeping it honest</em> — what a code change owes its spec.</td>
           <td class="num" data-wc=".agents/profiles/specs/rules/always-on/spec-builder-rules.md">0</td>
         </tr>
         <tr>
@@ -831,7 +831,7 @@
         <tr>
           <td class="file">on-demand/spec-change-rules.md</td>
           <td><span class="tag t-cond">conditional</span></td>
-          <td>Before starting, planning, building or merging a change. Stages, the folder, approval, the implementation plan, and changing course mid-way.</td>
+          <td>Before planning, building or folding in a change. The folder, the plan, approval, building, reshaping and folding in.</td>
           <td class="num" data-wc=".agents/profiles/specs/rules/on-demand/spec-change-rules.md">0</td>
         </tr>
         <tr>
@@ -871,7 +871,7 @@
         <tr>
           <td class="file">spec-create</td>
           <td><span class="tag t-cond">invoked</span></td>
-          <td>Step 3. Every change starts here — a new feature, a changed one, or code already written: it works out which, elicits requirements, and gets your OK.</td>
+          <td>Step 3, when you ask to plan. Opens a change's plan and agrees its requirements with you — or writes a spec from code already there.</td>
           <td class="num" data-wc=".agents/skills/spec-create/SKILL.md">0</td>
         </tr>
         <tr>
@@ -889,19 +889,19 @@
         <tr>
           <td class="file">spec-plan</td>
           <td><span class="tag t-cond">invoked</span></td>
-          <td>Steps 4 and 5. Writes a change's implementation plan with you — design, then tasks — builds from it when you ask, and changes it with you mid-way. The architect subagent proposes.</td>
+          <td>Steps 4 and 5. Adds a plan's design and tasks with you, builds from them when you ask — updating the specs as each lands — and reshapes the plan any time. The architect subagent proposes.</td>
           <td class="num" data-wc=".agents/skills/spec-plan/SKILL.md">0</td>
         </tr>
         <tr>
           <td class="file">spec-merge</td>
           <td><span class="tag t-cond">invoked</span></td>
-          <td>Merges a finished change: copies its spec files over, keeps what its plan decided, deletes the folder.</td>
+          <td>Folds a change in, finished or not: checks the specs say what's built, writes what its plan decided, then deletes the plan or keeps the unbuilt rest.</td>
           <td class="num" data-wc=".agents/skills/spec-merge/SKILL.md">0</td>
         </tr>
         <tr>
           <td class="file">spec-check-style</td>
           <td><span class="tag t-cond">on request</span></td>
-          <td>Audits prose against spec-style-rules. Offered with --fix by spec-merge.</td>
+          <td>Audits prose against spec-style-rules, or with --fix applies the safe fixes.</td>
           <td class="num" data-wc=".agents/skills/spec-check-style/SKILL.md">1,432</td>
         </tr>
 
@@ -964,7 +964,7 @@
         <tr>
           <td class="file">vue-create</td>
           <td><span class="tag t-cond">invoked</span></td>
-          <td>New or changed Vue page, component or composable: placement by layer, typed props and emits, state hoisting, accessibility, a component test. From the stack profile.</td>
+          <td>New or changed Vue page, component or composable: placement by layer, typed props and emits, state hoisting, accessibility. From the stack profile.</td>
           <td class="num" data-wc=".agents/skills/vue-create/SKILL.md">1,445</td>
         </tr>
 
@@ -1047,6 +1047,12 @@
           <td><span class="tag t-cond">on request</span></td>
           <td>Optional. A summary of whatever you name — open questions, decisions, how something works today — from the specs, the code and the conversation, in plain words for its reader, handed over as a file and stored nowhere.</td>
           <td class="num" data-wc=".agents/skills/write-summary/SKILL.md">900</td>
+        </tr>
+        <tr>
+          <td class="file">write-commit-message</td>
+          <td><span class="tag t-cond">on request</span></td>
+          <td>Optional. A short commit message someone who knows the product but not the work reads from <code>git log</code> alone: what the product does differently, and a few concrete changes.</td>
+          <td class="num" data-wc=".agents/skills/write-commit-message/SKILL.md">0</td>
         </tr>
         <tr class="group"><td colspan="4">Subagents — fresh context, report back</td></tr>
         <tr>

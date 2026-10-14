@@ -1,7 +1,6 @@
 ---
 id: architecture
 title: Architecture
-status: merged
 parent: product
 owns:
   - "{{TOP_LEVEL_SOURCE_GLOB — e.g. src/**}}"

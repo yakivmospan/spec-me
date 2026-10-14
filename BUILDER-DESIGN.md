@@ -616,42 +616,55 @@ The common case, and the one that shapes the most.
     single source the skills point at
   - **Because** specs are memory any agent can use (the constitution), and `.agents/` may be neither
     committed nor installed — while a README written from its sources never quietly becomes one
-- **Work not folded in yet lives in `.specs/changes/<branch>/` (a second one on it: `<branch>-<topic>/`) — each spec it touches,
-  moved in with `git mv`, and an `implementation-plan.md` when the work needs one — and folds into
-  `.specs/` by moving each spec back to its place**
-  - **Instead of** editing a spec at its place ahead of the code; Kiro-style requirements, design and
-    tasks files kept per feature for good; or a whole copy of each spec, folded in by copying it over
-    its place
-  - **Because** a spec at its place then always describes the code as it is, and no finished task list
-    or stale design is left for later sessions to read. A move, unlike a copy, shows every edit as a
-    diff in git, the IDE and the merge request, and leaves no second version to reconcile at merge —
-    at the cost of one spec being in only one change at a time
+- **Shaping is the default — build, try, adjust, with each spec edited in place as the code moves; a
+  change only when the user asks to plan**
+  - **Instead of** every new or changed guarantee starting as a change before any code
+  - **Because** in daily use the user shapes UI and behaviour by trying and adjusting, often long after
+    a plan; sending each tweak through a change folder, approvals and a merge stopped the work, and its
+    questions pulled the user off the task they were on. Only a red flag interrupts, in one line
+  - **Replaced 2026-10-12:** every guarantee change through a change first
+- **A change is one `implementation-plan.md` in `.specs/changes/<branch>/` (a second one on it:
+  `<branch>-<topic>/`) — Requirements, Design, Tasks — and specs never move into it; they follow the
+  code as each task lands**
+  - **Instead of** each spec it touches moved in with `git mv`, edited ahead of the code and moved back
+    at merge; editing a spec at its place ahead of the code; Kiro-style requirements, design and tasks
+    files kept per feature for good; or a whole copy of each spec, folded in by copying it over its place
+  - **Because** a plan says what will be done and a spec what is. With one-line Behaviour, a moved
+    spec's diff said little more than the plan's requirements, while the spec went missing from its
+    place, sat in one change at a time, and had to be moved back. A spec at its place always describes
+    the code as built
   - **Replaced 2026-09-19:** a whole copy of each spec, folded in by copying it over its place
+  - **Replaced 2026-10-12:** each spec moved into the change with `git mv` and back at merge
+- **Folding in is a checkpoint, not a finish line: it saves what's built, any time, and the unbuilt
+  rest goes to Future plans or stays as a cut-down plan anyone can pick up**
+  - **Instead of** merging only a finished change, with what the plan leaves behind shown for approval
+    and the folder deleted on a yes
+  - **Because** the user saves good work mid-feature and carries on; the only question is where the
+    rest goes, asked in one line when they haven't said
 - **A spec's Behaviour stays in the spec file**
   - **Instead of** a separate requirements file beside each spec
   - **Because** the rules outlive the change that added them, and sit beside the Decisions and
     Pitfalls that explain them
-- **Every spec has a `status`: `draft` or `approved` inside a change, `merged` everywhere else; only the
-  user approves**
-  - **Instead of** no `status`, with an `approved:` date in a change's `proposal.md`; `active` for the
-    third, which reads as *being worked on*; or a folder per status
-  - **Because** any single file then says how far it has come, to a person or any agent; the three names
-    don't overlap the way `draft` once meant both *not agreed* and *being built*; and a status in a header
-    moves no files
+- **A plan has a `status`, `draft` or `approved`, and only the user approves; a spec has none**
+  - **Instead of** every spec carrying `draft` or `approved` inside a change and `merged` everywhere
+    else; an `approved:` date in a change's `proposal.md`; or a folder per status
+  - **Because** a spec always documents what's built, so it has nothing to approve; what is agreed and
+    not yet built is the plan, and its header says how far it has come
   - **Replaced 2026-09-14:** no `status`, with two `approved:` dates and four phases; then one `approved:`
     date in `proposal.md`
   - **Replaced 2026-09-15:** the third status was named `current`
-- **Every way into a spec starts a change, through one skill — `spec-create` — and
-  `spec-plan` and `spec-merge` finish it**
+  - **Replaced 2026-10-12:** a `status` on every spec, `merged` outside a change
+- **One skill opens a planned change or writes a spec from code — `spec-create` — and `spec-plan` and
+  `spec-merge` carry the change on**
   - **Instead of** `spec-new`, `spec-update` and `spec-from-code` as three entry skills; or skills
     writing specs directly, beside a separate `change-*` skill family
-  - **Because** a spec written from code is a reading the user has to confirm — already what a change
-    carries. Three doors made the user pick one and collided on "create/update the spec"; the agent can
-    tell the starting point from the specs and the code, asking only whether the code is already right
+  - **Because** three doors made the user pick one and collided on "create/update the spec"; the agent
+    can tell the starting point from the specs and the code, asking only whether the code is already
+    right
   - **Replaced 2026-09-13:** three entry skills, one per starting point
-- **A `merged` spec the code has moved past, with the code right, is corrected in place — a Change
-  history row, "No ticket" when there's none, and `updated:`**
-  - **Instead of** a change folder with the spec moved in, an approval and a fold-in for a spec that was only behind
+- **A spec the code has moved past, with the code right, is corrected in place — a Change history row,
+  "No ticket" when there's none, and `updated:`**
+  - **Instead of** a change, an approval and a fold-in for a spec that was only behind
   - **Because** nothing is being decided: the code already is what the spec should say, so one question
     to the user is the whole review, and the row keeps the history a change would have
 - **A design outside a change — a new module or a moved boundary — is agreed in chat and recorded in
@@ -659,26 +672,26 @@ The common case, and the one that shapes the most.
   - **Instead of** opening a change only to hold a design, or an architecture-only plan file
   - **Because** chat is the simplest place to agree it, and the Decision and the row in the spec that
     owns the boundary keep what a change's plan would have
-- **A change folder holds only spec files, and one `implementation-plan.md` — design, then tasks —
-  when the work needs it**
-  - **Instead of** a `proposal.md` beside the spec files; separate `design.md` and `tasks.md`; or the
-    same files and two approvals at every size, with a contract change's `tasks.md` listing its
-    sub-changes
-  - **Because** each spec file already carries its why, in a `## Change` section, and its approval, in
-    `status` — a proposal only repeated them. Design and tasks are both the how: most designs fit in two
+- **The plan holds what, how and in what order in one file — Requirements, Design, Tasks — with one
+  OK on the whole of it**
+  - **Instead of** spec files carrying the what, each with its own approval, beside a plan for design
+    and tasks; a `proposal.md`; separate `design.md` and `tasks.md`; or two approvals at every size
+  - **Because** Requirements, Design and Tasks are read and reshaped together; most designs fit in two
     lines above the tasks they explain, and a big one grows sub-headings in the same file
   - **Replaced 2026-09-14:** every change with the same files and two approvals; then a `proposal.md`
     holding the why and the approval; then separate `design.md` and `tasks.md`
-- **Changing course adds, never rewrites: a ticked task stays, rework is a new task, and an edited
-  Behaviour line keeps the spec's approval on the user's OK**
-  - **Instead of** rewriting or unticking built tasks; or any edit to an approved guarantee sending the
-    spec back to `draft`
-  - **Because** building is where the user tests and adapts, so the plan stays a record of what was
-    tried and what was found, and an approval survives the ordinary back-and-forth. Only the user sets a
-    spec back to `draft`, to stop and rethink
-- **A spec written from code that already exists goes from `draft` straight to `merged`**
-  - **Instead of** approving it, then folding it in as a second step
-  - **Because** there is nothing to build: the approval is the user confirming the reading
+  - **Replaced 2026-10-12:** spec files in the change carrying the what and an approval each
+- **The plan is shaped freely; what's built is shaped without tasks**
+  - **Instead of** a ticked task never rewritten and every rework a new task; or any edit to an approved
+    guarantee sending it back to `draft`
+  - **Because** building is where the user tests and adapts, often through many small changes; a task
+    per tweak buried the plan and stopped the work. Only the user sets a plan back to `draft`, to stop
+    and rethink
+  - **Replaced 2026-10-12:** changing course added, never rewrote
+- **A spec written from code that already exists is written in place on the user's OK**
+  - **Instead of** a change carrying it as `draft`, merged on the yes
+  - **Because** there is nothing to build: the OK is the user confirming the reading
+  - **Replaced 2026-10-12:** from `draft` straight to `merged` through a change
 - **Reports to the user use plain words, not phase or skill names**
   - **Instead of** "Phase: Planning", "delta", "sub-change"
   - **Because** the lifecycle is the agent's to know; the user should never have to learn it
@@ -709,16 +722,19 @@ The common case, and the one that shapes the most.
     feature does for the flow
   - **Replaced 2026-09-14:** a traceability matrix in the contract's Implementation table
   - **Replaced 2026-10-08:** `(contract AC-n)` tags in the features' criteria
-- **A change's spec files sit flat in its folder, one per spec, each named after the path it lands at
-  (`specs.feature.logger.md`) and each the whole spec as it should read afterwards**
-  - **Instead of** a delta applied section by section — ADDED, MODIFIED, REMOVED, RESOLVED; one
-    requirements file holding criteria only; one target spec per change; or a `specs/` tree mirroring
-    `.specs/`
-  - **Because** a whole copy folds in by copying over, which any agent can do; one ticket can touch
-    several specs; a file's name is where it lands; and a mirrored tree buried each spec several folders
-    deep
+- **A plan's Requirements say why, then what must hold once built, in plain lines grouped by topic,
+  ending with the specs it touches**
+  - **Instead of** the lines to add, change or drop listed per spec, in the words the spec will take;
+    each spec as a whole file in the change, named after the path it lands at
+    (`specs.feature.logger.md`); a delta applied section by section — ADDED, MODIFIED, REMOVED,
+    RESOLVED; or a `specs/` tree mirroring `.specs/`
+  - **Because** listed per spec, they read as a log of spec edits — "Changed", stage tags, section
+    names — not as what the work must achieve. The plan is designed from requirements; the specs
+    change only as the code does
   - **Replaced 2026-09-14:** a `specs/` tree inside each change, mirroring `.specs/`; then deltas applied
     section by section
+  - **Replaced 2026-10-12:** a whole spec file per spec, flat in the change folder; then spec edits
+    listed per spec
 - **One skill holds a plan's whole life — writing it, building from it, changing course — and the
   architect subagent proposes**
   - **Instead of** the architect subagent deciding, with `design.md` shaped by one paragraph; or a

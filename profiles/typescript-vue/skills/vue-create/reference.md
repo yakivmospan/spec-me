@@ -5,7 +5,7 @@ Design — elsewhere, the same files go where the project keeps its own.
 
 ## Template — a new page
 
-A page, the composable it calls, one component below it, and their tests.
+A page, the composable it calls, and one component below it.
 
 ```
 entities/item/
@@ -132,45 +132,6 @@ onMounted(refresh)
 export { default as ItemsPage } from './ui/ItemsPage.vue'
 
 // router: { path: '/items', component: () => import('@/pages/items').then((page) => page.ItemsPage) }
-```
-
-`entities/item/ui/__tests__/ItemRow.spec.ts` — in the project's test location:
-
-```ts
-import { describe, expect, it } from 'vitest'
-import { mount } from '@vue/test-utils'
-import ItemRow from '../ItemRow.vue'
-
-describe('ItemRow', () => {
-  it('emits select with the item id when pressed', async () => {
-    const wrapper = mount(ItemRow, { props: { item: { id: '7', title: 'Seven' } } })
-
-    await wrapper.get('button').trigger('click')
-
-    expect(wrapper.emitted('select')).toEqual([['7']])
-  })
-})
-```
-
-`entities/item/model/__tests__/useItems.spec.ts` — a composable using a lifecycle hook runs inside an
-effect scope:
-
-```ts
-import { effectScope } from 'vue'
-import { describe, expect, it } from 'vitest'
-import { useItems } from '../useItems'
-
-describe('useItems', () => {
-  it('flags a failed load', async () => {
-    const scope = effectScope()
-    const state = scope.run(() => useItems(() => Promise.reject(new Error('offline'))))!
-
-    await state.refresh()
-
-    expect(state.failed.value).toBe(true)
-    scope.stop()
-  })
-})
 ```
 
 ## Non-obvious accessibility

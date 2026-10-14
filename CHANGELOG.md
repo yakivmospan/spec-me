@@ -5,6 +5,91 @@ builder by hand can decide what to take.
 
 ## 0.6.0
 
+### A plan's Design reads like a design
+- **Every added piece in What changes names the existing piece that could hold it, and why it can't;
+  `spec-plan` checks each reason in the code before the design reaches the user,** whoever wrote it.
+  "Checked against the rules" with no procedure shrank to a skim, and three new pieces in one session
+  — a second job in a use case, a helper kept for one caller, a new object for constants a binding
+  already held — each duplicated something that already existed.
+- **The plan template's Design is a design doc**, after Google-style design docs, RFCs and arc42:
+  Context naming the Requirements topic it builds (Requirements are the goals, Not in this change the
+  non-goals, so Design never repeats them), Overview with one Mermaid component diagram marking new, changed and
+  deleted pieces, Scenarios as numbered steps, Detailed design per piece (responsibility, interface,
+  behaviour, failures), Cross-cutting, What changes, Alternatives considered — each kept only when it
+  has something real; a small change keeps Overview and Alternatives. A Design written as dense prose
+  couldn't be followed by someone joining cold, and flows drawn as diagrams — a sequence diagram,
+  then flowcharts — read worse than three numbered steps.
+
+### The architect designs, and decides the engineering
+- **`spec-architect` returns one decided design,** every engineering call made with its reason, and
+  options only for a choice the user must weigh: product behaviour, scope, cost, or a Decision in the
+  way. Asked for options, it handed the user engineering calls with obvious answers.
+- **It maps the closest case of the same kind and follows its pattern, or says why not; an existing
+  piece it keeps must still be the right owner.** It once widened a helper left with one caller,
+  instead of following the pattern a sibling vendor's check had set. **A new type only when no existing
+  one can carry it:** it then moved a binding object's constants into a new object of their own,
+  where the binding could simply share them.
+- **`spec-architecture-rules`' *A proposal needs* and `spec-plan` say the same,** and `spec-plan`
+  checks the design against the design rules before it reaches the user.
+- **`docs-incode` reviews every comment against every step,** not only whether it is true.
+
+### A reshaped design is checked again
+- **`spec-plan` sends a changed Design back to the architect** when it touches more than one class,
+  then re-reads every Design line and task, built ones included, against it, reworking what the change
+  made untrue. A design moved from waiting for a check to running it alongside, and a no-retry choice
+  made for the old design survived into the new one, where it no longer made sense.
+- **The architect's brief carries the rules the loaders place at proposing a design.** It loads only
+  the spec rules, so a design rule kept in a local profile never reached it.
+- **Every new or changed call between packages or layers goes into Design as a signature,** with the
+  class that owns it, at a high level, so a class given a second job shows when the plan is reviewed
+  rather than in the code. It was module and process boundaries only, which missed two layers sharing
+  one module and one process; what happens inside a package stays with building.
+
+### An idea keeps the name the codebase gave it
+- **`code-clean-kotlin`: an idea the codebase already names keeps that name** — `NotSupported`, as a
+  sibling type said, not a new `TooOld` for the same case in another vendor's check.
+
+### One class, one job
+- **`code-clean-kotlin` checks that a class gets no method of a different kind,** and that what
+  already answers a question — a use case, an extension, a flow — is used before anything is added. A
+  verification use case grew a state read beside its one job, though a state use case and the
+  extension the read needed were already there.
+- **A limit on something several classes use, such as a pool bounding calls to one outside app, is
+  owned once and passed in, never rebuilt per class.** A second class calling the same app was built
+  by copying the first, private pool and all, so a hung app held more threads than either limit meant,
+  and the copy had to be a single only to keep its own limit.
+
+### Commit messages a newcomer can read
+- **`ai-companion` has `write-commit-message`:** a subject saying what the product does differently,
+  and at most four bullets of one concrete change each, every line readable without the diff, with a
+  bad and a good example of each way it goes wrong. Messages came out either as every edit with its
+  reasons, or cut so short they meant nothing without the diff.
+- **`project-workflow-rules` keeps only the project's own format:** its paragraph on what a message
+  holds is now the skill, one person's style, and a Commit body row asks for the format the project's
+  `git log` shows. A project taking this version moves that paragraph's established parts — a bullet
+  verb, say — into the row and deletes the rest.
+
+### A plan keeps what the work found out
+- **A plan has an optional Findings section:** how things really behave, learned while doing the work
+  — on a device, in a log, from another team — each dated, with where. Folding in moves what still
+  holds into the specs, as Behaviour or a Pitfall. A device check's result had nowhere to go but a
+  task's Check line, where it read as a test of the change rather than a fact about the system.
+
+### Shaping by default; a change is its plan
+- **Most work is shaping now:** build, try, adjust, with each spec edited in place as the code moves.
+  A change starts only when the user asks to plan. Sending every tweak through a change folder,
+  approvals and a merge stopped the work, and its questions pulled the user off their task.
+- **Only a red flag interrupts,** in one line — the work would break something the request didn't mean
+  to change, or goes against a Decision. Every question is one line, one at a time.
+- **A change is one `implementation-plan.md`** — Requirements, Design, Tasks — with one OK on the
+  plan. Requirements say why, then what must hold once built, by topic — never a log of spec edits.
+  Specs never move into it; they follow the code as each task lands, and have no `status` any more.
+- **Folding in is a checkpoint:** it saves what's built at any point; the unbuilt rest goes to Future
+  plans, or stays as a cut-down plan anyone can pick up.
+- **A project taking this version** deletes `status:` from its specs, moves any `specs.<path>.md` left
+  in a change back to `.specs/<path>`, turns an open change into a plan with Requirements, and runs
+  `spec-rebuild-overviews`, which warns about each of these.
+
 ### Rules load from the loaders again
 - **`AGENTS.md` points at the constitution and the two loaders again,** read at session start, and
   the sync no longer carries rules into `AGENTS.md`, `CLAUDE.local.md` or `AGENTS.override.md`. In
@@ -73,8 +158,7 @@ builder by hand can decide what to take.
 ### Specs list behaviour, not acceptance criteria
 - **A spec's guarantees are a `## Behaviour` list:** one plain line per rule the code follows on
   purpose, with no id, Given/When/Then, checkbox or `Verified:` proof. Constraints and Public surface
-  go too: an obligation is a Behaviour line, with `Currently violated:` under it where the code breaks
-  it today, and what visibility can't say is a Behaviour line. In daily use nobody reread the criteria
+  go too: an obligation is a Behaviour line, and what visibility can't say is a Behaviour line. In daily use nobody reread the criteria
   — the agent wrote them, they were approved unread and reworded to match the code — and their test
   lists went stale with every rename. The tests are the proof, found through `owns`, which now lists
   them. Plan tasks lose their `[AC-n]` tags, and a merge no longer confirms criteria one by one.
@@ -82,22 +166,68 @@ builder by hand can decide what to take.
   `spec-builder-rules` (*a person's word is enough* now means a Behaviour line the user agreed to
   needs no test), the templates, `spec-create`, `spec-plan`, `spec-merge`, `spec-sync-with-code`
   (runs the tests under `owns`, reads the code for the lines they don't settle),
-  `spec-check-style`, `spec-test-writer` (cases from Behaviour lines; none that pins a line marked
-  currently violated), and `spec-rebuild-overviews`, whose script drops every criteria check and
-  reads `Currently violated:` under Behaviour. `write-summary`, the Claude project file and one
+  `spec-check-style`, `spec-test-writer` (cases from Behaviour lines; none that pins a Pitfall nobody
+  chose), and `spec-rebuild-overviews`, whose script drops every criteria and violation check. `write-summary`, the Claude project file and one
   behaviour test case follow too.
+- **A rule the code breaks, or something it does that nobody chose, is a Pitfall, not Behaviour,**
+  with its fix under Future plans, or an Open question when it's unclear the fix is wanted, so a
+  Behaviour line keeps meaning "on purpose". `Currently violated:` under a Behaviour line is gone.
+- **A rule the code's own docs already state stays there:** a README or a doc comment for a module's
+  users, `ARCHITECTURE.md` or other repo docs for its maintainers. The spec points there and keeps
+  only what no doc says; docs outside the repo are pointed at, never copied. The SDK's README and its
+  spec said the same rules twice.
 - **A project taking this version** rewrites each spec's criteria as Behaviour lines, folds its
   Constraints and Public surface in, and adds its test folders to `owns`.
 
-### Decisions say what was chosen, what it beat and why — no history
-- **`Replaced {date}:` is gone.** A revised Decision is edited in place, and the overturned choice
-  joins its *Instead of* with what went wrong, in a clause; git keeps the dated story. Chains of four
-  dated lines retold versions nobody needed to choose well.
+### Decisions say what was chosen, what it beat and why; Change history dates a revision
+- **`Replaced {date}:` is gone.** A revised Decision is edited in place, the overturned choice joins
+  its *Instead of* with what went wrong, in a clause, and Change history gets a dated row. Chains of
+  four dated lines inside one Decision retold versions nobody needed to choose well.
 - **A rule the choice produces is a Behaviour line,** not part of the Decision; *Because* is a
   sentence or two, and a trade-off is one *Cost* line.
 - **Past about ten, Decisions are grouped** under the same bold labels as the spec's Behaviour, so
   a rule and the reason for it sit under the same heading in both. The style rules, the specs README,
   `spec-builder-rules` and `spec-check-style`'s examples say so.
+
+### Names say what the code does
+- **`code-clean-kotlin` asks for a name someone new reads without opening the code** —
+  `saveWithRetry`, not `saveBehindSaver` — **and no two names a letter apart for different things.**
+  Two types a letter apart, and a function named after a word for itself, had to be renamed after
+  review.
+
+### Code comments read cold
+- **`docs-incode` writes for someone opening the file for the first time:** whole sentences that name
+  who does what, and no shorthand from the work that wrote them. Read it aloud to someone who hasn't
+  seen the change; anything they'd ask about is rewritten. A comment saying "no run shows a dialog"
+  meant nothing to the person who owns the code.
+
+### A plan's task numbers show in every viewer
+- **A task is `- [ ] **3. …**`, its number inside the bold title.** As `3. [ ] **…**`, most Markdown
+  viewers hid the number behind the checkbox, and from task 10 on the sub-points, indented for one
+  digit, started a new numbered list of their own; a number right after the box (`- [ ] 3. …`) started
+  a nested list instead. The plan template, the change rules and the specs README show the new shape;
+  `spec-rebuild-overviews` reads it and the old one.
+
+### The product spec lists what the product does
+- **`00-product.md` gains a Features section:** one line per thing the product does for its users,
+  grouped, each naming the spec that covers it or "no spec yet", so the product spec is the way into
+  the feature specs and shows what nothing describes yet. Product features only — `INDEX.md` stays
+  the index of every spec. The product template and the specs README say so.
+
+### An answered Open question is deleted
+- **No checkbox, no strike-through, no `Resolved:` line:** an Open question is a bold question with
+  its Action, open while it's there; once answered it is deleted, since the answer already lives on
+  as a Decision, a doc comment or the code, and git keeps the question. The specs README, the style
+  rules, `spec-check-style`'s examples, the templates and the Claude project file say so;
+  `spec-rebuild-overviews` reads questions without a checkbox and still counts an old `[x]` one as
+  answered.
+
+### The map shows local profiles again
+- **The Local section finds personal files where they live now:** `.local/LOADER.md` and
+  `.local/profiles/<name>/rules/` and `skills/`. It still looked in `.local/rules/` and
+  `.local/skills/`, found nothing, and stayed hidden.
+- **The shared counts leave personal rules out,** as the map always said they did; local profiles'
+  rules had been counted in the words loaded every session and the rules total.
 
 ### Every kind of test has its skill
 - **`testing` has `test-ui`,** an existing Compose UI test skill brought in with its text kept: it
@@ -112,6 +242,11 @@ builder by hand can decide what to take.
   platform adds its own. A framework whose finder returns the first match quietly now checks that only
   one node matches, and what a screen asks for by itself when it opens is now tested too. Side by side
   on the same Compose screen, the neutral version scored as the Compose-only one did.
+- **Vue tests live in the test skills, as Compose's do.** `vue-create` no longer writes a component
+  test: its rule, step and checklist line moved to a Vue section of `test-ui`'s `reference.md`, and its
+  composable example to `test-unit`'s, whose description now names Vue composables and stores.
+  `compose-create` already left tests to the test skills; `vue-create` writing its own made the two
+  compete for the same request.
 - **`test-e2e` tests a journey inside one app from inside that app,** in the app's own device tests
   against its real dependency graph, and keeps the test-only module and UiAutomator for journeys that
   cross apps. Side by side on the same tasks, the in-app route needed two build lines where the

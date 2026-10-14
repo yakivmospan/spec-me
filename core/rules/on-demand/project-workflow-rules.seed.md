@@ -34,17 +34,14 @@ is actually verified.
 | | |
 |---|---|
 | Commit subject | {{the real format, with a real example copied from `git log`}} |
+| Commit body | {{the real format of the lines under the subject, from `git log` — or delete this row}} |
 | No ticket | {{what people actually write when there is no ticket — or delete this row}} |
 | Branch | {{the real convention, with an example}} |
 | Attribution | Never add `Co-Authored-By`, a generated-by line, or any other trailer naming the tool that wrote it — in a commit message or a request description. A commit says what changed. Delete this row only if the project wants such a trailer. |
 | Review unit | {{pull requests / merge requests, and how they're referenced in commits}} |
 | Never stage | {{paths deliberately excluded, and where that exclusion lives}} |
 
-Commit or push only when asked. A commit message is the subject and a bullet for each important
-change only — what a reviewer needs to know, never every file or edit; one line each, never
-paragraphs. The diff carries the rest. The subject says what
-the change does overall; each bullet starts with Added, Changed or Removed and says in a few words
-what, readable without the diff.
+Commit or push only when asked.
 
 ## Pull or merge request description
 

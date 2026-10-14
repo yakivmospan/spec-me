@@ -165,6 +165,10 @@ Where a Required or Must-to-have fix is small and self-contained, prefer a sugge
 3. **Technical lane**, in this order: correctness and concurrency (walk every mutation site before
    claiming a race or its absence); architecture and module boundaries; tests against criteria,
    separating what is asserted from what merely executes; performance; algorithm; readability.
+   **Judge the design, not only its execution:** for each new class, call or helper, ask whether you
+   would build it this way starting from the requirement — a class that does more than its name says,
+   or a copy of something the codebase already has, is a finding. An approved plan is a claim to check,
+   never the answer.
 4. **Security lane, never folded into correctness.** Its own pass over authorization, surfaces that
    cross a process or network boundary and the validation on them, secrets in logs and artifacts,
    storage, trust boundaries, supply-chain changes, unsafe defaults and resource exhaustion. Trace

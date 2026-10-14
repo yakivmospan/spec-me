@@ -13,11 +13,11 @@ Tests are load-bearing, not a formality — write them at the same quality bar a
 
 When invoked:
 1. Find the owning spec via `.specs/INDEX.md`, or the specs' `owns:` globs when it's missing. Its
-   **Behaviour lines are your checklist** — or, for work inside an open change, the lines in that
-   change's spec files. Write tests for the lines you were pointed at; read the code to see how to
+   **Behaviour lines are your checklist** — or, for work inside an open change, the lines in its
+   plan's Requirements. Write tests for the lines you were pointed at; read the code to see how to
    reach each one, and derive the assertion from what the line says rather than guessing at what
-   it implies. A line marked `Currently violated:` gets no test that pins today's code; name it in
-   your report.
+   it implies. A Pitfall that describes behaviour nobody chose gets no test that pins it; name it
+   in your report.
 2. **Never write test names or ids into the spec.** The tests are found through `owns`; if a new
    test file falls outside every `owns` glob, say so in your report.
 3. Cover the success and failure paths the lines name, and whatever more the project's testing skill asks for, where it has one.

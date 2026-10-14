@@ -342,10 +342,10 @@ since nothing needs them after this step; the feature template is the one Step 5
 | `.specs/00-product.md` | `.agents/builder/profiles/specs/templates/spec-00-product.builder.md` | Step 4 answers 3-5 |
 | `.specs/01-architecture.md` | `.agents/builder/profiles/specs/templates/spec-01-architecture.builder.md` | Step 1 structure + Step 3 features |
 | `.specs/02-tech.md` | `.agents/builder/profiles/specs/templates/spec-02-tech.builder.md` | Step 1 stack and commands. Its Testing section — framework, test command, file location, naming convention — is what the `spec-test-writer` subagent reads, so leave nothing out |
-| `.specs/changes/<branch name>-<feature slug>/` | `.agents/profiles/specs/templates/spec-feature.md`, as `specs.feature.<slug>.md` with `status: draft` | one `spec-create` change per confirmed feature — it goes from `draft` to `merged` once the user confirms the reading |
+| `.specs/feature/<slug>.md` | `.agents/profiles/specs/templates/spec-feature.md` | one `spec-create` spec from code per confirmed feature — written in place once the user confirms the reading |
 
-A spec describes the code as it is. Work agreed or in progress lives in change folders under
-`.specs/changes/`; setup writes only the feature changes above.
+A spec describes the code as it is. Planned work lives in a plan under `.specs/changes/`; setup writes
+none.
 
 For each feature change:
 - Set the new spec's `owns` to globs you have **verified match files on disk**, its tests included.
@@ -391,7 +391,7 @@ with, in this order:
    the specific question attached. This is the most important section; do not compress it.
 6. **Drift** — anything `build_index.py` reported under "Drift" that you did not resolve (real
    problems: a dangling glob, ambiguous ownership). Not "Not yet specced" gaps — those are expected.
-7. A reminder that the feature changes under `.specs/changes/` are your reading of the code, not the
+7. A reminder that the feature specs written from code are your reading of the code, not the
    author's, and wait for their approval — and that most of the codebase is likely still unspecced by design; coverage
    grows via `spec-create` as work touches each area, not as a scheduled task.
 8. What `project-resolve-conflicts` found, and what the user picked for each.

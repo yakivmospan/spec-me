@@ -1,6 +1,6 @@
 ---
 name: spec-rebuild-overviews
-description: Use after any edit under .specs/, after moving or deleting code a spec's `owns` glob points at, when asked to "run spec-rebuild-overviews" or "rebuild the index", or when a generated file looks stale or a file's owning spec can't be found — rebuilds .specs/INDEX.md, DECISIONS.md and OPEN-QUESTIONS.md, and reports drift, warnings, possibly stale specs and Behaviour lines marked currently violated. Not for reviewing spec prose (spec-check-style), or checking a spec against its code (spec-sync-with-code).
+description: Use after any edit under .specs/, after moving or deleting code a spec's `owns` glob points at, when asked to "run spec-rebuild-overviews" or "rebuild the index", or when a generated file looks stale or a file's owning spec can't be found — rebuilds .specs/INDEX.md, DECISIONS.md and OPEN-QUESTIONS.md, and reports drift, warnings, and specs possibly stale since their code changed. Not for reviewing spec prose (spec-check-style), or checking a spec against its code (spec-sync-with-code).
 ---
 
 # Spec Sync
@@ -28,10 +28,9 @@ exits non-zero on drift only, `build_setup_map.py` also when the map is out of d
 ## What it generates
 
 - **`INDEX.md`** — routing from code path to owning spec, open changes with their status and tasks
-  done, the spec tree, drift, possibly-stale specs, and counts of violations and gaps.
-- **`DECISIONS.md`** — every decision and what it rejected, one section per spec, then what open changes
-  add.
-- **`OPEN-QUESTIONS.md`** — every open question, one section per spec, then what each open change adds.
+  done, the spec tree, drift, possibly-stale specs, and a count of gaps.
+- **`DECISIONS.md`** — every decision and what it rejected, one section per spec.
+- **`OPEN-QUESTIONS.md`** — every open question, one section per spec.
 
 ## Reading the results
 
@@ -40,10 +39,8 @@ exits non-zero on drift only, `build_setup_map.py` also when the map is out of d
 - **Possibly stale** — owned code has commits after the spec's `updated:`. `spec-sync-with-code` can confirm
   one; its last result shows beside the spec. A broad glob
   shows up often — a reason to ask whether that spec is too broad.
-- **Known violations** — `Currently violated:` notes under Behaviour lines, counted per spec. Kept true
-  per spec-builder-rules' *Keeping it honest*.
-- **Pending changes** — any folder under `changes/` directly holding `specs.<path>.md` files; it folds
-  in when the user says so.
+- **Pending changes** — any folder under `changes/` directly holding an `implementation-plan.md`, with
+  the plan's `status:` and its tasks done; it folds in when the user says so.
 - **Long Change history rows** (stdout) — past 35 words; rewrite as one sentence (spec-style-rules' *One
   row, one sentence*).
 - **Not yet specced** — information only. Spec an area with `spec-create` when a task touches it, not

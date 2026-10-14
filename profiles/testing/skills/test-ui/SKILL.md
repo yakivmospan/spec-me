@@ -85,7 +85,7 @@ Always test the **public entry**. The state holder is mocked through dependency 
 
 ## Templates
 
-One section per platform in `reference.md` — Compose (Kotlin) today — with its tech stack, how the
+One section per platform in `reference.md` — Compose (Kotlin) and Vue (TypeScript) today — with its tech stack, how the
 rules above look there, and a template. No section for this project's platform: write the tests in the
 idiom of its existing UI tests and libraries, never guessing a library's API, and offer to add the
 section.

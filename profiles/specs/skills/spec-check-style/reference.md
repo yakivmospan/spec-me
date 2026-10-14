@@ -93,13 +93,14 @@ which is the fastest way to catch this.
 The narrowest owner is often not the file the code is in. A module that deliberately wraps the
 platform logger instead of using the shared one reads as a code-style violation to anyone who
 hasn't opened it, so it's a spec Decision even though it concerns a single module — a doc comment
-there is invisible at the moment someone "fixes" the apparent violation. (Spec versus doc comment
+there is invisible at the moment someone "fixes" the apparent mistake. (Spec versus doc comment
 in general: `spec-builder-rules.md`'s *Where a decision lives*.)
 
 ### Revising, not replacing
 
 Edit the entry in place to the choice that holds now, and add the overturned one to its **Instead
-of** with what was learned — no date, no story of the earlier versions; git keeps those. Don't leave
+of** with what was learned — no story of the earlier versions inside it; a Change history row dates
+the revision. Don't leave
 the old decision live somewhere else, and don't record the reversal only in Change history — a
 reader who finds the superseded version first has no way to know it lost. A decision that's conditionally
 live gets `- **Revisit when** {condition}` instead: that's a live decision with a known expiry,
@@ -108,12 +109,10 @@ not a superseded one.
 ### Question and action
 
 An open question states those two things and nothing else. Background belongs in a linked spec or
-ticket. One Action per question, on its own sub-bullet (*Sub-bullet per field*), never its own
-checkbox — the question's `[ ]`/`[x]` is the entry's only state. A question needing several
-independent actions is usually two questions filed as one. Resolving one strikes through both
-lines and adds a third sub-bullet (`- [x] ~~**Question**~~` / `  - ~~**Action:** …~~` / `  -
-Resolved: see Decisions → "{{name}}"`); the entry stays in place below the still-open ones, and
-isn't deleted except on explicit user request.
+ticket. One Action per question, on its own sub-bullet (*Sub-bullet per field*), and no checkbox:
+an entry is open as long as it is there. A question needing several independent actions is usually
+two questions filed as one. Once answered, the entry is deleted — the answer already lives on as a
+Decision, a doc comment or the code, and git keeps the question.
 
 ### Guarantee, not implementation
 
@@ -153,14 +152,16 @@ structure should track genuine complexity, not habit.
 The ticket column and date already answer who and when; don't re-derive root cause, repro steps,
 or a file-by-file account. Reasoning that still matters going forward belongs in Decisions or
 Behaviour as the current state, not preserved as a log entry. A row is for a change in
-documented behaviour or requirements — a new or changed Behaviour line, a bug fix — never for an
+documented behaviour or requirements — a new or changed Behaviour line, a bug fix, a revised
+Decision — never for an
 editorial pass on the spec's own prose. Nor for creating the spec, narrowing an Open question,
 adding a test, or a refactor or restyle that leaves behaviour alone — the current text already
 shows where things stand, and the Decision or Open question holds the reasoning.
 
 ### Sub-bullet per field
 
-A Decision's Instead of, an Open question's Action, a Behaviour line's Currently violated.
+A Decision's Instead of, an Open question's Action, a Future plan's Why, Not yet because and Take
+up when.
 Markdown preview collapses consecutive indented lines with no blank line between them into one
 run-on paragraph, so the rendered page silently runs the field into the line above it. A
 sub-bullet per field, never an em-dash continuation or a bare indented line, with no reliance on

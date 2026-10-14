@@ -12,8 +12,8 @@ Everything here is true of the stack. Nothing here names a particular project �
 A repository is on this stack if a `package.json` lists `vue` (3.x) in any dependency field **and** it
 uses TypeScript — `typescript` in a dependency field or a `tsconfig.json` — **and** it has `.vue`
 sources. `vite` in `package.json` or a `vite.config.*` confirms the build half; Vitest with
-`@vue/test-utils` confirms the component-test step of `vue-create`, which otherwise uses whatever runner
-the project has. A `nuxt` dependency still matches, but Nuxt's file-based routing and auto-imports
+`@vue/test-utils` confirms the test half, which the Vue sections of `test-ui` and `test-unit` assume;
+otherwise they use whatever runner the project has. A `nuxt` dependency still matches, but Nuxt's file-based routing and auto-imports
 decide where files go — say so when offering `vue-create`.
 
 ## Tool commands, for a permission allowlist

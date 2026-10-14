@@ -1,7 +1,6 @@
 ---
 id: contract.{{SLUG}}
 title: {{CONTRACT_NAME}}
-status: draft
 parent: architecture
 owns: []
 ticket: {{TICKET_KEY — or delete this line if there isn't one}}
@@ -19,9 +18,6 @@ related: []
 -->
 
 # {{CONTRACT_NAME}}
-
-## Change
-{{Why this spec is being written or changed, in a sentence or two.}}
 
 ## Intent
 {{One paragraph: what the flow guarantees across modules. Not how.}}
@@ -51,5 +47,5 @@ related: []
 
 ## Open questions
 <!-- Where a question goes: spec-change-rules' *The folder*; format: spec-style-rules' *Question and action*. -->
-- [ ] **{{question}}**
+- **{{question}}**
   - **Action:** {{what resolves it, and who decides}}
